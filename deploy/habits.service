@@ -1,0 +1,23 @@
+[Unit]
+Description=Habit tracker
+After=network.target
+
+[Service]
+User=habits
+WorkingDirectory=/opt/habits
+Environment=NODE_ENV=production
+Environment=HABIT_DATA_DIR=/var/lib/habits
+Environment=PORT=3000
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=3
+
+# lock it down: the app can only write to its data folder
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/habits
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

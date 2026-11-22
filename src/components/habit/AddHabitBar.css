@@ -1,0 +1,4 @@
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.add { align-self: flex-start; }
+.add::before { content: '+ '; color: var(--muted); }
+.add.plain::before { content: none; }

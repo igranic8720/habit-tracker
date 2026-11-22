@@ -1,0 +1,9 @@
+/* GitHub buttons: .btn is the secondary style; .btn-sm and .btn-danger modify it */
+.btn {
+  padding: 5px 16px; cursor: pointer; font-size: 14px; font-weight: 500; line-height: 20px; color: var(--fg);
+  background: var(--btn); border: 1px solid var(--btn-border); border-radius: 6px; transition: background-color .15s;
+}
+.btn:hover { background: var(--btn-hover); }
+.btn-sm { padding: 3px 12px; font-size: 12px; }
+.btn-danger { color: var(--danger); }
+.btn-danger:hover { color: #fff; background: #da3633; border-color: #f85149; }

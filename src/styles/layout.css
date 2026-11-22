@@ -1,0 +1,19 @@
+/* page frame: header fixed on top, dashboard pinned left, habits scrolling right; no page scroll */
+#root, main { height: 100%; }
+main { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+.workspace { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.workspace.two { grid-template-columns: clamp(380px, 30vw, 520px) minmax(0, 1fr); }
+.habits-pane, .side { min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.habits-pane > *, .side > * { flex: none; }
+
+/* small screens: normal page scroll, dashboard first */
+@media (max-width: 900px) {
+  body { height: auto; overflow: auto; }
+  #root, main { height: auto; }
+  .workspace, .workspace.two { grid-template-columns: minmax(0, 1fr); }
+  .habits-pane, .side { overflow: visible; }
+  .side { order: -1; }
+}
+@media (max-width: 768px) {
+  body { padding: 16px 16px 48px; }
+}

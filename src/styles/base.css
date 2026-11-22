@@ -1,0 +1,20 @@
+/* reset, page background and the small utilities every component shares */
+* { box-sizing: border-box; }
+h1, h2, h3, p { margin: 0; }
+html { background: var(--canvas); }
+body { margin: 0; height: 100vh; height: 100dvh; overflow: hidden; padding: 16px 24px; color: var(--fg); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+button { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* every box: a GitHub-style card */
+.surface { background: var(--subtle); border: 1px solid var(--border); border-radius: 6px; }
+
+/* habit colour = --on; GitHub-style default green. ('aqua' is the old name for blue) */
+.habit-color { --on: var(--green); }
+[data-color='blue'], [data-color='aqua'] { --on: var(--blue); }
+[data-color='purple'] { --on: var(--purple); }
+[data-color='orange'] { --on: var(--orange); }
+[data-color='pink'] { --on: var(--pink); }
+[data-color='green'] { --on: var(--green); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
