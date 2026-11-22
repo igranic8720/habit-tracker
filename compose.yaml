@@ -1,0 +1,18 @@
+# Run the habit tracker:   docker compose up -d
+# Update to the newest image:   docker compose pull && docker compose up -d
+services:
+  habits:
+    image: ${HABITS_IMAGE:-ghcr.io/igranic8720/habit-tracker:latest}
+    container_name: habits
+    restart: unless-stopped
+    ports:
+      - "3000:3000"          # use "127.0.0.1:3000:3000" if a reverse proxy sits in front
+    volumes:
+      - ./data:/data         # your habits; this folder is never touched by updates
+    read_only: true          # the container can only write to /data (and a scratch /tmp)
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

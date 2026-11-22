@@ -79,7 +79,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, HOST, () => console.log(`Habit tracker on http://${HOST}:${PORT} (data: ${process.env.HABIT_DATA_DIR ?? 'data'})`))
 
-// systemd stops the service with SIGTERM: finish in-flight requests, then exit
+// `docker stop` sends SIGTERM: finish in-flight requests, then exit
 for (const signal of ['SIGTERM', 'SIGINT']) {
   process.on(signal, () => {
     server.close(() => process.exit(0))
