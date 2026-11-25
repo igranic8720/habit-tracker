@@ -6,7 +6,9 @@ folder next to the compose file, so updating never touches it.
 
 ```
 /opt/habits/compose.yaml   the only file the VM needs
-/opt/habits/data/          your habits (data/habits/*.json)   <- survives every update
+/opt/habits/data/          your data                          <- survives every update
+  habits/*.json            one file per habit
+  workouts/                plans.json, cycles.json, log.json (+ backups/: a daily copy, last 14)
 ```
 
 ## 1. Get an image published (once)
@@ -101,6 +103,7 @@ Delete the `.env` line (or set it back to a newer tag) to follow `latest` again.
 - Your data is plain JSON files: `tar -czf habits-$(date +%F).tar.gz -C /opt/habits data` is a complete backup.
 - Add a scheduled Proxmox backup job for the VM, and take a snapshot before big changes.
 - A habit you delete in the app is moved to `data/habits/.deleted/`, not erased.
+- Workouts are kept apart from habits in `data/workouts/`. `log.json` (everything you have done) also gets a once-a-day copy in `data/workouts/backups/`, so a bad save can never wipe your history.
 
 ## Building without GitHub (optional)
 

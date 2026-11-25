@@ -1,7 +1,7 @@
 /* reset, page background and the small utilities every component shares */
 * { box-sizing: border-box; }
 h1, h2, h3, p { margin: 0; }
-html { background: var(--canvas); }
+html { background: var(--canvas); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 body { margin: 0; height: 100vh; height: 100dvh; overflow: hidden; padding: 16px 24px; color: var(--fg); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 button { font-family: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -9,12 +9,32 @@ button { font-family: inherit; }
 /* every box: a GitHub-style card */
 .surface { background: var(--subtle); border: 1px solid var(--border); border-radius: 6px; }
 
-/* habit colour = --on; GitHub-style default green. ('aqua' is the old name for blue) */
-.habit-color { --on: var(--green); }
-[data-color='blue'], [data-color='aqua'] { --on: var(--blue); }
-[data-color='purple'] { --on: var(--purple); }
-[data-color='orange'] { --on: var(--orange); }
-[data-color='pink'] { --on: var(--pink); }
-[data-color='green'] { --on: var(--green); }
+/* a small round marker in the colour of the habit / plan around it */
+.dot { display: inline-block; width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--on); vertical-align: 1px; }
+
+/* a habit / plan colour = --on (one of the 14 --hc-* colours); blue when none is set */
+.habit-color { --on: var(--hc-blue); }
+[data-color='red'] { --on: var(--hc-red); }
+[data-color='orange'] { --on: var(--hc-orange); }
+[data-color='yellow'] { --on: var(--hc-yellow); }
+[data-color='blue'] { --on: var(--hc-blue); }
+[data-color='violet'] { --on: var(--hc-violet); }
+[data-color='white'] { --on: var(--hc-white); }
+[data-color='pink'] { --on: var(--hc-pink); }
+[data-color='cyan'] { --on: var(--hc-cyan); }
+[data-color='brown'] { --on: var(--hc-brown); }
+[data-color='magenta'] { --on: var(--hc-magenta); }
+[data-color='sky'] { --on: var(--hc-sky); }
+[data-color='navy'] { --on: var(--hc-navy); }
+[data-color='wine'] { --on: var(--hc-wine); }
+[data-color='peach'] { --on: var(--hc-peach); }
+/* retired names, shown as their nearest colour until the app re-saves them */
+[data-color='aqua'], [data-color='green'] { --on: var(--hc-blue); }
+[data-color='purple'] { --on: var(--hc-violet); }
+[data-color='indigo'] { --on: var(--hc-navy); }
+[data-color='rose'] { --on: var(--hc-wine); }
+[data-color='coral'] { --on: var(--hc-peach); }
+[data-color='gold'] { --on: var(--hc-yellow); }
+[data-color='gray'] { --on: var(--muted); } /* workout days without a plan */
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

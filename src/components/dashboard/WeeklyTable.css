@@ -5,3 +5,7 @@
 .table-view table { width: 100%; border-collapse: collapse; }
 .table-view th, .table-view td { text-align: left; padding: 4px 8px; border-top: 1px solid var(--border-muted); font-variant-numeric: tabular-nums; }
 .table-view th { color: var(--muted); font-weight: 500; position: sticky; top: 0; background: var(--subtle); }
+
+@media (pointer: coarse) {
+  .table-view summary { padding: 12px 0; }
+}

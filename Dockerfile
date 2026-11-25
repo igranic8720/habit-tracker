@@ -15,7 +15,8 @@ ENV NODE_ENV=production \
     HABIT_DATA_DIR=/data
 WORKDIR /app
 COPY --from=build /app/dist ./dist
-COPY package.json server.js habit-store.js ./
+COPY package.json ./
+COPY server ./server
 
 # your habit files live here; mount a volume over it so they survive container updates
 RUN mkdir /data && chown node:node /data
@@ -26,4 +27,4 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:'+process.env.PORT+'/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-CMD ["node", "server.js"]
+CMD ["node", "server/index.js"]

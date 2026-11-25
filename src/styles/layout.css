@@ -6,14 +6,19 @@ main { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
 .habits-pane, .side { min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 .habits-pane > *, .side > * { flex: none; }
 
-/* small screens: normal page scroll, dashboard first */
-@media (max-width: 900px) {
+/* small screens (phones, portrait tablets, landscape phones): normal page scroll, dashboard first */
+@media (max-width: 900px), (max-height: 500px) {
   body { height: auto; overflow: auto; }
   #root, main { height: auto; }
   .workspace, .workspace.two { grid-template-columns: minmax(0, 1fr); }
   .habits-pane, .side { overflow: visible; }
   .side { order: -1; }
 }
-@media (max-width: 768px) {
-  body { padding: 16px 16px 48px; }
+/* phones: habits first (what you tap every day), dashboard after; keep clear of the notch and home bar */
+@media (max-width: 768px), (max-height: 500px) {
+  .side { order: 1; }
+  body {
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+      calc(76px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); /* bottom: clear of the tab bar */
+  }
 }

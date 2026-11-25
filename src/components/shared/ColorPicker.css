@@ -1,0 +1,13 @@
+.cp { position: relative; display: inline-flex; flex: none; }
+.cp-pop {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 40; display: grid; grid-template-columns: repeat(7, 26px); gap: 8px; padding: 10px;
+  background: var(--overlay); border: 1px solid var(--border); border-radius: 6px; box-shadow: var(--shadow);
+}
+.cp-opt { width: 26px; height: 26px; padding: 0; border: 0; border-radius: 50%; background: var(--on); cursor: pointer; }
+.cp-opt:hover { transform: scale(1.1); }
+.cp-opt[aria-pressed='true'] { box-shadow: 0 0 0 2px var(--overlay), 0 0 0 4px var(--fg); }
+
+@media (pointer: coarse) {
+  .cp-pop { grid-template-columns: repeat(7, 40px); gap: 6px; padding: 8px; }
+  .cp-opt { width: 40px; height: 40px; }
+}

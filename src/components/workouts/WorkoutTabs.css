@@ -1,0 +1,10 @@
+.subtabs { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--btn-border); border-radius: 6px; overflow: hidden; background: var(--btn); }
+.subtabs a { padding: 6px 12px; text-align: center; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; transition: background-color .15s; }
+.subtabs a + a { border-left: 1px solid var(--btn-border); }
+.subtabs a:hover { background: var(--btn-hover); color: var(--fg); }
+.subtabs a.on { color: var(--fg); background: var(--btn-hover); }
+.subtabs a:focus-visible { outline-offset: -2px; }
+
+@media (pointer: coarse) {
+  .subtabs a { padding: 12px; }
+}

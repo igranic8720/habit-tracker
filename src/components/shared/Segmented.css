@@ -1,0 +1,8 @@
+.seg { display: inline-flex; border: 1px solid var(--btn-border); border-radius: 6px; overflow: hidden; background: var(--btn); }
+.seg button { font: inherit; font-size: 12px; font-weight: 600; padding: 4px 12px; color: var(--muted); background: var(--btn); border: 0; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--btn-border); }
+.seg button[aria-pressed='true'] { color: var(--fg); background: var(--btn-hover); }
+
+@media (pointer: coarse) {
+  .seg button { min-height: 44px; padding: 6px 16px; font-size: 14px; }
+}

@@ -1,0 +1,46 @@
+.graph { background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; padding: 12px 12px 8px; }
+.graph-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px 16px; flex-wrap: wrap; margin-top: 4px; font-size: 12px; color: var(--muted); }
+.graph-foot strong { color: var(--fg); font-weight: 600; }
+.legend { display: inline-flex; align-items: center; gap: 4px; }
+.plan-legend { list-style: none; margin: 0; padding: 0; flex-basis: 100%; flex-wrap: wrap; gap: 4px 14px; } /* the workout key: on its own row, one entry per plan */
+.plan-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.lg { display: inline-block; width: 12px; height: 12px; border-radius: 2px; background: var(--cell); box-shadow: inset 0 0 0 1px var(--cell-border); }
+.lg.on { background: var(--on); }
+
+.scroll { overflow-x: auto; padding: 4px 4px 8px; margin: -4px; }
+.chart {
+  display: flex; gap: 6px; width: 100%; container-type: inline-size;
+  min-width: calc(30px + var(--weeks) * 10px + (var(--weeks) - 1) * 4px); /* below this the grid scrolls sideways */
+  /* squares grow to fill the card: 10px minimum, 30px maximum */
+  --s: clamp(10px, calc((100cqw - 30px - (var(--weeks) - 1) * 4px) / var(--weeks)), 30px);
+}
+.days { display: flex; flex-direction: column; gap: 4px; padding-top: 19px; width: 24px; flex: none; font-size: 11px; color: var(--muted); }
+.days span { height: var(--s); line-height: var(--s); }
+.months { display: flex; gap: 4px; height: 15px; margin-bottom: 4px; font-size: 11px; color: var(--muted); }
+.months span { width: var(--s); flex: none; white-space: nowrap; overflow: visible; }
+.grid { display: flex; gap: 4px; }
+.week { display: flex; flex-direction: column; gap: 4px; }
+.cell { width: var(--s); height: var(--s); border-radius: 2px; background: var(--cell); box-shadow: inset 0 0 0 1px var(--cell-border); border: 0; padding: 0; cursor: pointer; }
+.cell:hover { outline: 1px solid var(--muted); outline-offset: 1px; }
+.cell.on { background: var(--on); }
+.cell.today-cell { outline: 1px solid var(--fg); outline-offset: 1px; }
+.cell:disabled { cursor: default; }
+.cell:disabled:hover { outline: none; }
+.cell.selected, .cell.selected:hover { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cell.future { background: transparent; box-shadow: inset 0 0 0 1px var(--border-muted); }
+.cell.empty { background: none; box-shadow: none; pointer-events: none; }
+.cell.noted { position: relative; }
+.cell.noted::after { content: ''; position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: var(--fg); opacity: .7; }
+.cell.on.noted::after { background: #fff; opacity: .8; }
+
+@media (max-width: 768px) {
+  .chart { --s: 16px; min-width: calc(30px + var(--weeks) * 16px + (var(--weeks) - 1) * 4px); }
+  .scroll { overscroll-behavior-x: contain; padding-left: 0; margin-left: 0; } /* nothing scrolls past the pinned weekday labels */
+  .days { position: sticky; left: 0; z-index: 1; background: var(--canvas); box-shadow: 6px 0 0 var(--canvas); }
+  .graph-foot { gap: 4px 16px; }
+}
+@media (pointer: coarse) {
+  .cell { position: relative; }
+  .cell::before { content: ''; position: absolute; inset: -2px; } /* grow each square's tap area to meet its neighbours */
+}
+

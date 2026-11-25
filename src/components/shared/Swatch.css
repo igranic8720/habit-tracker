@@ -2,3 +2,8 @@
 .swatch:hover { box-shadow: 0 0 0 3px color-mix(in srgb, var(--on) 30%, transparent); }
 .swatch.static { cursor: default; opacity: .7; }
 .swatch.static:hover { box-shadow: none; }
+
+@media (pointer: coarse) {
+  .swatch:not(.static) { width: 28px; height: 44px; border-radius: 8px; background: radial-gradient(circle closest-side, var(--on) 6px, transparent 6.5px); }
+  .swatch:not(.static):hover { box-shadow: none; }
+}

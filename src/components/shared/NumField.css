@@ -1,0 +1,17 @@
+.num {
+  width: 72px; min-width: 0; height: 36px; padding: 0 8px; font: inherit; font-variant-numeric: tabular-nums; text-align: center; color: var(--fg);
+  background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; -webkit-appearance: none; appearance: none; transition: border-color .15s;
+}
+.num::placeholder { color: var(--muted); }
+.num:hover { border-color: var(--muted); }
+.num:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+
+@media (max-width: 768px) {
+  .num { font-size: 16px; } /* 16px stops Safari zooming in on focus */
+}
+@media (pointer: coarse) {
+  .num { height: 44px; }
+}
+@media (pointer: coarse) {
+  .num { font-size: 16px; }
+}

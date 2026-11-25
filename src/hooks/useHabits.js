@@ -1,45 +1,27 @@
-import { useEffect, useRef, useState } from 'react'
-import { newHabit } from '../lib/habits.js'
+import { useCallback } from 'react'
+import { firstFree, newHabit, recolor } from '../lib/habits.js'
+import { useAutosave } from './useAutosave.js'
 
-// owns the habit list: loads it from the dev server, and saves it back (debounced) after every change
+// a first visit starts with one blank habit (saved only once you change it); habits with a retired colour get a current one
+const fix = (habits) => {
+  const colored = recolor(habits)
+  const changed = colored.some((h, i) => h !== habits[i])
+  return [colored.length ? colored : [newHabit()], changed]
+}
+const options = { fromServer: (body) => body.habits, toServer: (habits) => ({ habits }), fix }
+
+// the habit list, loaded from and saved to /api/habit (see useAutosave for how saving stays safe)
 export function useHabits() {
-  const [habits, setHabits] = useState([])
-  const [loaded, setLoaded] = useState(false)
-  const [saveState, setSaveState] = useState('idle') // idle | saving | saved | error
-  const dirty = useRef(false)
-
-  useEffect(() => {
-    fetch('/api/habit')
-      .then((r) => r.json())
-      .then((data) => setHabits(data.habits.length ? data.habits : [newHabit()]))
-      .catch(() => setHabits([newHabit()]))
-      .finally(() => setLoaded(true))
-  }, [])
-
-  // saved shortly after any change (debounced so typing a name or note isn't a write per key)
-  useEffect(() => {
-    if (!dirty.current) return
-    setSaveState('saving')
-    const t = setTimeout(() => {
-      fetch('/api/habit', { method: 'POST', body: JSON.stringify({ habits }) })
-        .then((r) => setSaveState(r.ok ? 'saved' : 'error'))
-        .catch(() => setSaveState('error'))
-    }, 300)
-    return () => clearTimeout(t)
-  }, [habits])
-
-  const update = (fn) => {
-    dirty.current = true
-    setHabits(fn)
-  }
-
+  const { data, status, saveState, update, flush } = useAutosave('/api/habit', options)
+  const map = useCallback((fn) => update((hs) => hs.map(fn)), [update])
   return {
-    habits,
-    loaded,
+    habits: data ?? [],
+    status,
     saveState,
-    change: (id, next) => update((hs) => hs.map((x) => (x.id === id ? next : x))),
-    patch: (id, changes) => update((hs) => hs.map((x) => (x.id === id ? { ...x, ...changes } : x))),
-    add: () => update((hs) => [...hs, newHabit(hs.length)]),
+    flush,
+    change: (id, next) => map((x) => (x.id === id ? next : x)),
+    patch: (id, changes) => map((x) => (x.id === id ? { ...x, ...changes } : x)),
+    add: () => update((hs) => [...hs, newHabit(firstFree(hs.map((h) => h.color)))]),
     remove: (id) => update((hs) => hs.filter((x) => x.id !== id)),
   }
 }

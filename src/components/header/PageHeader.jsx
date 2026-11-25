@@ -1,18 +1,19 @@
 import { today } from '../../lib/dates.js'
-import HeaderStats from './HeaderStats.jsx'
+import PageNav from './PageNav.jsx'
 import SaveStatus from './SaveStatus.jsx'
 import YearPicker from './YearPicker.jsx'
 import './PageHeader.css'
 
-// the fixed header card: title + date, headline numbers, save status, year picker
-export default function PageHeader({ habits, year, years, firstYear, onYear, saveState }) {
+// the header card: page title + date, the page switch, that page's headline numbers (children), save status, year picker
+export default function PageHeader({ page, year, years, firstYear, onYear, saveState, children }) {
   return (
     <header className="page-head surface">
       <div className="head-title">
-        <h1>Habits</h1>
+        <h1>{page === 'workouts' ? 'Workouts' : 'Habits'}</h1>
         <p>{today.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
       </div>
-      <HeaderStats habits={habits} year={year} />
+      <PageNav page={page} />
+      {children}
       <div className="head-right">
         <SaveStatus state={saveState} />
         <YearPicker year={year} years={years} firstYear={firstYear} onChange={onYear} />

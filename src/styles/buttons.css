@@ -7,3 +7,9 @@
 .btn-sm { padding: 3px 12px; font-size: 12px; }
 .btn-danger { color: var(--danger); }
 .btn-danger:hover { color: #fff; background: #da3633; border-color: #f85149; }
+
+/* touch screens: 44px minimum tap targets */
+@media (pointer: coarse) {
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 40px; padding: 6px 14px; font-size: 14px; }
+}

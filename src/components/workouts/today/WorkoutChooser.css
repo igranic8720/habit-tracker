@@ -1,0 +1,53 @@
+.wc { margin: 0 0 12px; padding: 12px; background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; }
+.wc-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.wc-title { font-size: 14px; font-weight: 600; }
+.wc label { flex: none; font-size: 12px; font-weight: 600; color: var(--muted); }
+.wc-row { display: flex; align-items: center; gap: 8px; }
+.wc-cycle-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; font-size: 12px; color: var(--muted); }
+.wc-cycle-head strong { color: var(--fg); font-size: 14px; }
+.wc-cycle-head a, .wc-hint a { color: var(--link); }
+.wc-select {
+  flex: 1; min-width: 0; height: 32px; padding: 0 30px 0 10px; font: inherit; font-weight: 600; color: var(--fg); cursor: pointer;
+  background-color: var(--btn); border: 1px solid var(--btn-border); border-radius: 6px;
+  background-position: right 10px center;
+}
+.wc-select:hover { background-color: var(--btn-hover); }
+.wc-select option { background: var(--overlay); color: var(--fg); }
+.wc-hint { margin: 4px 0 8px; font-size: 12px; color: var(--muted); }
+.wc-hint a { color: var(--link); }
+
+/* the cycle's days: one card each */
+.wc-days { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.wc-day {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; height: 100%; padding: 10px 12px; text-align: left; font: inherit; color: var(--fg);
+  cursor: pointer; background: var(--subtle); border: 1px solid var(--border); border-radius: 6px; transition: border-color .15s, background-color .15s;
+}
+.wc-day { box-shadow: inset 3px 0 0 var(--on); } /* the plan's colour down the left edge */
+.wc-day:hover:not(:disabled) { border-color: var(--muted); }
+.wc-day strong { font-size: 15px; }
+.wc-day.next { background: color-mix(in srgb, var(--on) 12%, var(--subtle)); border-color: var(--on); }
+.wc-day.today { cursor: default; background: color-mix(in srgb, var(--green) 12%, var(--subtle)); border-color: var(--green); }
+.wc-kicker { font-size: 12px; font-weight: 600; color: var(--muted); }
+.wc-day.next .wc-kicker { color: var(--on); }
+.wc-day.today .wc-kicker { color: var(--green); }
+.wc-line { font-size: 12px; color: var(--muted); }
+.wc-go { margin-top: 8px; padding: 3px 12px; font-size: 12px; font-weight: 600; color: var(--fg); background: var(--btn); border: 1px solid var(--btn-border); border-radius: 6px; }
+.wc-go.primary { color: #fff; background: var(--primary); border-color: var(--primary); }
+
+.wc-other { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-muted); }
+.wc-other > label { display: block; margin-bottom: 6px; }
+
+@media (max-width: 768px) {
+  .wc-select { font-size: 16px; }
+  .wc-days { grid-template-columns: 1fr; }
+}
+@media (pointer: coarse) {
+  .wc-select { height: 44px; }
+  .wc-go { padding: 6px 14px; font-size: 14px; }
+}
+@media (pointer: coarse) {
+  .wc-cycle-head a, .wc-hint a { padding: 12px 0; } /* bigger tap area, same layout */
+}
+@media (pointer: coarse) {
+  .wc-select { font-size: 16px; }
+}

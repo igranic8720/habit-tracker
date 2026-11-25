@@ -14,3 +14,8 @@
 }
 .year-picker select option { background: var(--overlay); color: var(--fg); }
 .year-picker :focus-visible { outline-offset: -2px; }
+
+@media (pointer: coarse) {
+  .year-picker button { min-width: 44px; min-height: 44px; padding: 0; }
+  .year-picker select { min-height: 44px; min-width: 68px; font-size: 16px; }
+}

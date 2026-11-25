@@ -1,0 +1,22 @@
+.page-nav { display: inline-flex; align-self: center; border: 1px solid var(--btn-border); border-radius: 6px; overflow: hidden; background: var(--btn); }
+.page-nav a { padding: 5px 16px; font-size: 14px; font-weight: 600; line-height: 20px; color: var(--muted); text-decoration: none; transition: background-color .15s; }
+.page-nav a + a { border-left: 1px solid var(--btn-border); }
+.page-nav a:hover { background: var(--btn-hover); color: var(--fg); }
+.page-nav a.on { color: var(--fg); background: var(--btn-hover); }
+.page-nav a:focus-visible { outline-offset: -2px; }
+
+/* landscape phones: its own row under the title */
+@media (max-height: 500px) {
+  .page-nav { grid-column: 1 / -1; justify-self: start; }
+}
+/* phones: a tab bar pinned to the bottom, like an iOS app (clear of the home indicator) */
+@media (max-width: 768px) {
+  .page-nav {
+    position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr; justify-self: auto;
+    border: 0; border-top: 1px solid var(--border); border-radius: 0; background: var(--subtle); padding-bottom: env(safe-area-inset-bottom);
+  }
+  .page-nav a { padding: 13px 0 12px; text-align: center; font-size: 15px; border-top: 2px solid transparent; margin-top: -1px; }
+  .page-nav a + a { border-left: 0; }
+  .page-nav a:hover, .page-nav a.on { background: none; }
+  .page-nav a.on { border-top-color: var(--accent); }
+}

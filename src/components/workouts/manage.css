@@ -1,0 +1,76 @@
+/* the Plans and Cycles tabs: lists, and the editors */
+.pv, .pe { padding: 16px 20px; }
+.pv-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.pv-title { font-size: 16px; font-weight: 600; }
+.pv-hint, .pv-empty, .pe-hint { margin: 6px 0 12px; font-size: 12px; color: var(--muted); }
+.pv-empty { font-size: 14px; }
+.pe-hint a { color: var(--link); }
+.pv-list { list-style: none; margin: 0; padding: 0; }
+.pv-list > li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border-muted); }
+.pv-list > li:first-child { border-top: 0; }
+.pv-main { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pv-main strong { font-size: 14px; }
+.pv-name { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.pe-name { display: flex; align-items: center; gap: 8px; }
+.pe-name .pe-input { flex: 1; }
+.pv-line, .pv-use { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.pv-badge { margin-left: 6px; padding: 1px 8px; font-size: 11px; font-weight: 600; color: var(--green); border: 1px solid var(--green); border-radius: 999px; }
+.pv-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; flex: none; }
+.btn[aria-pressed='true'] { color: var(--green); }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn-primary { color: #fff; background: var(--primary); }
+.btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+.cv-steps { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.cv-steps li { padding: 1px 8px; font-size: 12px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; }
+.cv-steps li.next { color: var(--fg); font-weight: 600; border-color: var(--on); background: color-mix(in srgb, var(--on) 14%, transparent); }
+
+.pe-label { display: block; margin: 12px 0 4px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.pe-sub { margin: 16px 0 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.pe-input {
+  display: block; width: 100%; min-width: 0; height: 36px; padding: 0 12px; font: inherit; color: var(--fg); background: var(--canvas); border: 1px solid var(--border); border-radius: 6px;
+  -webkit-appearance: none; appearance: none; transition: border-color .15s;
+}
+select.pe-input { padding-right: 30px; background-position: right 12px center; }
+.pe-input::placeholder { color: var(--muted); }
+.pe-input:hover { border-color: var(--muted); }
+.pe-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+.pe-rows, .ce-steps { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pe-row { display: flex; flex-direction: column; gap: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--border-muted); }
+.pe-top { display: flex; align-items: center; gap: 4px; }
+.pe-nums { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 8px; }
+.pe-nums label { display: flex; flex-direction: column; gap: 2px; }
+.pe-nums label span { font-size: 11px; color: var(--muted); }
+.pe-nums .num { width: 64px; }
+.pe-move { margin-left: auto; display: inline-flex; flex: none; gap: 0; }
+.pe-move button { width: 32px; height: 36px; font-size: 14px; color: var(--muted); background: none; border: 0; border-radius: 6px; cursor: pointer; }
+.pe-move button:hover:not(:disabled) { color: var(--fg); background: var(--btn-hover); }
+.pe-move button:disabled { opacity: .3; cursor: default; }
+.ce-steps li { display: flex; align-items: center; gap: 8px; }
+.ce-n { width: 48px; flex: none; font-size: 12px; color: var(--muted); }
+.pe-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-muted); }
+.pe-delete { margin-left: auto; }
+
+@media (max-width: 768px) {
+  .pv, .pe { padding: 14px 16px; }
+  .pv-list > li { flex-direction: column; align-items: stretch; }
+  .pv-buttons { justify-content: flex-start; }
+  .pe-input { font-size: 16px; }
+}
+@media (pointer: coarse) {
+  .pe-input { height: 44px; }
+  .pe-move button { width: 36px; height: 44px; }
+}
+
+@media (pointer: coarse) {
+  .pv-name .cp, .pe-name .cp { margin-left: -8px; } /* the dot lines up with the text below, as on habit cards */
+  .pe-hint a { padding: 12px 0; } /* bigger tap area, same layout */
+}
+/* phones: the day label sits above its plan, so the plan's name has room */
+@media (max-width: 768px) {
+  .ce-steps li { flex-wrap: wrap; gap: 4px 6px; }
+  .ce-n { flex-basis: 100%; width: auto; }
+  .ce-steps .pe-input { flex: 1; }
+}
+@media (pointer: coarse) {
+  .pe-input { font-size: 16px; }
+}

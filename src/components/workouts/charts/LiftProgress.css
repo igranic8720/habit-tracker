@@ -1,0 +1,22 @@
+.lp-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.lp-select {
+  flex: 1 1 140px; min-width: 0; height: 36px; padding: 0 30px 0 12px; font: inherit; font-weight: 600; color: var(--fg); cursor: pointer;
+  background-color: var(--btn); border: 1px solid var(--btn-border); border-radius: 6px;
+  background-position: right 12px center;
+}
+.lp-select:hover { background-color: var(--btn-hover); }
+.lp-select option { background: var(--overlay); color: var(--fg); }
+.lp-sum { margin-bottom: 8px; font-size: 12px; color: var(--muted); }
+.lp-sum strong { color: var(--fg); font-size: 14px; }
+.lp-sum .up { color: var(--green); font-weight: 600; }
+.lp-empty { color: var(--muted); font-size: 12px; }
+
+@media (max-width: 768px) {
+  .lp-select { font-size: 16px; }
+}
+@media (pointer: coarse) {
+  .lp-select { height: 44px; }
+}
+@media (pointer: coarse) {
+  .lp-select { font-size: 16px; }
+}

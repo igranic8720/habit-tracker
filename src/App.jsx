@@ -1,56 +1,67 @@
-import { useState } from 'react'
-import ArchivedList from './components/archive/ArchivedList.jsx'
-import Dashboard from './components/dashboard/Dashboard.jsx'
+import { useCallback, useMemo, useState } from 'react'
+import HeaderStats from './components/header/HeaderStats.jsx'
 import PageHeader from './components/header/PageHeader.jsx'
-import AddHabitBar from './components/habit/AddHabitBar.jsx'
-import HabitCard from './components/habit/HabitCard.jsx'
+import WorkoutStats from './components/header/WorkoutStats.jsx'
+import Panel from './components/shared/Panel.jsx'
+import { useDayRollover } from './hooks/useDayRollover.js'
 import { useHabits } from './hooks/useHabits.js'
+import { useRoute } from './hooks/useRoute.js'
+import { useWorkouts } from './hooks/useWorkouts.js'
 import { YEAR } from './lib/dates.js'
 import { browsableYears } from './lib/habits.js'
+import { diaryOf } from './lib/workouts.js'
+import HabitsPage from './pages/HabitsPage.jsx'
+import WorkoutsPage from './pages/WorkoutsPage.jsx'
 
-// layout: fixed header on top; dashboard pinned left; habit cards scrolling right
+const RANK = { error: 4, conflict: 3, saving: 2, saved: 1, idle: 0 }
+
+// two separate data sets (habits; workouts with their plans and cycles) on two pages, switched from the header / tab bar
 export default function App() {
-  const { habits, loaded, saveState, change, patch, add, remove } = useHabits()
+  const { habits, status, saveState: habitsSave, flush, change, patch, add, remove } = useHabits()
+  const w = useWorkouts()
+  const { page, sub } = useRoute()
   const [year, setYear] = useState(YEAR)
-  const [showArchived, setShowArchived] = useState(false)
+  const diary = useMemo(() => diaryOf(w.log), [w.log])
+  const { flush: flushWorkouts } = w
 
-  if (!loaded) return null
+  // past midnight with the app still open: save what is pending, then reload so "today" is today
+  useDayRollover(
+    useCallback(async () => {
+      await Promise.all([flush(), flushWorkouts()])
+      location.reload()
+    }, [flush, flushWorkouts]),
+  )
 
-  const { firstYear, years } = browsableYears(habits)
-  const active = habits.filter((h) => !h.archived)
-  const archived = habits.filter((h) => h.archived)
+  if (status === 'loading') return null
+  if (status === 'failed') {
+    return (
+      <main>
+        <Panel title="Couldn’t load your habits">
+          <p>The server didn’t answer. Nothing is shown, so nothing can be saved over your data. Reload the page to try again.</p>
+        </Panel>
+      </main>
+    )
+  }
+
+  // the header shows one save status for both stores: the most urgent one
+  const saveState = RANK[w.saveState] > RANK[habitsSave] ? w.saveState : habitsSave
+  // years you can browse: back to the earliest year with a habit day, note or workout
+  const { firstYear, years } = browsableYears([...habits, { days: diary.days, notes: diary.notes }])
 
   return (
     <main>
-      <PageHeader habits={active} year={year} years={years} firstYear={firstYear} onYear={setYear} saveState={saveState} />
-      <div className={`workspace${active.length ? ' two' : ''}`}>
-        {active.length > 0 && (
-          <aside className="side" aria-label="Dashboard">
-            <Dashboard habits={active} year={year} />
-          </aside>
+      <PageHeader page={page} year={year} years={years} firstYear={firstYear} onYear={setYear} saveState={saveState}>
+        {page === 'workouts' ? (
+          <WorkoutStats log={w.status === 'ready' ? diary : null} year={year} />
+        ) : (
+          <HeaderStats habits={habits.filter((h) => !h.archived)} year={year} />
         )}
-        <div className="habits-pane">
-          {active.map((h) => (
-            <HabitCard key={h.id} habit={h} year={year} onChange={(next) => change(h.id, next)} onArchive={() => patch(h.id, { archived: true })} />
-          ))}
-          <AddHabitBar
-            archivedCount={archived.length}
-            archivedOpen={showArchived}
-            onAdd={add}
-            onToggleArchived={() => setShowArchived(!showArchived)}
-          />
-          {showArchived && archived.length > 0 && (
-            <ArchivedList
-              habits={archived}
-              onRestore={(h) => patch(h.id, { archived: false })}
-              onDelete={(h) => {
-                remove(h.id)
-                if (archived.length === 1) setShowArchived(false)
-              }}
-            />
-          )}
-        </div>
-      </div>
+      </PageHeader>
+      {page === 'workouts' ? (
+        <WorkoutsPage w={w} diary={diary} year={year} sub={sub} />
+      ) : (
+        <HabitsPage habits={habits} year={year} change={change} patch={patch} add={add} remove={remove} />
+      )}
     </main>
   )
 }
