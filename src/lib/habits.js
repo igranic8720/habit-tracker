@@ -2,7 +2,13 @@ import { YEAR } from './dates.js'
 
 export const COLORS = ['green', 'blue', 'purple', 'orange', 'pink']
 
-export const newHabit = (n = 0) => ({ id: crypto.randomUUID(), name: '', color: COLORS[n % COLORS.length], days: [], notes: {} })
+// randomUUID only exists on localhost/HTTPS; getRandomValues works over plain HTTP on the LAN
+const newId = () => {
+  if (crypto.randomUUID) return crypto.randomUUID()
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+export const newHabit = (n = 0) => ({ id: newId(), name: '', color: COLORS[n % COLORS.length], days: [], notes: {} })
 
 export const habitName = (h) => h.name || 'Unnamed habit'
 export const habitColor = (h) => h.color ?? 'green'
