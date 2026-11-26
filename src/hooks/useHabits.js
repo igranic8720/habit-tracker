@@ -21,7 +21,16 @@ export function useHabits() {
     flush,
     change: (id, next) => map((x) => (x.id === id ? next : x)),
     patch: (id, changes) => map((x) => (x.id === id ? { ...x, ...changes } : x)),
-    add: () => update((hs) => [...hs, newHabit(firstFree(hs.map((h) => h.color)))]),
+    // files a tracked session { id, start, end } with its habit (that is all "done" needs: see habitDoneDays)
+    recordSession: (id, session) =>
+      map((x) => {
+        if (x.id !== id || (x.sessions ?? []).some((s) => s.id === session.id)) return x
+        const { days: _stored, ...rest } = x // done days are worked out, never stored
+        return { ...rest, sessions: [...(x.sessions ?? []), session] }
+      }),
+    removeSession: (id, sessionId) => map((x) => (x.id === id ? { ...x, sessions: (x.sessions ?? []).filter((s) => s.id !== sessionId) } : x)),
+    // a new habit takes the first colour no habit and no plan (`taken`) uses
+    add: (taken = []) => update((hs) => [...hs, newHabit(firstFree([...hs.map((h) => h.color), ...taken]))]),
     remove: (id) => update((hs) => hs.filter((x) => x.id !== id)),
   }
 }

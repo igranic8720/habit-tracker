@@ -6,6 +6,10 @@
 .plan-legend li { display: inline-flex; align-items: center; gap: 6px; }
 .lg { display: inline-block; width: 12px; height: 12px; border-radius: 2px; background: var(--cell); box-shadow: inset 0 0 0 1px var(--cell-border); }
 .lg.on { background: var(--on); }
+/* shaded by amount (the time heatmap): level 4 is the full colour, lower levels fade towards an empty square */
+.cell.on[data-level='1'], .lg.on[data-level='1'] { background: color-mix(in srgb, var(--on) 35%, var(--cell)); }
+.cell.on[data-level='2'], .lg.on[data-level='2'] { background: color-mix(in srgb, var(--on) 55%, var(--cell)); }
+.cell.on[data-level='3'], .lg.on[data-level='3'] { background: color-mix(in srgb, var(--on) 78%, var(--cell)); }
 
 .scroll { overflow-x: auto; padding: 4px 4px 8px; margin: -4px; }
 .chart {
@@ -14,7 +18,10 @@
   /* squares grow to fill the card: 10px minimum, 30px maximum */
   --s: clamp(10px, calc((100cqw - 30px - (var(--weeks) - 1) * 4px) / var(--weeks)), 30px);
 }
-.days { display: flex; flex-direction: column; gap: 4px; padding-top: 19px; width: 24px; flex: none; font-size: 11px; color: var(--muted); }
+/* the weekday labels stay put when the graph is wider than its card and scrolls sideways (it opens at the latest weeks) */
+.scroll { overscroll-behavior-x: contain; padding-left: 0; margin-left: 0; }
+.days { position: sticky; left: 0; z-index: 1; background: var(--canvas); box-shadow: 6px 0 0 var(--canvas);
+  display: flex; flex-direction: column; gap: 4px; padding-top: 19px; width: 24px; flex: none; font-size: 11px; color: var(--muted); }
 .days span { height: var(--s); line-height: var(--s); }
 .months { display: flex; gap: 4px; height: 15px; margin-bottom: 4px; font-size: 11px; color: var(--muted); }
 .months span { width: var(--s); flex: none; white-space: nowrap; overflow: visible; }
@@ -28,6 +35,7 @@
 .cell:disabled:hover { outline: none; }
 .cell.selected, .cell.selected:hover { outline: 2px solid var(--accent); outline-offset: 1px; }
 .cell.future { background: transparent; box-shadow: inset 0 0 0 1px var(--border-muted); }
+.cell.future:not(:disabled) { box-shadow: inset 0 0 0 1px var(--border); } /* upcoming days you can open (the time graph) */
 .cell.empty { background: none; box-shadow: none; pointer-events: none; }
 .cell.noted { position: relative; }
 .cell.noted::after { content: ''; position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: var(--fg); opacity: .7; }
@@ -35,8 +43,6 @@
 
 @media (max-width: 768px) {
   .chart { --s: 16px; min-width: calc(30px + var(--weeks) * 16px + (var(--weeks) - 1) * 4px); }
-  .scroll { overscroll-behavior-x: contain; padding-left: 0; margin-left: 0; } /* nothing scrolls past the pinned weekday labels */
-  .days { position: sticky; left: 0; z-index: 1; background: var(--canvas); box-shadow: 6px 0 0 var(--canvas); }
   .graph-foot { gap: 4px 16px; }
 }
 @media (pointer: coarse) {

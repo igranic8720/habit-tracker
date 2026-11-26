@@ -30,6 +30,28 @@ export function useWorkouts() {
         else delete log[key]
         return { ...d, log }
       }),
+    // tracked time { id, start, end } is kept with the day it started on (ignored when there is no workout that day)
+    addSession: (key, session) =>
+      update((d) => {
+        const day = d.log[key]
+        if (!day || (day.sessions ?? []).some((s) => s.id === session.id)) return d
+        return { ...d, log: { ...d.log, [key]: { ...day, sessions: [...(day.sessions ?? []), session] } } }
+      }),
+    removeSession: (key, id) =>
+      update((d) => {
+        const day = d.log[key]
+        if (!day) return d
+        const { sessions = [], ...rest } = day
+        const left = sessions.filter((s) => s.id !== id)
+        return { ...d, log: { ...d.log, [key]: left.length ? { ...rest, sessions: left } : rest } }
+      }),
+    // changes one day from its latest state (so two quick changes, e.g. ticking a set and starting the rest, never undo each other)
+    patchDay: (key, fn) =>
+      update((d) => {
+        const day = d.log[key]
+        if (!day) return d
+        return { ...d, log: { ...d.log, [key]: fn(day) } }
+      }),
     savePlan: (plan) => update((d) => ({ ...d, plans: upsert(d.plans, plan) })),
     // a deleted plan also leaves every cycle (past log days keep the name they were done under)
     removePlan: (id) => update((d) => ({ ...d, plans: d.plans.filter((p) => p.id !== id), cycles: d.cycles.map((c) => ({ ...c, steps: c.steps.filter((s) => s !== id) })) })),

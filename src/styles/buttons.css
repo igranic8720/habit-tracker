@@ -3,10 +3,11 @@
   padding: 5px 16px; cursor: pointer; font-size: 14px; font-weight: 500; line-height: 20px; color: var(--fg);
   background: var(--btn); border: 1px solid var(--btn-border); border-radius: 6px; transition: background-color .15s;
 }
-.btn:hover { background: var(--btn-hover); }
+.btn:hover:not(:disabled) { background: var(--btn-hover); }
+.btn:disabled { cursor: not-allowed; opacity: .55; }
 .btn-sm { padding: 3px 12px; font-size: 12px; }
 .btn-danger { color: var(--danger); }
-.btn-danger:hover { color: #fff; background: #da3633; border-color: #f85149; }
+.btn-danger:hover:not(:disabled) { color: #fff; background: #da3633; border-color: #f85149; }
 
 /* touch screens: 44px minimum tap targets */
 @media (pointer: coarse) {

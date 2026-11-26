@@ -1,4 +1,4 @@
-// Production server: serves the built app (dist/) and the data API (/api/habit, /api/workouts). No dependencies beyond Node.
+// Production server: serves the built app (dist/) and the data API (/api/habit, /api/workouts, /api/time, /api/calendar). No dependencies beyond Node.
 //   npm run build && npm start
 // Settings (environment variables):
 //   PORT            port to listen on            (default 3000)
@@ -8,7 +8,10 @@ import fs from 'node:fs'
 import http from 'node:http'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { calendarApi } from './calendar.js'
+import { closeAll, eventsApi } from './events.js'
 import { habitApi } from './habits.js'
+import { timeApi } from './time.js'
 import { workoutApi } from './workouts.js'
 
 const DIST = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'dist')
@@ -62,6 +65,9 @@ const server = http.createServer((req, res) => {
 
     if (pathname === '/api/habit') return habitApi(req, res)
     if (pathname === '/api/workouts') return workoutApi(req, res)
+    if (pathname === '/api/time') return timeApi(req, res)
+    if (pathname === '/api/calendar' || pathname.startsWith('/api/calendar/')) return calendarApi(req, res)
+    if (pathname === '/api/events') return eventsApi(req, res)
     if (pathname === '/healthz') return send(res, 200, 'ok')
     if (req.method !== 'GET' && req.method !== 'HEAD') return send(res, 405, 'Method not allowed')
 
@@ -84,6 +90,7 @@ server.listen(PORT, HOST, () => console.log(`Habit tracker on http://${HOST}:${s
 // `docker stop` sends SIGTERM: finish in-flight requests, then exit
 for (const signal of ['SIGTERM', 'SIGINT']) {
   process.on(signal, () => {
+    closeAll() // the live-update connections would otherwise hold the server open
     server.close(() => process.exit(0))
     setTimeout(() => process.exit(0), 3000).unref()
   })

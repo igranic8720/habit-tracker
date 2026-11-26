@@ -1,11 +1,12 @@
 import './PageNav.css'
 
 const TABS = [
-  { id: 'habits', label: 'Habits', href: '#/' },
+  { id: 'glance', label: 'At a glance', href: '#/' },
+  { id: 'habits', label: 'Habits', href: '#/habits' },
   { id: 'workouts', label: 'Workouts', href: '#/workouts' },
 ]
 
-// Habits | Workouts: a switch in the header on wide screens, a tab bar at the bottom of the screen on phones
+// At a glance | Habits | Workouts: a switch in the header on wide screens, a tab bar at the bottom of the screen on phones
 export default function PageNav({ page }) {
   return (
     <nav className="page-nav" aria-label="Pages">

@@ -74,3 +74,4 @@ select.pe-input { padding-right: 30px; background-position: right 12px center; }
 @media (pointer: coarse) {
   .pe-input { font-size: 16px; }
 }
+.pe-rest { width: auto; min-width: 200px; }

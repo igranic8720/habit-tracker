@@ -1,17 +1,17 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { DATA, DATE, ID, dataApi, versionOf, writeAtomic } from './storage.js'
+import { DATA, DATE, ID, backup, dataApi, validSessions, versionOf, writeAtomic } from './storage.js'
 
 // Workouts live apart from habits, in data/workouts/:
-//   plans.json    named workout plans:   [{ id, name, color, exercises: [{ exercise, sets, reps, weight? }] }]
+//   plans.json    named workout plans:   [{ id, name, color, rest (seconds between sets), exercises: [{ exercise, sets, reps, weight? }] }]
 //   cycles.json   groups of plans:       { active, cycles: [{ id, name, steps: [planId, ...] }] }
-//   log.json      what you actually did: { 'YYYY-MM-DD': { name, plan, cycle, step?, entries: [{ exercise, sets: [{ weight, reps, done? }] }], note? } }
+//   log.json      what you actually did: { 'YYYY-MM-DD': { name, plan, cycle, step?, entries: [{ exercise, sets: [{ weight, reps, done? }] }], note?, sessions?: [{ id, start, end }], rest?: { start, end } } }  (rest: the rest timer running now, so every device shows it)
 // Weights are pounds. Writes are atomic; a copy of each file is kept once a day in backups/ (last 14).
 const DIR = path.join(DATA, 'workouts')
 const HABITS = path.join(DATA, 'habits')
 const FILE = { plans: 'plans.json', cycles: 'cycles.json', log: 'log.json' }
 
-const COLORS = ['red', 'orange', 'yellow', 'blue', 'violet', 'white', 'pink', 'cyan', 'brown', 'magenta', 'sky', 'navy', 'wine', 'peach'] // must match COLORS in src/lib/habits.js
+const COLORS = ['red', 'orange', 'yellow', 'blue', 'violet', 'white', 'pink', 'cyan', 'brown', 'magenta', 'sky', 'navy', 'wine', 'peach', 'green', 'lime', 'teal', 'mint', 'olive', 'forest', 'lavender', 'plum', 'slate', 'maroon', 'sand', 'rust', 'steel', 'salmon'] // must match COLORS in src/lib/habits.js
 const str = (v, max) => typeof v === 'string' && v.length <= max
 const int = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi
 const num = (v, lo, hi) => typeof v === 'number' && Number.isFinite(v) && v >= lo && v <= hi
@@ -24,7 +24,7 @@ const validEntries = (entries) =>
   entries.length <= 50 &&
   entries.every((e) => e && str(e.exercise, 80) && Array.isArray(e.sets) && e.sets.length <= 50 && e.sets.every(validSet))
 const validPlan = (p) =>
-  p && id(p.id) && str(p.name, 60) && (p.color === undefined || COLORS.includes(p.color)) && Array.isArray(p.exercises) && p.exercises.length <= 40 &&
+  p && id(p.id) && str(p.name, 60) && (p.color === undefined || COLORS.includes(p.color)) && (p.rest === undefined || int(p.rest, 5, 900)) && Array.isArray(p.exercises) && p.exercises.length <= 40 &&
   p.exercises.every((e) => e && str(e.exercise, 80) && int(e.sets, 1, 20) && int(e.reps, 1, 100) && (e.weight === undefined || num(e.weight, 0, 5000)))
 const validCycle = (c) => c && id(c.id) && str(c.name, 60) && Array.isArray(c.steps) && c.steps.length <= 30 && c.steps.every(id)
 const validLog = (log) =>
@@ -34,7 +34,8 @@ const validLog = (log) =>
   Object.entries(log).every(
     ([k, d]) =>
       DATE.test(k) && d && str(d.name, 80) && (d.plan == null || id(d.plan)) && (d.cycle == null || id(d.cycle)) &&
-      (d.step === undefined || int(d.step, 0, 100)) && validEntries(d.entries) && (d.note === undefined || str(d.note, 2000)),
+      (d.step === undefined || int(d.step, 0, 100)) && validEntries(d.entries) && (d.note === undefined || str(d.note, 2000)) && (d.sessions === undefined || validSessions(d.sessions, 50)) &&
+      (d.rest === undefined || (d.rest && int(d.rest.start, 0, 4102444800000) && int(d.rest.end, d.rest.start, d.rest.start + 3600000))),
   )
 
 export const isValid = (d) =>
@@ -45,25 +46,12 @@ export const isValid = (d) =>
   validLog(d.log)
 
 const sortKeys = (o) => Object.fromEntries(Object.entries(o).sort(([a], [b]) => a.localeCompare(b)))
-const stamp = () => new Date().toISOString().slice(0, 10)
-
-// first change of the day to a file: keep the version it had before (so one bad save can never erase history), newest 14 kept
-function backup(name) {
-  const file = path.join(DIR, name)
-  if (!fs.existsSync(file)) return
-  const dir = path.join(DIR, 'backups')
-  fs.mkdirSync(dir, { recursive: true })
-  const copy = path.join(dir, `${name.replace('.json', '')}.${stamp()}.json`)
-  if (!fs.existsSync(copy)) fs.copyFileSync(file, copy)
-  const mine = fs.readdirSync(dir).filter((f) => f.startsWith(name.replace('.json', '') + '.')).sort()
-  for (const old of mine.slice(0, -14)) fs.rmSync(path.join(dir, old))
-}
 
 function writeFile(name, value) {
   const file = path.join(DIR, name)
   const text = JSON.stringify(value, null, 2) + '\n'
   if (fs.existsSync(file) && fs.readFileSync(file, 'utf8') === text) return // unchanged files aren't rewritten
-  backup(name)
+  backup(DIR, name)
   writeAtomic(file, text)
 }
 
@@ -130,6 +118,7 @@ function load() {
 
 // GET /api/workouts -> { plans, cycles, active, log, version }   POST the same -> saves them (see dataApi)
 export const workoutApi = dataApi({
+  name: 'workouts',
   load,
   isValid,
   save,

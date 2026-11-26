@@ -1,0 +1,235 @@
+.time-select, .time-input { font: inherit; color: var(--fg); background: var(--canvas); border: 1px solid var(--btn-border); border-radius: 6px; padding: 5px 10px; min-width: 0; }
+.time-select { padding-right: 28px; max-width: 100%; }
+
+.day-nav { display: flex; align-items: center; gap: 8px; }
+.day-nav-label { flex: 1; min-width: 0; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* one line, so the card keeps its size */
+.day-nav-label span { color: var(--muted); font-weight: 400; }
+.day-total { margin: 8px 0; color: var(--muted); }
+.day-total strong { color: var(--fg); font-size: 20px; }
+.time-empty { color: var(--muted); margin: 12px 0; }
+
+
+.time-list { list-style: none; margin: 8px 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.time-list li { display: flex; align-items: center; gap: 8px; }
+.time-ms { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.time-row { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.time-row span { color: var(--muted); font-size: 12px; }
+.time-list li { padding: 6px 0; border-top: 1px solid var(--border); }
+
+.time-add { margin-top: 12px; }
+.time-add summary { cursor: pointer; color: var(--muted); }
+.time-add form { margin-top: 8px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+/* what it was: the whole width; then From, To and Add on one line, the times sharing what's left */
+.time-add .time-select, .time-add .time-input[aria-label='What is it?'] { grid-column: 1 / -1; width: 100%; box-sizing: border-box; }
+.time-add label { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--muted); }
+.time-add label .time-input { flex: 1; min-width: 0; }
+.time-add button[type='submit'] { height: 100%; min-width: 56px; }
+@media (max-width: 420px) {
+  .time-add form { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .time-add button[type='submit'] { grid-column: 1 / -1; } /* narrow phones: Add underneath, full width */
+}
+
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-top: 8px; }
+.cal-dow { text-align: center; font-size: 11px; color: var(--muted); }
+.cal-day { aspect-ratio: 1; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 2px; font: inherit; color: var(--fg); background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+.cal-day[data-level='1'] { background: color-mix(in srgb, var(--accent) 22%, var(--canvas)); }
+.cal-day[data-level='2'] { background: color-mix(in srgb, var(--accent) 40%, var(--canvas)); }
+.cal-day[data-level='3'] { background: color-mix(in srgb, var(--accent) 60%, var(--canvas)); }
+.cal-day[data-level='4'] { background: color-mix(in srgb, var(--accent) 80%, var(--canvas)); }
+.cal-day.cal-today { border-color: var(--fg); }
+.cal-day.cal-sel { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cal-day:disabled { opacity: .35; cursor: default; }
+.cal-day { position: relative; }
+.cal-day.cal-future { border-style: dashed; color: var(--muted); }
+.cal-ev { position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); } /* something on your calendar */
+.cal-num { font-size: 13px; font-weight: 600; }
+.cal-ms { font-size: 10px; line-height: 1; min-height: 10px; font-variant-numeric: tabular-nums; }
+
+.dbars { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 3px; height: 120px; margin-top: 8px; }
+.dbar { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 3px; padding: 0; min-height: 44px; background: none; border: 0; border-bottom: 1px solid var(--border); cursor: pointer; color: var(--muted); font: inherit; }
+.dbar-fill { display: block; width: 100%; min-height: 0; background: var(--accent); border-radius: 3px 3px 0 0; opacity: .8; }
+.dbar.dbar-sel .dbar-fill, .dbar:hover .dbar-fill { opacity: 1; }
+.dbar.dbar-sel { color: var(--fg); font-weight: 600; }
+.dbar-day { font-size: 10px; }
+.dbar-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+@media (pointer: coarse) {
+  .time-select, .time-input { font-size: 16px; min-height: 44px; }
+  .time-add summary { padding: 12px 0; }
+}
+
+/* start / stop on a habit or workout */
+.timer-btn { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.timer-btn.running { color: #fff; background: var(--accent); border-color: var(--accent); font-weight: 600; }
+.timer-btn:disabled { opacity: .5; cursor: default; }
+.today-row .timer-btn { height: 36px; flex: none; min-width: 150px; } /* Start timer and Stop · 0:04:04 take the same room, so the note box keeps its size */
+@media (max-width: 768px) {
+  .today-row .timer-btn { flex: 1 1 100%; height: 48px; font-size: 16px; }
+}
+
+.cal-allday { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.cal-allday li { padding: 2px 8px; font-size: 12px; border-radius: 999px; border: 1px solid var(--border); background: color-mix(in srgb, var(--accent) 12%, var(--canvas)); }
+
+/* connect / sync the Microsoft calendar */
+.cal-connect { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.cal-connect p { margin: 4px 0; }
+.cal-note { color: var(--muted); font-size: 12px; }
+.cal-error { color: var(--danger); font-size: 12px; }
+.cal-code { font-size: 28px; font-weight: 700; letter-spacing: .12em; font-variant-numeric: tabular-nums; user-select: all; }
+.cal-actions { display: flex; gap: 8px; margin-top: 6px; }
+/* connected: one quiet line at the foot of the card, the sync time on the left and its buttons on the right */
+.cal-connect.is-connected { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding-top: 10px; }
+.cal-connect.is-connected .cal-actions { margin-top: 0; }
+.cal-connect.is-connected .cal-error { flex-basis: 100%; }
+
+/* the day's calendar events, as a list above the timeline */
+.oncal-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.oncal-item {
+  display: flex; align-items: flex-start; gap: 14px; padding: 10px 12px; border-radius: 6px;
+  border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--canvas));
+}
+.oncal-when { flex: none; min-width: 84px; display: flex; flex-direction: column; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.oncal-when small { font-size: 12px; font-weight: 400; color: var(--muted); }
+.oncal-title { flex: 1; min-width: 0; font-size: 17px; overflow-wrap: anywhere; }
+.oncal-item.now { background: color-mix(in srgb, var(--accent) 22%, var(--canvas)); }
+.oncal-item.now .oncal-when { color: var(--accent); }
+.oncal-item.past { opacity: .55; border-left-color: var(--border); background: var(--canvas); }
+
+.oncal-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.oncal-meta { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 13px; color: var(--muted); }
+.oncal-meta li { overflow-wrap: anywhere; }
+.oncal-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.oncal-actions a.btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.oncal-join { color: #fff; background: #5b5fc7; border-color: #5b5fc7; font-weight: 600; } /* Teams purple */
+.oncal-join:hover { background: #4f52b2; }
+.oncal-more summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+.oncal-people, .oncal-notes { margin: 4px 0 0; font-size: 13px; overflow-wrap: anywhere; }
+.oncal-notes { white-space: pre-wrap; color: var(--muted); }
+.oncal-item.declined .oncal-title { text-decoration: line-through; }
+@media (pointer: coarse) {
+  .oncal-more summary { padding: 10px 0; }
+}
+
+/* ---- the day timeline: tracked time beside your calendar on a 24-hour grid ---- */
+.tl-sum { display: flex; align-items: center; gap: 12px; height: 34px; margin: 8px 0 4px; } /* the same height every day */
+.tl-sum .day-total { flex: none; margin: 0; white-space: nowrap; }
+.tl-chips { flex: 1; min-width: 0; list-style: none; margin: 0; padding: 0 16px 0 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+  mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); } /* more than fit: they fade out at the edge and scroll sideways */
+.tl-chips li { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 13px; white-space: nowrap; background: color-mix(in srgb, var(--on) 14%, var(--canvas)); border: 1px solid color-mix(in srgb, var(--on) 35%, transparent); }
+.tl-chips li span { color: var(--muted); font-variant-numeric: tabular-nums; }
+.tl-run { flex: none; display: inline-flex; gap: 6px; }
+
+.tl2 { margin: 12px 0 8px; }
+.tl2-heads { display: grid; grid-template-columns: 1fr; margin: 0 0 6px 52px; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.tl2.two-lanes .tl2-heads { grid-template-columns: 1fr 1fr; gap: 8px; }
+.tl2-grid {
+  position: relative; margin-left: 52px; height: 720px; /* a constant 30px an hour, on every screen */
+  border: 1px solid var(--border); border-radius: 8px; background: var(--canvas);
+}
+.tl2-night { position: absolute; left: 0; right: 0; background: color-mix(in srgb, var(--fg) 4%, transparent); pointer-events: none; }
+.tl2-night:first-child { border-radius: 8px 8px 0 0; }
+.tl2-night + .tl2-night { border-radius: 0 0 8px 8px; }
+.tl2-hour { position: absolute; left: 0; right: 0; border-top: 1px solid color-mix(in srgb, var(--border) 55%, transparent); pointer-events: none; }
+.tl2-hour.major { border-top-color: var(--border); }
+.tl2-hour span { position: absolute; right: calc(100% + 8px); top: -7px; font-size: 11px; line-height: 14px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tl2-lane { position: absolute; top: 0; bottom: 0; left: 6px; right: 6px; }
+.tl2.two-lanes .tl2-lane.tracked { right: calc(50% + 4px); }
+.tl2.two-lanes .tl2-lane.cal { left: calc(50% + 4px); }
+.tl2.two-lanes .tl2-grid::after { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 1px dashed var(--border); pointer-events: none; }
+
+/* a block: tinted in its colour with a solid edge, its name and times inside (cut off when the block is short) */
+.tl2-block {
+  position: absolute; left: 0; right: 0; box-sizing: border-box; z-index: 1; overflow: hidden; padding: 1px 6px 1px 8px;
+  display: flex; flex-flow: row wrap; align-content: flex-start; align-items: baseline; column-gap: 6px;
+  font-size: 12px; line-height: 14px; color: var(--fg); border-radius: 5px;
+  background: color-mix(in srgb, var(--on) 22%, var(--canvas)); border: 1px solid color-mix(in srgb, var(--on) 45%, transparent); border-left: 4px solid var(--on);
+}
+.tl2-block strong { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+/* the time tracked (or an event's start) always shows: the name gives way first */
+.tl2-dur { flex: none; font-style: normal; font-size: 11px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tl2-range { flex-basis: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.tl2-block.running { background-image: repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in srgb, var(--on) 18%, transparent) 6px 12px); border-style: dashed; border-left-style: solid; }
+.tl2-block.event { --on: var(--accent); }
+.tl2-block.event.declined { opacity: .5; }
+.tl2-block.event.declined strong { text-decoration: line-through; }
+.tl2-block.short { flex-wrap: nowrap; align-items: center; padding-top: 0; padding-bottom: 0; }
+.tl2-block.short .tl2-range { display: none; } /* one line: name and time only */
+.tl2-block.event:not(.short) .tl2-dur { display: none; } /* a longer event shows its full times on the line below instead */
+.tl2-block:hover { z-index: 3; box-shadow: var(--shadow); }
+/* calendar blocks open their details */
+button.tl2-block { font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
+.tl2-block.event:hover { background: color-mix(in srgb, var(--on) 32%, var(--canvas)); }
+.tl2-block.event:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; z-index: 3; }
+.tl2-block.event.open { z-index: 3; box-shadow: 0 0 0 2px var(--accent); }
+.tl2-pop {
+  position: absolute; left: 6px; right: 6px; z-index: 6; padding: 6px; border-radius: 8px;
+  background: var(--overlay); border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.tl2-pop .oncal-item { padding-right: 34px; }
+.tl2-pop-x { position: absolute; top: 10px; right: 10px; z-index: 1; display: inline-flex; padding: 4px; color: var(--muted); background: none; border: 0; border-radius: 4px; cursor: pointer; }
+.tl2-pop-x:hover { color: var(--fg); background: color-mix(in srgb, var(--fg) 8%, transparent); }
+
+/* now */
+.tl2-now { position: absolute; left: -6px; right: 0; z-index: 2; border-top: 2px solid #e5534b; pointer-events: none; }
+.tl2-now::before { content: ''; position: absolute; left: -4px; top: -6px; width: 10px; height: 10px; border-radius: 50%; background: #e5534b; }
+.tl2-now span { position: absolute; right: calc(100% + 10px); top: -9px; padding: 0 4px; font-size: 11px; font-weight: 700; line-height: 16px; color: #fff; background: #e5534b; border-radius: 4px; white-space: nowrap; }
+
+.tl-sessions { margin-top: 8px; }
+.tl-sessions summary { cursor: pointer; color: var(--muted); }
+.tl-sessions summary[aria-disabled='true'], .time-add summary[aria-disabled='true'] { cursor: default; opacity: .5; }
+.tl-sessions .time-list { margin-top: 8px; }
+
+/* the agenda */
+.agenda-past { margin: 4px 0 8px; padding: 4px 0; font: inherit; font-size: 13px; color: var(--link); background: none; border: 0; cursor: pointer; }
+.oncal-soon { color: var(--accent); font-weight: 600; }
+
+@media (max-width: 768px) {
+  .tl2-grid { margin-left: 46px; }
+  .tl2-heads { margin-left: 46px; }
+  .tl2-range { display: none; } /* narrow lanes: name and time tracked (the full times are in the tooltip and the lists) */
+  .tl2-block.event:not(.short) .tl2-dur { display: inline; }
+}
+@media (pointer: coarse) {
+  .tl-sessions summary, .agenda-past { padding: 10px 0; }
+}
+
+.agenda-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; }
+.agenda-outlook { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--link); text-decoration: none; white-space: nowrap; }
+.agenda-outlook:hover { text-decoration: underline; }
+@media (pointer: coarse) { .agenda-outlook { padding: 8px 0; margin: -8px 0; } }
+
+/* the year graph on At a glance: squares down to 9px (not 10), so the whole year fits its column without scrolling sideways */
+/* compact: the same box as the habits' graphs with less padding, tighter rows (the squares stay as wide), and the count and the
+   key share one line */
+.time-year .graph { padding: 8px 10px 6px; }
+.time-year .ty-head { margin-bottom: 4px; }
+.time-year .week, .time-year .days { gap: 2px; }
+.time-year .days { padding-top: 15px; }
+.time-year .months { margin-bottom: 2px; height: 13px; }
+.time-year .graph-foot { margin-top: 2px; }
+.time-year .plan-legend { flex-basis: auto; }
+.time-year .chart {
+  min-width: calc(30px + var(--weeks) * 9px + (var(--weeks) - 1) * 4px);
+  --s: clamp(9px, calc((100cqw - 30px - (var(--weeks) - 1) * 4px) / var(--weeks)), 30px);
+}
+
+/* the year's head: the total, and beside it the days missed (red while there are any) and the current run of days */
+.ty-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin-bottom: 8px; }
+.ty-head .summary { margin: 0; }
+.ty-shame { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; font-size: 14px; color: var(--muted); }
+.ty-shame strong { font-size: 18px; }
+.ty-missed strong { color: var(--danger); }
+.ty-good strong { color: var(--fg); }
+/* narrow screens: the event's details card stacks (time above the title) and also covers the hour labels, for room */
+@media (max-width: 900px), (max-height: 500px) {
+  .tl2-pop { left: -40px; }
+  .tl2-pop .oncal-item { flex-direction: column; gap: 6px; }
+  .tl2-pop .oncal-when { flex-direction: row; align-items: baseline; gap: 8px; min-width: 0; }
+}
+
+/* the month calendar's title line: < month >, and the month's total at the far end */
+.month-head { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
+.month-total { margin-left: auto; font-weight: 400; color: var(--muted); white-space: nowrap; }
+.month-total strong { color: var(--fg); font-size: 16px; }
+.month-nav { display: inline-flex; align-items: center; gap: 6px; }
+.month-name { min-width: 116px; text-align: center; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; } /* a steady width, so the arrows don't move between months */

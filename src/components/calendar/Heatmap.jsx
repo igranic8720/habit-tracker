@@ -6,7 +6,10 @@ import './Heatmap.css'
 
 // the GitHub-style contribution graph for one habit and one year, with a streak + legend footer.
 // colorOf(key) colours individual days and legend replaces the default Not done / Done key (the workout log uses both).
-export default function Heatmap({ habit, year, selected, onPick, colorOf, legend }) {
+// openUntil: future days up to this date can be clicked too (the time graph, to look at what's scheduled); habit graphs leave it
+// out, so a day that hasn't happened can never be ticked done.
+// levelOf(key) (0-4) shades a day by how much happened (time tracked); tipOf(key, dateLabel) makes the hover text; stat replaces the streak line.
+export default function Heatmap({ habit, year, selected, onPick, colorOf, legend, levelOf, tipOf, stat, openUntil }) {
   const { grid, monthLabels } = getYear(year)
   const done = new Set(habit.days)
   const notes = habit.notes ?? {}
@@ -50,11 +53,12 @@ export default function Heatmap({ habit, year, selected, onPick, colorOf, legend
                       <button
                         key={d}
                         className={`cell${done.has(key) ? ' on' : ''}${notes[key] ? ' noted' : ''}${key === todayKey ? ' today-cell' : ''}${key === selected ? ' selected' : ''}${future ? ' future' : ''}`}
-                        title={`${label}${done.has(key) ? (strength ? ` ✓ ${setCount(habit.workouts?.[key])} sets` : ' ✓') : ''}${notes[key] ? `\n${notes[key]}` : ''}`}
-                        aria-label={label}
+                        title={tipOf ? tipOf(key, label) : `${label}${done.has(key) ? (strength ? ` ✓ ${setCount(habit.workouts?.[key])} sets` : ' ✓') : ''}${notes[key] ? `\n${notes[key]}` : ''}`}
+                        aria-label={tipOf ? tipOf(key, label) : label}
                         aria-pressed={key === selected}
                         data-color={colorOf?.(key)}
-                        disabled={future}
+                        data-level={levelOf?.(key)}
+                        disabled={future && !(openUntil && key <= openUntil)}
                         onClick={() => onPick(key)}
                       />
                     )
@@ -66,9 +70,11 @@ export default function Heatmap({ habit, year, selected, onPick, colorOf, legend
         </div>
       </div>
       <div className="graph-foot">
-        <span>
-          <strong>{currentStreak(done)}</strong> day streak · best <strong>{longestStreak(habit.days)}</strong>
-        </span>
+        {stat ?? (
+          <span>
+            <strong>{currentStreak(done)}</strong> day streak · best <strong>{longestStreak(habit.days)}</strong>
+          </span>
+        )}
         {legend ?? (
           <span className="legend" aria-hidden="true">
             Not done <i className="lg" /> <i className="lg on" /> Done

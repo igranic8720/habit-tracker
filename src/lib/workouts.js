@@ -41,8 +41,10 @@ export function niceMax(v) {
   return [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].map((m) => m * mag).find((m) => m >= v)
 }
 
-// the days that count as "done": any day with at least one real set
-export const workoutDays = (workouts = {}) => Object.keys(workouts).filter((k) => hasSets(workouts[k])).sort()
+// a workout is done once every set in it is ticked (and at least one has reps)
+export const isComplete = (entries = []) => setTotal(entries) > 0 && entries.every((e) => e.sets.every((s) => s.done !== false)) && hasSets(entries)
+// the days that count as "done": every set of that day's workout ticked
+export const workoutDays = (workouts = {}) => Object.keys(workouts).filter((k) => isComplete(workouts[k])).sort()
 
 // heaviest set, ties broken by reps
 export const topSet = (sets) => sets.reduce((a, b) => (b.weight > a.weight || (b.weight === a.weight && b.reps > a.reps) ? b : a))

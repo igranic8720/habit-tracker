@@ -12,7 +12,7 @@ button { font-family: inherit; }
 /* a small round marker in the colour of the habit / plan around it */
 .dot { display: inline-block; width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--on); vertical-align: 1px; }
 
-/* a habit / plan colour = --on (one of the 14 --hc-* colours); blue when none is set */
+/* a habit / plan colour = --on (one of the 28 --hc-* colours); blue when none is set */
 .habit-color { --on: var(--hc-blue); }
 [data-color='red'] { --on: var(--hc-red); }
 [data-color='orange'] { --on: var(--hc-orange); }
@@ -29,7 +29,22 @@ button { font-family: inherit; }
 [data-color='wine'] { --on: var(--hc-wine); }
 [data-color='peach'] { --on: var(--hc-peach); }
 /* retired names, shown as their nearest colour until the app re-saves them */
-[data-color='aqua'], [data-color='green'] { --on: var(--hc-blue); }
+[data-color='green'] { --on: var(--hc-green); }
+[data-color='lime'] { --on: var(--hc-lime); }
+[data-color='teal'] { --on: var(--hc-teal); }
+[data-color='mint'] { --on: var(--hc-mint); }
+[data-color='olive'] { --on: var(--hc-olive); }
+[data-color='forest'] { --on: var(--hc-forest); }
+[data-color='lavender'] { --on: var(--hc-lavender); }
+[data-color='plum'] { --on: var(--hc-plum); }
+[data-color='slate'] { --on: var(--hc-slate); }
+[data-color='maroon'] { --on: var(--hc-maroon); }
+[data-color='sand'] { --on: var(--hc-sand); }
+[data-color='rust'] { --on: var(--hc-rust); }
+[data-color='steel'] { --on: var(--hc-steel); }
+[data-color='salmon'] { --on: var(--hc-salmon); }
+/* retired names from earlier palettes (until the data is next loaded and recoloured) */
+[data-color='aqua'] { --on: var(--hc-blue); }
 [data-color='purple'] { --on: var(--hc-violet); }
 [data-color='indigo'] { --on: var(--hc-navy); }
 [data-color='rose'] { --on: var(--hc-wine); }

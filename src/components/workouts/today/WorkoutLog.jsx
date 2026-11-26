@@ -1,13 +1,15 @@
 import { useId, useState } from 'react'
-import { addedSet, changeSet, nextSet, openCount, prIndexes } from '../../../lib/session.js'
+import { changeSet, nextSet, openCount, prIndexes } from '../../../lib/session.js'
 import { hasSets, setCount, setTotal, topSet, workText } from '../../../lib/workouts.js'
 import ExerciseEntry from './ExerciseEntry.jsx'
 import './WorkoutLog.css'
+import { CheckOutlined } from '@ant-design/icons'
 
 // the set editor for today's session: exercises, each with sets of weight × reps, and a tick on each set when you have done it.
 // Only ticked sets count (towards the day, the heatmap and the graphs). Past days are read-only (see WorkoutDay).
 // onTicked(setsLeft) is called when a set is ticked, so the page can start the rest timer.
-export default function WorkoutLog({ color, title, tag, action, entries, names, lastTime, bestBefore, onChange, onTicked }) {
+// locked: nothing can be typed or ticked yet (the workout hasn't been started); gate is shown above the locked sets instead.
+export default function WorkoutLog({ color, title, tag, action, entries, names, lastTime, bestBefore, onChange, onTicked, locked = false, gate }) {
   const listId = useId()
   const [draft, setDraft] = useState('')
   const logged = hasSets(entries)
@@ -57,7 +59,7 @@ export default function WorkoutLog({ color, title, tag, action, entries, names, 
         <div className="wl-sub">
           {tag && <span className="wl-tag">{tag}</span>}
           <span className={`wl-sum${logged ? ' yes' : ''}`}>
-            {logged ? `✓ ${done} of ${total} sets done · ${workText(entries)}` : total ? `${total} ${total === 1 ? 'set' : 'sets'} to do · tick each one as you finish it` : 'Nothing logged yet'}
+            {logged ? <><CheckOutlined /> {done} of {total} sets done · {workText(entries)}</> : total ? `${total} ${total === 1 ? 'set' : 'sets'} to do · tick each one as you finish it` : 'Nothing logged yet'}
           </span>
         </div>
       </div>
@@ -69,20 +71,20 @@ export default function WorkoutLog({ color, title, tag, action, entries, names, 
         </p>
       )}
 
+      {locked && gate}
+
+      <fieldset className="wl-body" disabled={locked}>
       {entries.map((e, i) => (
         <ExerciseEntry
           key={i}
           entry={e}
-          listId={listId}
           lastSets={lastTime(e.exercise)}
           nextJ={next?.i === i ? next.j : -1}
           prJ={prs[i]}
-          onRename={(exercise) => setEntry(i, { exercise })}
           onRemove={() => removeExercise(i)}
           onSet={(j, patch) => setSets(i, (sets) => changeSet(sets, j, patch))}
           onTick={(j) => tick(i, j)}
           onRemoveSet={(j) => setSets(i, (sets) => sets.filter((_, k) => k !== j))}
-          onAddSet={() => setSets(i, (sets) => [...sets, addedSet(sets, lastTime(e.exercise))])}
           onTickAll={() => tickAll(i)}
         />
       ))}
@@ -99,6 +101,7 @@ export default function WorkoutLog({ color, title, tag, action, entries, names, 
           Add
         </button>
       </form>
+      </fieldset>
       <datalist id={listId}>
         {names.map((n) => (
           <option key={n} value={n} />

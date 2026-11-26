@@ -11,9 +11,10 @@
   --cell: #161b22; --cell-border: rgba(255, 255, 255, .05);
   --green: #26a641; --blue: #388bfd; --purple: #a371f7; --orange: #db6d28; --pink: #db61a2;
   --shadow: 0 8px 24px rgba(1, 4, 9, .6);
-  /* the 14 colours you can give a habit or a plan: the rainbow minus green (green means done / good here), white, then extras that
-     differ from their nearest neighbour in lightness. In light mode white is shown near-black, since white would vanish. */
+  /* the 28 colours you can give a habit or a plan (each item has its own): the rainbow minus green, white, extras that differ from
+     their nearest neighbour in lightness, then 14 more from green on. In light mode white is shown near-black, since white would vanish. */
   --hc-red: #ff4d4f; --hc-orange: #ff8c1a; --hc-yellow: #ffd60a; --hc-blue: #2b7fff; --hc-violet: #c77dff; --hc-white: #f0f6fc; --hc-pink: #ff85c0; --hc-cyan: #1fc6e6; --hc-brown: #a8602a; --hc-magenta: #f230cf; --hc-sky: #a5d6ff; --hc-navy: #4a55d8; --hc-wine: #b8325a; --hc-peach: #ffb38a;
+  --hc-green: #3fb950; --hc-lime: #a3e635; --hc-teal: #14a89a; --hc-mint: #8af0c8; --hc-olive: #a6a33a; --hc-forest: #2f8f5b; --hc-lavender: #b9b0ff; --hc-plum: #a24ea2; --hc-slate: #8b9bb0; --hc-maroon: #a32020; --hc-sand: #d8c690; --hc-rust: #d9581c; --hc-steel: #6c9cc8; --hc-salmon: #ff8a7a;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
 }
 @media (prefers-color-scheme: light) {
@@ -30,5 +31,6 @@
     --green: #30a14e; --blue: #0969da; --purple: #8250df; --orange: #bc4c00; --pink: #bf3989;
     --shadow: 0 8px 24px rgba(140, 149, 159, .3);
     --hc-red: #d1242f; --hc-orange: #e8850c; --hc-yellow: #e3b200; --hc-blue: #0a5cd6; --hc-violet: #9a4ee8; --hc-white: #24292f; --hc-pink: #e0569a; --hc-cyan: #0a9cc0; --hc-brown: #7a3f14; --hc-magenta: #c4169e; --hc-sky: #6cb8ff; --hc-navy: #1f2a80; --hc-wine: #8c1c3e; --hc-peach: #f5a07a;
+    --hc-green: #1a7f37; --hc-lime: #5c9e00; --hc-teal: #0d8478; --hc-mint: #2fb58a; --hc-olive: #6b6b12; --hc-forest: #1e5e3a; --hc-lavender: #7a6ad8; --hc-plum: #6a2a6a; --hc-slate: #5a6b7d; --hc-maroon: #7a1414; --hc-sand: #a8894a; --hc-rust: #a8380b; --hc-steel: #3d6f99; --hc-salmon: #e0604f;
   }
 }

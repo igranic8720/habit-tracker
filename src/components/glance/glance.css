@@ -1,0 +1,84 @@
+.glance-sum { margin: 0 0 8px; color: var(--muted); }
+.glance-sum strong { color: var(--fg); font-size: 20px; }
+.glance-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.glance-list > li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); }
+.glance-list > li:first-child { border-top: 0; }
+/* the item being timed: first in the list, its row tinted in its colour, with today's note under it */
+.glance-list > li { flex-wrap: wrap; }
+.glance-list > li.is-running { order: -1; margin: 0 -10px; padding: 8px 10px; border-radius: 8px; border-top-color: transparent; background: color-mix(in srgb, var(--on) 10%, transparent); }
+.glance-list > li.is-running + li { border-top-color: transparent; }
+.glance-note { flex-basis: 100%; padding-left: 34px; } /* under the name, past the ring */
+.glance-note .today-row { margin: 2px 0 0; }
+.glance-what { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.glance-what strong { overflow-wrap: anywhere; }
+.glance-what span { font-size: 12px; color: var(--muted); }
+.glance-list > li.is-done .glance-what strong { color: var(--muted); }
+.glance-empty { color: var(--muted); }
+
+/* the progress ring, in the habit's / plan's colour: fills as the day's time (or the workout's sets) goes, a tick once done */
+.glance-ring {
+  flex: none; position: relative; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff; background: conic-gradient(var(--on) var(--p), color-mix(in srgb, var(--on) 22%, transparent) 0); /* the rest of the ring: a track in its colour, like the Habits page bar */
+}
+.glance-ring::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: var(--subtle); } /* the hole */
+.glance-ring.on { background: var(--on); }
+.glance-ring.on::after { display: none; }
+.glance-icon { flex: none; width: 24px; display: flex; justify-content: center; }
+.glance-list a.btn { text-decoration: none; }
+.glance-list .timer-btn { flex: none; min-width: 88px; } /* Start and the running clock take the same room */
+.glance-quiet { color: var(--muted); margin: 4px 0; }
+
+/* the page: the main column (year graph, then two columns of cards) on the left; the timeline in its own narrow column on the
+   right (the same width the left column has on the other pages). Wide screens: each column scrolls by itself, so picking a day
+   (which changes the agenda's length) never moves the other column. Small screens: one column in the order you need it. */
+@media (min-width: 901px) and (min-height: 501px) {
+  .workspace.two.glance { grid-template-columns: minmax(0, 1fr) clamp(380px, 30vw, 520px); }
+}
+.glance-main { container-type: inline-size; }
+/* each column is as tall as its own cards (they don't line up at the bottom) */
+.g-cols { display: flex; align-items: flex-start; gap: 16px; }
+.g-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.g-daily .day-total { margin-top: 0; }
+@container (max-width: 700px) {
+  /* not enough room for two cards side by side: one column, in reading order */
+  .g-cols { flex-direction: column; align-items: stretch; }
+  .g-col { display: contents; }
+  .g-today { order: 1; }
+  .g-agenda { order: 2; }
+  .g-month { order: 3; }
+  .g-daily { order: 4; }
+}
+/* the month, compact: short days showing just the date (the shading says how much was tracked; the exact time is in the tooltip),
+   the month's total beside the month name */
+.g-month .cal { gap: 3px; margin-top: 6px; }
+.g-month .cal-day { aspect-ratio: auto; min-height: 0; height: 32px; border-radius: 5px; }
+.g-month .cal-ms { display: none; }
+.g-month .cal-ev { top: 3px; right: 3px; width: 5px; height: 5px; }
+@media (max-width: 900px), (max-height: 500px) {
+  .workspace.glance > .side, .workspace.glance > .habits-pane, .g-cols, .g-col { display: contents; }
+  .workspace.glance .glance-tabs { order: 0; }
+  .glance.show-overview .g-timeline { display: none; }
+  .glance.show-timeline .g-today, .glance.show-timeline .g-agenda, .glance.show-timeline .time-year,
+  .glance.show-timeline .g-month, .glance.show-timeline .g-daily { display: none; }
+  .g-today { order: 1; }
+  .g-agenda { order: 2; }
+  .workspace.glance .time-year { order: 0; } /* the year first, as on wide screens: it is the reminder to get going */
+  .g-timeline { order: 4; }
+  .g-month { order: 5; }
+  .g-daily { order: 6; }
+}
+
+/* the timeline fits the screen. Wide screens: its column is exactly as tall as the window, so the card fills the column and the
+   24-hour grid takes whatever is left (300px at the least; below that the column scrolls). It is the same size every day. */
+@media (min-width: 901px) and (min-height: 501px) {
+  .glance .side > .g-timeline { flex: 1 0 auto; display: flex; flex-direction: column; min-height: 0; }
+  .glance .g-timeline > .panel { flex: 1 0 auto; display: flex; flex-direction: column; }
+  .glance .g-timeline .tl2 { flex: 1 0 auto; display: flex; flex-direction: column; }
+  .glance .g-timeline .tl2-grid { flex: 1 0 auto; height: auto; min-height: 300px; }
+}
+/* phones (the Timeline tab): the page scrolls as a whole, so the grid is the screen's height less the header, the tabs, the
+   card's other rows and the tab bar at the bottom; the card's own "Timeline" title is left out (the tab says it) */
+@media (max-width: 900px), (max-height: 500px) {
+  .glance .g-timeline .panel-title { display: none; }
+  .glance .g-timeline .tl2-grid { height: max(300px, calc(100dvh - 500px)); }
+}

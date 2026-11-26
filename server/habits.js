@@ -1,9 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { DATA, DATE, ID, dataApi, versionOf, writeAtomic } from './storage.js'
+import { DATA, DATE, ID, dataApi, validSessions, versionOf, writeAtomic } from './storage.js'
 import { migrateStrengthHabits } from './workouts.js'
 
-// One JSON file per habit: data/habits/<id>.json  (set HABIT_DATA_DIR to use another folder, e.g. for tests)
+// One JSON file per habit: data/habits/<id>.json (with its tracked time, sessions: [{ id, start, end }], and its daily target in
+// minutes). The days it is done are not stored: the app works them out from its time and target (any `days` sent is dropped).  (set HABIT_DATA_DIR to use another folder, e.g. for tests)
 const DIR = path.join(DATA, 'habits')
 const LEGACY = path.join(DATA, 'habit.json') // the old single-file format
 
@@ -22,8 +23,9 @@ function isValid(habits) {
           (h.notes !== null &&
             typeof h.notes === 'object' &&
             Object.entries(h.notes).every(([k, v]) => DATE.test(k) && typeof v === 'string' && v.length <= 2000))) &&
-        Array.isArray(h.days) && h.days.length <= 40000 &&
-        h.days.every((d) => DATE.test(d)),
+        (h.target === undefined || h.target === null || (Number.isInteger(h.target) && h.target > 0 && h.target <= 1440)) &&
+        (h.sessions === undefined || validSessions(h.sessions, 5000)) &&
+        (h.days === undefined || (Array.isArray(h.days) && h.days.length <= 40000 && h.days.every((d) => DATE.test(d)))),
     )
   )
 }
@@ -34,7 +36,8 @@ const tidy = (h, order) => ({
   color: h.color,
   ...(h.archived ? { archived: true } : {}),
   order,
-  days: [...h.days].sort(),
+  target: h.target ?? null,
+  ...(h.sessions?.length ? { sessions: [...h.sessions].sort((a, b) => a.start - b.start) } : {}),
   notes: Object.fromEntries(Object.entries(h.notes ?? {}).sort(([a], [b]) => a.localeCompare(b))),
 })
 
@@ -64,7 +67,7 @@ function migrateLegacy() {
   if (!fs.existsSync(LEGACY) || fs.existsSync(DIR)) return
   try {
     let data = JSON.parse(fs.readFileSync(LEGACY, 'utf8'))
-    if (data.days) data = { habits: [{ id: 'habit-1', name: '', days: data.days }] } // even older single-habit format
+    if (data.days) data = { habits: [{ id: 'habit-1', name: '', days: data.days }] } /* (its days are dropped: done is worked out now) */ // even older single-habit format
     if (!isValid(data.habits)) throw new Error('legacy file has unexpected contents')
     save(data.habits)
     fs.renameSync(LEGACY, `${LEGACY}.migrated`)
@@ -93,6 +96,7 @@ function load() {
 // GET /api/habit -> { habits, version }   POST /api/habit { habits, version } -> saves them (see dataApi)
 const files = () => (fs.existsSync(DIR) ? fs.readdirSync(DIR).filter((n) => n.endsWith('.json')).map((n) => path.join(DIR, n)) : [])
 export const habitApi = dataApi({
+  name: 'habit',
   load: () => ({ habits: load() }),
   isValid: (d) => isValid(d.habits),
   save: (d) => save(d.habits),

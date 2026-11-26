@@ -24,8 +24,14 @@ test('a set counts once it has reps and is ticked (sets from before ticks existe
   assert.equal(w.setTotal(e), 3)
 })
 
-test('workout days are the days with a counted set', () => {
+test('a workout is done once every set is ticked; workout days are the days it was done', () => {
   assert.deepEqual(w.workoutDays(habit.workouts), ['2026-11-10', '2026-11-17', '2026-11-24'])
+  const partly = [{ exercise: 'Squat', sets: [S(200, 5, true), S(200, 5, false)] }]
+  assert.equal(w.isComplete(partly), false) // one set still to go
+  assert.deepEqual(w.workoutDays({ ...habit.workouts, '2026-11-26': partly }), ['2026-11-10', '2026-11-17', '2026-11-24'])
+  assert.equal(w.isComplete([{ exercise: 'Squat', sets: [S(200, 5, true), S(200, 5, true)] }]), true)
+  assert.equal(w.isComplete([]), false) // nothing planned
+  assert.equal(w.isComplete([{ exercise: 'Squat', sets: [S(0, 0, true)] }]), false) // ticked, but no reps
 })
 
 test('totals: pounds for weighted sets, reps for bodyweight ones', () => {

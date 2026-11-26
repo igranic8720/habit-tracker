@@ -12,7 +12,7 @@
 /* phones: a tab bar pinned to the bottom, like an iOS app (clear of the home indicator) */
 @media (max-width: 768px) {
   .page-nav {
-    position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr; justify-self: auto;
+    position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(3, 1fr); justify-self: auto;
     border: 0; border-top: 1px solid var(--border); border-radius: 0; background: var(--subtle); padding-bottom: env(safe-area-inset-bottom);
   }
   .page-nav a { padding: 13px 0 12px; text-align: center; font-size: 15px; border-top: 2px solid transparent; margin-top: -1px; }

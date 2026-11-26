@@ -3,21 +3,36 @@ import PageNav from './PageNav.jsx'
 import SaveStatus from './SaveStatus.jsx'
 import YearPicker from './YearPicker.jsx'
 import './PageHeader.css'
+import { CheckSquareOutlined, DashboardOutlined, FireOutlined } from '@ant-design/icons'
 
-// the header card: page title + date, the page switch, that page's headline numbers (children), save status, year picker
-export default function PageHeader({ page, year, years, firstYear, onYear, saveState, children }) {
+const TITLES = { glance: 'At a Glance:', habits: 'Habits:', workouts: 'Workouts:' }
+// each page's mark beside its title (Ant Design has no dumbbell: a flame stands for training)
+const ICONS = { glance: DashboardOutlined, habits: CheckSquareOutlined, workouts: FireOutlined }
+
+// the header card: page title + date, in a fixed width so the page switch sits in the same place on every page; the page switch;
+// the save status in a fixed-width slot beside it (so it never moves anything); that page's headline numbers (children, against
+// the right); the year picker
+export default function PageHeader({ page, year, years, onYear, saveState, children }) {
+  const Icon = ICONS[page]
   return (
     <header className="page-head surface">
       <div className="head-title">
-        <h1>{page === 'workouts' ? 'Workouts' : 'Habits'}</h1>
-        <p>{today.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+        <Icon className="head-icon" />
+        <div className="head-text">
+          <h1>{TITLES[page]}</h1>
+          <p>{today.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+        </div>
       </div>
       <PageNav page={page} />
-      {children}
-      <div className="head-right">
+      <div className="head-save">
         <SaveStatus state={saveState} />
-        <YearPicker year={year} years={years} firstYear={firstYear} onChange={onYear} />
       </div>
+      {children}
+      {page !== 'glance' && years.length > 1 && (
+        <div className="head-right">
+          <YearPicker year={year} years={years} onChange={onYear} />
+        </div>
+      )}
     </header>
   )
 }

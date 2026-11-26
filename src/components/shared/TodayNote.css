@@ -8,17 +8,9 @@
 .quick-note:focus, .quick-note:not(:placeholder-shown) { min-height: 72px; }
 .quick-note:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
 
-/* the primary (green) button; turns secondary once today is done */
-.today { min-width: 130px; white-space: nowrap; color: #fff; background: var(--primary); border-color: var(--btn-border); }
-.today:hover { background: var(--primary-hover); }
-.today.done { color: var(--fg); background: var(--btn); }
-.today.done:hover { background: var(--btn-hover); }
-.today-row .today { height: 36px; flex: none; }
-
 @media (max-width: 768px) {
   .quick-note { flex-basis: 100%; height: 44px; min-height: 44px; padding: 10px 12px; font-size: 16px; }
   .quick-note:focus, .quick-note:not(:placeholder-shown) { min-height: 88px; }
-  .today-row .today { flex: 1 1 100%; height: 48px; font-size: 16px; font-weight: 600; }
 }
 /* any touch screen, phone portrait or landscape: 16px text (smaller makes Safari zoom in on focus) and a finger-sized box */
 @media (pointer: coarse) {

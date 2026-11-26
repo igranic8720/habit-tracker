@@ -3,6 +3,7 @@ import { fromKey } from '../../../lib/format.js'
 import { cycleStatus, newCycle, planColor } from '../../../lib/plans.js'
 import CycleEditor from './CycleEditor.jsx'
 import '../manage.css'
+import { CheckOutlined } from '@ant-design/icons'
 
 // the Cycles tab: plans grouped in a repeating order; one cycle at a time can be active (it decides what is "up next" each day)
 export default function CyclesView({ w }) {
@@ -73,7 +74,7 @@ export default function CyclesView({ w }) {
                 </div>
                 <div className="pv-buttons">
                   <button type="button" className="btn btn-sm" aria-pressed={active} onClick={() => w.setActive(active ? null : c.id)}>
-                    {active ? '✓ Active' : 'Make active'}
+                    {active ? <><CheckOutlined /> Active</> : 'Make active'}
                   </button>
                   <button type="button" className="btn btn-sm" onClick={() => setEditing(structuredClone(c))}>
                     Edit

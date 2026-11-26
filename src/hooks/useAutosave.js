@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { DATA_CHANGE } from './useLiveUpdates.js'
 
 // Loads one document from the API, then saves it back after every change. The rules that keep your data safe:
 //  - nothing is saved until a load has succeeded (a failed load can never overwrite what is on disk)
@@ -6,6 +7,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 //  - every save names the version it started from; if another device or tab saved first the server refuses it (409)
 //    and the newer data is loaded instead of being overwritten
 //  - pending changes are sent straight away when the app is hidden (switching apps on a phone can freeze the page)
+//  - a change saved on another device is loaded as soon as the server announces it (live updates), unless this copy is in the
+//    middle of saving its own change: that save is checked against the server's version, so it never overwrites the newer one
 // fromServer(body) -> data;  toServer(data) -> body;  fix(data) -> [data, needsSave] tidies freshly loaded data
 export function useAutosave(url, { fromServer, toServer, fix = (d) => [d, false], delay = 300 }) {
   const [data, setData] = useState(null)
@@ -68,6 +71,20 @@ export function useAutosave(url, { fromServer, toServer, fix = (d) => [d, false]
   useEffect(() => {
     load()
   }, [load])
+
+  // live updates: another device (or tab) saved this store -> load it, unless it's our own save or we have changes on the way
+  const name = url.split('/').pop() // '/api/habit' -> 'habit'
+  useEffect(() => {
+    const onChange = (e) => {
+      const { store, version: v } = e.detail ?? {}
+      if (store !== name && store !== '*') return
+      if (version.current === null || (v && v === version.current)) return // not loaded yet / we already have it
+      if (dirty.current || inFlight.current) return // ours is being saved; if it's out of date the server says so (409)
+      load()
+    }
+    window.addEventListener(DATA_CHANGE, onChange)
+    return () => window.removeEventListener(DATA_CHANGE, onChange)
+  }, [name, load])
 
   // save shortly after each change (debounced so typing a note isn't a request per key)
   useEffect(() => {

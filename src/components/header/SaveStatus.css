@@ -1,4 +1,5 @@
-.save-state { font-size: 12px; color: var(--muted); min-width: 84px; text-align: right; }
+.save-state { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; color: var(--muted); }
+.save-state:empty { display: none; }
 .save-state.saved { color: var(--green); }
 .save-state.error { color: var(--danger); font-weight: 600; }
 .save-state.conflict { color: var(--accent); font-weight: 600; }
@@ -8,7 +9,7 @@
 @media (max-width: 768px) {
   .save-state {
     position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 68px); /* above the tab bar */
-    min-width: 0; padding: 6px 14px; font-size: 13px; white-space: nowrap; pointer-events: none;
+    min-width: 0; padding: 6px 14px; font-size: 13px; white-space: nowrap; pointer-events: none; display: inline-flex;
     background: var(--overlay); border: 1px solid var(--border); border-radius: 999px; box-shadow: var(--shadow);
   }
   .save-state:empty, .save-state.saving { display: none; }

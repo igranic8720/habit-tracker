@@ -1,8 +1,22 @@
-.page-head { flex: none; display: flex; align-items: center; flex-wrap: wrap; gap: 16px 32px; padding: 14px 24px; }
-.page-head h1 { font-size: 24px; line-height: 1.25; font-weight: 600; }
+.page-head { flex: none; display: flex; align-items: center; flex-wrap: wrap; gap: 16px 20px; padding: 14px 24px; }
+.page-head h1 { font-size: 24px; line-height: 1.25; font-weight: 600; white-space: nowrap; }
+.head-title { display: flex; align-items: center; gap: 12px; }
+.head-text { min-width: 0; }
+.head-icon { flex: none; color: var(--accent); font-size: 40px; } /* as tall as the title and the date together */
 .page-head p { margin-top: 2px; color: var(--muted); }
 .head-title { margin-right: 0; }
-.head-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.head-right { display: flex; align-items: center; gap: 12px; }
+/* wide screens: the title block is always as wide as the longest title, so the page switch never moves; the stats go right */
+@media (min-width: 769px) and (min-height: 501px) {
+  .head-title { flex: none; width: 244px; }
+  .head-save { flex: none; width: 120px; } /* always this wide, whatever it says, so nothing beside it moves */
+  .page-head .head-stats { margin-left: auto; }
+}
+/* narrow desktops / tablets: not enough room beside the page switch on every page, so the stats always take their own row
+   (right-aligned), and the header is the same shape on all three pages */
+@media (min-width: 769px) and (max-width: 1239px) and (min-height: 501px) {
+  .page-head .head-stats { flex-basis: 100%; justify-content: flex-end; }
+}
 
 /* phones: title + year picker on one row, the stats underneath */
 @media (max-width: 768px), (max-height: 500px) {
@@ -10,4 +24,7 @@
   .head-right { grid-column: 2; grid-row: 1; margin-left: 0; }
   .head-stats { grid-column: 1 / -1; }
   .page-head p { font-size: 13px; text-wrap: balance; }
+  .head-icon { font-size: 34px; }
+  .head-save { display: contents; } /* phones: the status is a pill above the tab bar (SaveStatus.css) */
 }
+

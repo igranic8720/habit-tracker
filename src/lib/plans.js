@@ -2,15 +2,20 @@
 import { firstFree, newId, recolor } from './habits.js'
 import { hasSets, lastTime, topSet } from './workouts.js'
 
-// each plan has a colour (the same 14 as habits); a new plan takes the first one no other plan uses yet
-export const nextColor = (plans) => firstFree(plans.map((p) => p.color))
-export const newPlan = (plans = []) => ({ id: newId(), name: '', color: nextColor(plans), exercises: [{ exercise: '', sets: 3, reps: 8 }] })
-// plans with no colour, or the retired green, get one when loaded
+// each plan has a colour of its own (from the same 14 as habits; no habit or other plan uses it); a new plan takes the first free one
+// (also skipping colours in `taken`: the habits' colours, so no two items ever share one)
+export const nextColor = (plans, taken = []) => firstFree([...plans.map((p) => p.color), ...taken])
+export const newPlan = (plans = [], taken = []) => ({ id: newId(), name: '', color: nextColor(plans, taken), exercises: [{ exercise: '', sets: 3, reps: 8 }] })
+// plans with no colour, or one from an earlier palette, get one when loaded
 export const withColors = recolor
 export const planColor = (plan) => plan?.color ?? 'gray' // a freestyle day, or a deleted plan: neutral grey, so it never looks like a plan
 export const newCycle = () => ({ id: newId(), name: '', steps: [] })
 
 export const planLine = (plan) => plan.exercises.map((e) => `${e.exercise} ${e.sets}×${e.reps}`).join(' · ') || 'No exercises yet'
+
+// the rest between sets a plan can have, in seconds, and how they read (90 -> "1:30")
+export const RESTS = [30, 45, 60, 75, 90, 120, 150, 180, 240, 300]
+export const restText = (s) => (s < 60 ? `${s}s` : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`)
 
 // today's entries for a plan: each exercise with its planned sets and reps, weight carried over from last time
 // (or the plan's starting weight). The sets start un-ticked: they count once you tick them.

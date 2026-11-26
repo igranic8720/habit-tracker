@@ -3,9 +3,10 @@ import { useDismiss } from '../../hooks/useDismiss.js'
 import { COLORS } from '../../lib/habits.js'
 import './ColorPicker.css'
 
-// the colour dot of a habit or plan: tap it to open a grid of the 14 colours, tap one to choose. Escape or a tap elsewhere closes it.
+// the colour dot of a habit or plan: tap it to open a grid of the 28 colours, tap one to choose. Escape or a tap elsewhere closes it.
 // The dot shows the colour of the nearest data-color around it.
-export default function ColorPicker({ value, onChange }) {
+// taken: Map<colour, who uses it> of colours that can't be chosen here (a habit can't take a plan's colour, and vice versa)
+export default function ColorPicker({ value, onChange, taken }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
   const close = useCallback(() => setOpen(false), [])
@@ -22,9 +23,10 @@ export default function ColorPicker({ value, onChange }) {
               type="button"
               className="cp-opt"
               data-color={c}
-              title={c === 'white' ? 'white (shown dark in light mode)' : c}
-              aria-label={c}
+              title={taken?.has(c) ? `${c}: ${taken.get(c)}` : c === 'white' ? 'white (shown dark in light mode)' : c}
+              aria-label={taken?.has(c) ? `${c}, ${taken.get(c)}` : c}
               aria-pressed={c === value}
+              disabled={taken?.has(c) && c !== value}
               onClick={() => {
                 onChange(c)
                 setOpen(false)

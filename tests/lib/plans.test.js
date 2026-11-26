@@ -59,5 +59,11 @@ test('plan use, colours and new plans', () => {
   assert.deepEqual(p.planUse('push', { a: day('push', 0), b: day('push', 0, false) }), { times: 1, last: 'a' })
   assert.equal(p.planColor(undefined), 'gray') // freestyle / deleted plan
   assert.equal(p.newPlan([{ color: 'red' }]).color, 'orange')
-  assert.deepEqual(p.withColors([{ id: 'x', color: 'green' }, { id: 'y', color: 'red' }]).map((x) => x.color), ['orange', 'red'])
+  assert.deepEqual(p.withColors([{ id: 'x', color: 'nope' }, { id: 'y', color: 'red' }, { id: 'z', color: 'green' }]).map((x) => x.color), ['orange', 'red', 'green'])
+})
+
+test('rest times read as seconds or minutes', async () => {
+  const { RESTS, restText } = await import('../../src/lib/plans.js')
+  assert.deepEqual([30, 45, 60, 90, 150, 300].map(restText), ['30s', '45s', '1:00', '1:30', '2:30', '5:00'])
+  assert.ok(RESTS.every((s) => s >= 5 && s <= 900)) // all accepted by the server
 })

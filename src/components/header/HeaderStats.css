@@ -1,4 +1,4 @@
-.head-stats { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 0; }
+.head-stats { display: flex; align-items: stretch; flex-wrap: wrap; gap: 8px 0; } /* stretch: every divider the same height */
 
 @media (max-width: 768px), (max-height: 500px) {
   .head-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); align-items: start; gap: 12px 6px; padding-top: 12px; border-top: 1px solid var(--border-muted); }

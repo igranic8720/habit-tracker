@@ -1,20 +1,25 @@
 import { useState } from 'react'
 import { fromKey } from '../../../lib/format.js'
 import { newId } from '../../../lib/habits.js'
-import { newPlan, planColor, planLine, planUse } from '../../../lib/plans.js'
+import { freeColor } from '../../../lib/habits.js'
+import { newPlan, planColor, planLine, planUse, restText } from '../../../lib/plans.js'
 import ColorPicker from '../../shared/ColorPicker.jsx'
 import PlanEditor from './PlanEditor.jsx'
 import '../manage.css'
 
 // the Plans tab: your named workouts, and where you create and edit them
-export default function PlansView({ w, names, hasSessionToday, onDo }) {
+// taken: Map<colour, who uses it> (every habit and plan has its own colour)
+export default function PlansView({ w, taken, names, hasSessionToday, onDo }) {
   const [editing, setEditing] = useState(null) // a plan being created / edited, or null
+  const full = freeColor([...taken.keys()]) === null // no free colour for another plan
+  const fullTip = 'All 28 colours are in use (each habit and plan has its own). Delete a habit or plan to add another.'
   const exists = editing && w.plans.some((p) => p.id === editing.id)
 
   if (editing) {
     return (
       <PlanEditor
         initial={editing}
+        taken={taken}
         names={names}
         onSave={(p) => {
           w.savePlan(p)
@@ -39,7 +44,7 @@ export default function PlansView({ w, names, hasSessionToday, onDo }) {
     <section className="pv surface" aria-label="Plans">
       <div className="pv-head">
         <h2 className="pv-title">Plans</h2>
-        <button type="button" className="btn" onClick={() => setEditing(newPlan(w.plans))}>
+        <button type="button" className="btn" disabled={full} title={full ? fullTip : undefined} onClick={() => setEditing(newPlan(w.plans, [...taken.keys()]))}>
           + New plan
         </button>
       </div>
@@ -54,10 +59,10 @@ export default function PlansView({ w, names, hasSessionToday, onDo }) {
               <li key={p.id} data-color={planColor(p)}>
                 <div className="pv-main">
                   <span className="pv-name">
-                    <ColorPicker value={planColor(p)} onChange={(color) => w.savePlan({ ...p, color })} />
+                    <ColorPicker value={planColor(p)} taken={taken} onChange={(color) => w.savePlan({ ...p, color })} />
                     <strong>{p.name || 'Untitled plan'}</strong>
                   </span>
-                  <span className="pv-line">{planLine(p)}</span>
+                  <span className="pv-line">{planLine(p)} · {p.rest ? `${restText(p.rest)} rest` : 'no rest time set'}</span>
                   <span className="pv-use">
                     {use.times ? `Done ${use.times}× · last ${fromKey(use.last).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'Not done yet'}
                   </span>
@@ -69,7 +74,7 @@ export default function PlansView({ w, names, hasSessionToday, onDo }) {
                   <button type="button" className="btn btn-sm" onClick={() => setEditing(structuredClone(p))}>
                     Edit
                   </button>
-                  <button type="button" className="btn btn-sm" onClick={() => setEditing({ ...structuredClone(p), id: newId(), name: `${p.name} copy`.slice(0, 60), color: newPlan(w.plans).color })}>
+                  <button type="button" className="btn btn-sm" disabled={full} title={full ? fullTip : undefined} onClick={() => setEditing({ ...structuredClone(p), id: newId(), name: `${p.name} copy`.slice(0, 60), color: newPlan(w.plans, [...taken.keys()]).color })}>
                     Copy
                   </button>
                 </div>

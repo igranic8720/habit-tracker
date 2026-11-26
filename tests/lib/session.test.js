@@ -1,7 +1,7 @@
 // editing today's session in the set editor
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { addedSet, changeSet, nextSet, openCount, prIndexes } from '../../src/lib/session.js'
+import { changeSet, nextSet, openCount, prIndexes } from '../../src/lib/session.js'
 
 const S = (weight, reps, done = false) => ({ weight, reps, done })
 
@@ -19,12 +19,6 @@ test('the set you are on, and how many are left', () => {
   assert.deepEqual(nextSet(e), { i: 0, j: 1 })
   assert.equal(openCount(e), 2)
   assert.equal(nextSet([{ exercise: 'a', sets: [S(1, 1, true)] }]), null)
-})
-
-test('a new set repeats the last one, or last time’s best', () => {
-  assert.deepEqual(addedSet([S(140, 6, true)], null), S(140, 6))
-  assert.deepEqual(addedSet([], [S(130, 8, true), S(135, 5, true)]), S(135, 5))
-  assert.deepEqual(addedSet([], null), S(0, 0))
 })
 
 test('PRs: today’s heaviest ticked set of an exercise, when it beats every earlier session', () => {

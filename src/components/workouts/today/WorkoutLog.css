@@ -14,9 +14,8 @@
   flex: 1; min-width: 0; font: inherit; color: var(--fg); background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 3px 8px; margin-left: -8px;
   -webkit-appearance: none; appearance: none;
 }
-.wl-name { font-weight: 600; }
-.wl-name:hover { border-color: var(--border); }
-.wl-name:focus, .wl-new:focus { outline: none; background: var(--canvas); border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+.wl-name { margin: 0; display: flex; align-items: center; font-size: inherit; font-weight: 600; overflow-wrap: anywhere; }
+.wl-new:focus { outline: none; background: var(--canvas); border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
 .wl-last { margin: 0 0 6px; font-size: 12px; color: var(--muted); }
 .wl-sets { list-style: none; margin: 4px 0 8px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .wl-sets li { display: flex; align-items: center; gap: 8px; }
@@ -47,6 +46,10 @@
   .wl-name, .wl-new { font-size: 16px; }
   .wl-sets li { gap: 6px; }
   .wl-sets .num { width: 64px; }
+  /* the workout's buttons get their own row, so its name keeps the full width */
+  .wl-head strong { flex-basis: 100%; }
+  .wl-action { flex: 1 1 100%; flex-wrap: wrap; }
+  .wl-action > * { flex: 1 1 auto; }
 }
 @media (pointer: coarse) {
   .wl-name { min-height: 44px; }
@@ -56,4 +59,16 @@
 }
 @media (pointer: coarse) {
   .wl-name, .wl-new { font-size: 16px; }
+}
+
+/* until the workout is started: a Start button over the sets, which are locked */
+.wl-body { border: 0; margin: 0; padding: 0; min-width: 0; }
+.wl-body:disabled { opacity: .5; }
+.wl-gate { margin: 8px 0 4px; padding: 14px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; border: 1px dashed var(--border); border-radius: 6px; }
+.wl-gate p { flex: 1 1 200px; margin: 0; color: var(--muted); }
+.wl-gate p strong { color: var(--fg); }
+.wl-gate .timer-btn:not(:disabled) { color: #fff; background: var(--primary); border-color: var(--primary); font-size: 16px; font-weight: 600; padding: 8px 24px; }
+.wl-gate .timer-btn:not(:disabled):hover { background: var(--primary-hover); }
+@media (max-width: 768px) {
+  .wl-gate .timer-btn { flex: 1 1 100%; min-height: 48px; }
 }

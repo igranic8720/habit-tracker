@@ -1,0 +1,17 @@
+.subtabs { display: flex; border: 1px solid var(--btn-border); border-radius: 6px; overflow: hidden; background: var(--btn); }
+.subtabs a { flex: 1 1 0; min-width: 0; padding: 6px 12px; text-align: center; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; white-space: nowrap; transition: background-color .15s; }
+.subtabs a + a { border-left: 1px solid var(--btn-border); }
+.subtabs a:hover { background: var(--btn-hover); color: var(--fg); }
+.subtabs a.on { color: var(--fg); background: var(--btn-hover); }
+.subtabs a:focus-visible { outline-offset: -2px; }
+
+/* tabs (or whole tab bars) that only exist where the page is one column: there they stand in for the second column */
+.subtabs a.phone-only, .subtabs.phone-only { display: none; }
+@media (max-width: 900px), (max-height: 500px) {
+  .subtabs a.phone-only { display: block; }
+  .subtabs.phone-only { display: flex; }
+}
+
+@media (pointer: coarse) {
+  .subtabs a { padding: 12px; }
+}

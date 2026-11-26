@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react'
 
 // pages are picked by the URL hash (no router library, no server routes):
-//   #/ habits     #/workouts today's workout     #/workouts/plans     #/workouts/cycles
+//   #/ at a glance (the home page; #/time, its old address, still works)    #/timeline its Timeline tab (phones)
+//   #/habits     #/habits/dashboard (phones)
+//   #/workouts today's workout     #/workouts/plans     #/workouts/cycles     #/workouts/graphs (phones)
+const TITLES = { glance: 'At a glance', habits: 'Habits', workouts: 'Workouts' }
+
 function read() {
-  if (!location.hash.startsWith('#/workouts')) return { page: 'habits', sub: null }
-  const sub = location.hash.split('/')[2]
-  return { page: 'workouts', sub: sub === 'plans' || sub === 'cycles' ? sub : 'today' }
+  const h = location.hash
+  if (h.startsWith('#/habits')) return { page: 'habits', sub: h.split('/')[2] === 'dashboard' ? 'dashboard' : 'list' }
+  if (h.startsWith('#/timeline')) return { page: 'glance', sub: 'timeline' }
+  if (h.startsWith('#/workouts')) {
+    const sub = h.split('/')[2]
+    return { page: 'workouts', sub: ['plans', 'cycles', 'graphs'].includes(sub) ? sub : 'today' }
+  }
+  return { page: 'glance', sub: 'overview' }
 }
 
 export function useRoute() {
@@ -19,7 +28,7 @@ export function useRoute() {
     return () => window.removeEventListener('hashchange', onChange)
   }, [])
   useEffect(() => {
-    document.title = route.page === 'workouts' ? 'Workouts · Habit Tracker' : 'Habit Tracker'
+    document.title = `${TITLES[route.page]} · Habit Tracker`
   }, [route.page])
   return route
 }

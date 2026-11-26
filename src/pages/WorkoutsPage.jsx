@@ -8,8 +8,9 @@ import { todayKey } from '../lib/dates.js'
 import { newSession } from '../lib/plans.js'
 import { exerciseNames } from '../lib/workouts.js'
 
-// the Workouts page: your own graphs pinned left; on the right Today / Plans / Cycles (on phones: those first, graphs after)
-export default function WorkoutsPage({ w, diary, year, sub }) {
+// the Workouts page: your own graphs pinned left; on the right Today / Plans / Cycles. Phones (one column): the graphs are a
+// fourth tab, Graphs
+export default function WorkoutsPage({ w, diary, time, year, sub, taken }) {
   if (w.status === 'loading') return null
   if (w.status === 'failed') {
     return (
@@ -25,18 +26,18 @@ export default function WorkoutsPage({ w, diary, year, sub }) {
     location.hash = '#/workouts'
   }
   return (
-    <div className="workspace two">
+    <div className={`workspace two show-${sub === 'graphs' ? 'side' : 'main'}`}>
       <aside className="side" aria-label="Workout graphs">
         <WorkoutCharts habit={diary} year={year} />
       </aside>
       <div className="habits-pane">
         <WorkoutTabs sub={sub} />
         {sub === 'plans' ? (
-          <PlansView w={w} names={exerciseNames(diary)} hasSessionToday={!!w.log[todayKey]} onDo={doToday} />
+          <PlansView w={w} taken={taken} names={exerciseNames(diary)} hasSessionToday={!!w.log[todayKey]} onDo={doToday} />
         ) : sub === 'cycles' ? (
           <CyclesView w={w} />
         ) : (
-          <WorkoutDiary w={w} diary={diary} year={year} />
+          <WorkoutDiary w={w} diary={diary} time={time} year={year} />
         )}
       </div>
     </div>

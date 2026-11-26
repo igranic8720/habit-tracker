@@ -77,7 +77,7 @@ test('bad data is refused (400) and writes nothing', async () => {
     '51 exercises in a day': (d) => (d.log['2026-11-25'].entries = Array(51).fill({ exercise: 'x', sets: [] })),
     'plan with 0 sets': (d) => (d.plans[0].exercises[0].sets = 0),
     'plan name too long': (d) => (d.plans[0].name = 'x'.repeat(61)),
-    'plan colour green (retired)': (d) => (d.plans[0].color = 'green'),
+    'plan colour not in the palette': (d) => (d.plans[0].color = 'aqua'),
     'duplicate plan ids': (d) => d.plans.push(structuredClone(d.plans[0])),
     '31 days in a cycle': (d) => (d.cycles[0].steps = Array(31).fill('p1')),
     'active cycle id with a slash': (d) => (d.active = '../c'),
@@ -89,4 +89,37 @@ test('bad data is refused (400) and writes nothing', async () => {
     assert.equal((await api.post('/api/workouts', { ...d, version })).status, 400, name)
   }
   assert.equal(snapshot(), before)
+})
+
+test('tracked time is kept with its workout day, and bad time is refused', async () => {
+  const withTime = (sessions) => {
+    const g = good()
+    g.log['2026-11-25'].sessions = sessions
+    return g
+  }
+  let { version } = await api.get('/api/workouts')
+  const ok = [{ id: 'w1', start: 1000, end: 4000 }]
+  assert.equal((await api.post('/api/workouts', { ...withTime(ok), version })).status, 200)
+  assert.deepEqual((await api.get('/api/workouts')).log['2026-11-25'].sessions, ok)
+  ;({ version } = await api.get('/api/workouts'))
+  assert.equal((await api.post('/api/workouts', { ...withTime([{ id: 'w1', start: 9, end: 1 }]), version })).status, 400)
+  assert.equal((await api.post('/api/workouts', { ...withTime([{ id: 'x', start: 1, end: 2 }, { id: 'x', start: 3, end: 4 }]), version })).status, 400)
+})
+
+test('a plan’s rest time and the running rest are saved; silly values are refused', async () => {
+  const withRest = (planRest, dayRest) => {
+    const g = good()
+    g.plans[0].rest = planRest
+    if (dayRest !== undefined) g.log['2026-11-25'].rest = dayRest
+    return g
+  }
+  let { version } = await api.get('/api/workouts')
+  assert.equal((await api.post('/api/workouts', { ...withRest(90, { start: 1000, end: 91000 }), version })).status, 200)
+  const back = await api.get('/api/workouts')
+  assert.equal(back.plans[0].rest, 90)
+  assert.deepEqual(back.log['2026-11-25'].rest, { start: 1000, end: 91000 })
+  ;({ version } = back)
+  for (const [planRest, dayRest] of [[0, undefined], [1000, undefined], [1.5, undefined], ['90', undefined], [90, { start: 5, end: 1 }], [90, { start: 0, end: 2 * 3600000 }], [90, null]]) {
+    assert.equal((await api.post('/api/workouts', { ...withRest(planRest, dayRest), version })).status, 400, JSON.stringify([planRest, dayRest]))
+  }
 })

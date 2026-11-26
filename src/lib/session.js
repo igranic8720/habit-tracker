@@ -23,12 +23,6 @@ export function changeSet(sets, j, patch) {
   })
 }
 
-// a new set repeats the last one (or last time's best set): the common case is "same again"
-export function addedSet(sets, lastSets) {
-  const from = sets.at(-1) ?? (lastSets ? topSet(lastSets) : { weight: 0, reps: 0 })
-  return { weight: from.weight, reps: from.reps, done: false }
-}
-
 // per exercise: the index of today's personal-best set (its heaviest ticked set, when that beats every earlier session), or -1
 export function prIndexes(entries, bestBefore) {
   return entries.map((e) => {

@@ -4,7 +4,9 @@
   background: var(--overlay); border: 1px solid var(--border); border-radius: 6px; box-shadow: var(--shadow);
 }
 .cp-opt { width: 26px; height: 26px; padding: 0; border: 0; border-radius: 50%; background: var(--on); cursor: pointer; }
-.cp-opt:hover { transform: scale(1.1); }
+.cp-opt:hover:not(:disabled) { transform: scale(1.1); }
+/* used by the other kind (a plan's colour in a habit's picker, or the reverse): crossed out */
+.cp-opt:disabled { cursor: not-allowed; opacity: .35; background-image: linear-gradient(135deg, transparent 45%, var(--fg) 45%, var(--fg) 55%, transparent 55%); }
 .cp-opt[aria-pressed='true'] { box-shadow: 0 0 0 2px var(--overlay), 0 0 0 4px var(--fg); }
 
 @media (pointer: coarse) {
