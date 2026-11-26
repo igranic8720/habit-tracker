@@ -50,10 +50,10 @@
 }
 /* the month, compact: short days showing just the date (the shading says how much was tracked; the exact time is in the tooltip),
    the month's total beside the month name */
-.g-month .cal { gap: 3px; margin-top: 6px; }
+.g-month .cal { gap: 3px; }
 .g-month .cal-day { aspect-ratio: auto; min-height: 0; height: 32px; border-radius: 5px; }
 .g-month .cal-ms { display: none; }
-.g-month .cal-ev { top: 3px; right: 3px; width: 5px; height: 5px; }
+.g-month .cal-day { gap: 1px; padding-top: 0; padding-bottom: 6px; } /* (the dots sit above the blue line along the bottom) */
 @media (max-width: 900px), (max-height: 500px) {
   .workspace.glance > .side, .workspace.glance > .habits-pane, .g-cols, .g-col { display: contents; }
   .workspace.glance .glance-tabs { order: 0; }

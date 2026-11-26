@@ -38,6 +38,8 @@ export default function MonthCalendar({ map, selected, onPick, firstDay }) {
         </span>
       }
     >
+      {/* the grid and its key sit in the same box as the year graph */}
+      <div className="cal-box">
       <div className="cal" role="grid" aria-label="Days of the month">
         {DOW.map((d, i) => (
           <span key={i} className="cal-dow" aria-hidden="true">{d}</span>
@@ -50,7 +52,8 @@ export default function MonthCalendar({ map, selected, onPick, firstDay }) {
             <button
               key={k}
               type="button"
-              className={`cal-day${k === selected ? ' cal-sel' : ''}${k === todayKey ? ' cal-today' : ''}${k > todayKey ? ' cal-future' : ''}`}
+              className={`cal-day${k === selected ? ' cal-sel' : ''}${k === todayKey ? ' cal-today' : ''}${k > todayKey ? ' cal-future' : ''}${events.has(k) ? ' has-ev' : ''}`}
+              title={events.has(k) ? `${events.get(k)} on your calendar` : undefined}
               data-level={level(ms)}
               disabled={k > end || (!!firstDay && k < firstDay)}
               aria-pressed={k === selected}
@@ -59,10 +62,21 @@ export default function MonthCalendar({ map, selected, onPick, firstDay }) {
             >
               <span className="cal-num">{Number(k.slice(8))}</span>
               <span className="cal-ms">{ms ? duration(ms).replace(' ', '') : ''}</span>
-              {events.has(k) && <span className="cal-ev" aria-hidden="true" title={`${events.get(k)} on your calendar`} />}
+              {/* something on your calendar: a blue dot per event under the date (3 at most, then +) */}
+              {events.has(k) && (
+                <span className="cal-evs" aria-hidden="true">
+                  {Array.from({ length: Math.min(3, events.get(k)) }, (_, n) => <i key={n} />)}
+                  {events.get(k) > 3 && <b>+</b>}
+                </span>
+              )}
             </button>
           )
         })}
+      </div>
+      <ul className="cal-key" aria-hidden="true">
+        <li><span className="cal-evs"><i /></span> On your calendar</li>
+        <li><i className="cal-key-sw" /> Time tracked (darker is more)</li>
+      </ul>
       </div>
     </Panel>
   )

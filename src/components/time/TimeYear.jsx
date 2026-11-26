@@ -48,7 +48,7 @@ export default function TimeYear({ map, year, selected, onPick }) {
     </ul>
   )
   return (
-    <section className="card surface time-year" data-color="blue" aria-label={`Time tracked in ${year}`}>
+    <section className="card surface time-year" data-color="green" aria-label={`Time tracked in ${year}`}>
       <div className="ty-head">
         <h3 className="summary">
           <strong>{duration(all)}</strong> tracked in {year}
