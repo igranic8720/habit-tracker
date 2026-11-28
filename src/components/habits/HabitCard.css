@@ -5,3 +5,5 @@
 @media (max-width: 768px) {
   .card { padding: 12px; }
 }
+/* each habit card has the site's accent bar down its left, in the habit's own colour */
+.card.habit-color:not(.diary) { border-left: 3px solid var(--on); } /* (the workout log is a plain card: each day inside has its plan's bar) */

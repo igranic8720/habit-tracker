@@ -1,4 +1,4 @@
-.wl { margin: 0 0 12px; padding: 12px; background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; scroll-margin-top: 12px; }
+.wl { margin: 0 0 12px; padding: 12px; background: var(--canvas); border: 1px solid var(--border); border-left: 3px solid var(--on, var(--accent)); border-radius: var(--radius); scroll-margin-top: 12px; }
 .wl-head { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 4px; }
 .wl-head strong { flex: 1; min-width: 0; }
 .wl-tag { font-size: 12px; color: var(--muted); }
@@ -11,7 +11,7 @@
 .wl-ex { padding: 12px 0; border-top: 1px solid var(--border-muted); }
 .wl-ex-head { display: flex; align-items: center; gap: 4px; }
 .wl-name, .wl-new {
-  flex: 1; min-width: 0; font: inherit; color: var(--fg); background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 3px 8px; margin-left: -8px;
+  flex: 1; min-width: 0; font: inherit; color: var(--fg); background: transparent; border: 1px solid transparent; border-radius: var(--radius); padding: 3px 8px; margin-left: -8px;
   -webkit-appearance: none; appearance: none;
 }
 .wl-name { margin: 0; display: flex; align-items: center; font-size: inherit; font-weight: 600; overflow-wrap: anywhere; }
@@ -21,18 +21,18 @@
 .wl-sets li { display: flex; align-items: center; gap: 8px; }
 .wl-n { width: 16px; font-size: 12px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
 .wl-times { font-size: 12px; color: var(--muted); white-space: nowrap; }
-.wl-ok { width: 36px; height: 36px; flex: none; font-size: 16px; line-height: 1; color: var(--muted); background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: background-color .15s, color .15s; }
+.wl-ok { width: 36px; height: 36px; flex: none; font-size: 16px; line-height: 1; color: var(--muted); background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: background-color .15s, color .15s; }
 .wl-ok:hover { border-color: var(--muted); }
 .wl-ok[aria-pressed='true'] { color: #fff; background: var(--primary); border-color: var(--primary); }
 .wl-ex-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .wl-sets li > .wl-x { margin-left: auto; }
 .wl-sets li.is-next .num { border-color: var(--on); }
 .wl-sets li.is-next .wl-n { color: var(--on); font-weight: 600; }
-.wl-pr { padding: 1px 6px; font-size: 11px; font-weight: 700; color: #fff; background: var(--orange); border-radius: 999px; }
-.wl-complete { margin: 8px 0 4px; padding: 8px 12px; font-size: 12px; color: var(--fg); background: color-mix(in srgb, var(--green) 14%, transparent); border: 1px solid var(--green); border-radius: 6px; }
+.wl-pr { padding: 1px 6px; font-size: 11px; font-weight: 700; color: #fff; background: var(--orange); border-radius: var(--radius); }
+.wl-complete { margin: 8px 0 4px; padding: 8px 12px; font-size: 12px; color: var(--fg); background: color-mix(in srgb, var(--green) 14%, transparent); border: 1px solid var(--green); border-radius: var(--radius); }
 .wl-complete strong { color: var(--green); }
 .wl-action { display: inline-flex; gap: 6px; }
-.wl-x { width: 28px; height: 28px; flex: none; font-size: 12px; color: var(--muted); background: none; border: 0; border-radius: 6px; cursor: pointer; }
+.wl-x { width: 28px; height: 28px; flex: none; font-size: 12px; color: var(--muted); background: none; border: 0; border-radius: var(--radius); cursor: pointer; }
 .wl-x:hover { color: var(--danger); background: var(--btn-hover); }
 
 .wl-add { display: flex; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border-muted); }
@@ -64,11 +64,11 @@
 /* until the workout is started: a Start button over the sets, which are locked */
 .wl-body { border: 0; margin: 0; padding: 0; min-width: 0; }
 .wl-body:disabled { opacity: .5; }
-.wl-gate { margin: 8px 0 4px; padding: 14px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; border: 1px dashed var(--border); border-radius: 6px; }
+.wl-gate { margin: 8px 0 4px; padding: 14px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; border: 1px dashed var(--border); border-radius: var(--radius); }
 .wl-gate p { flex: 1 1 200px; margin: 0; color: var(--muted); }
 .wl-gate p strong { color: var(--fg); }
-.wl-gate .timer-btn:not(:disabled) { color: #fff; background: var(--primary); border-color: var(--primary); font-size: 16px; font-weight: 600; padding: 8px 24px; }
-.wl-gate .timer-btn:not(:disabled):hover { background: var(--primary-hover); }
+.wl-gate .timer-btn:not(:disabled) { color: #000; text-shadow: none; background: var(--accent); border-color: var(--accent); font-size: 16px; font-weight: 600; padding: 8px 24px; }
+.wl-gate .timer-btn:not(:disabled):hover { background: #7fffff; }
 @media (max-width: 768px) {
   .wl-gate .timer-btn { flex: 1 1 100%; min-height: 48px; }
 }

@@ -1,3 +1,4 @@
+import { BarChartOutlined, CheckSquareOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import ArchivedList from '../components/habits/ArchivedList.jsx'
 import Dashboard from '../components/dashboard/Dashboard.jsx'
@@ -7,8 +8,8 @@ import HabitCard from '../components/habits/HabitCard.jsx'
 import SubTabs from '../components/shared/SubTabs.jsx'
 
 const TABS = [
-  { id: 'list', label: 'Habits', href: '#/habits' },
-  { id: 'dashboard', label: 'Dashboard', href: '#/habits/dashboard' },
+  { id: 'list', label: 'Habits', href: '#/habits', Icon: CheckSquareOutlined },
+  { id: 'dashboard', label: 'Dashboard', href: '#/habits/dashboard', Icon: BarChartOutlined },
 ]
 
 // layout: dashboard pinned left; habit cards scrolling right. Phones (one column): two tabs, Habits and Dashboard

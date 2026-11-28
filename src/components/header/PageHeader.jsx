@@ -5,7 +5,7 @@ import YearPicker from './YearPicker.jsx'
 import './PageHeader.css'
 import { CheckSquareOutlined, DashboardOutlined, FireOutlined } from '@ant-design/icons'
 
-const TITLES = { glance: 'At a Glance:', habits: 'Habits:', workouts: 'Workouts:' }
+const TITLES = { glance: 'At a glance', habits: 'Habits', workouts: 'Workouts' }
 // each page's mark beside its title (Ant Design has no dumbbell: a flame stands for training)
 const ICONS = { glance: DashboardOutlined, habits: CheckSquareOutlined, workouts: FireOutlined }
 
@@ -15,11 +15,14 @@ const ICONS = { glance: DashboardOutlined, habits: CheckSquareOutlined, workouts
 export default function PageHeader({ page, year, years, onYear, saveState, children }) {
   const Icon = ICONS[page]
   return (
-    <header className="page-head surface">
+    <header className="page-head surface accent-bar">
       <div className="head-title">
         <Icon className="head-icon" />
         <div className="head-text">
-          <h1>{TITLES[page]}</h1>
+          <h1>
+            {TITLES[page]}
+            <span className="head-cursor" aria-hidden="true">_</span>
+          </h1>
           <p>{today.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
       </div>

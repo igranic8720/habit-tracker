@@ -1,7 +1,7 @@
 /* the Plans and Cycles tabs: lists, and the editors */
 .pv, .pe { padding: 16px 20px; }
 .pv-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
-.pv-title { font-size: 16px; font-weight: 600; }
+.pv-title { font-size: 15px; font-weight: 600; letter-spacing: .02em; }
 .pv-hint, .pv-empty, .pe-hint { margin: 6px 0 12px; font-size: 12px; color: var(--muted); }
 .pv-empty { font-size: 14px; }
 .pe-hint a { color: var(--link); }
@@ -14,20 +14,18 @@
 .pe-name { display: flex; align-items: center; gap: 8px; }
 .pe-name .pe-input { flex: 1; }
 .pv-line, .pv-use { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
-.pv-badge { margin-left: 6px; padding: 1px 8px; font-size: 11px; font-weight: 600; color: var(--green); border: 1px solid var(--green); border-radius: 999px; }
+.pv-badge { margin-left: 6px; padding: 1px 8px; font-size: 11px; font-weight: 600; color: var(--green); border: 1px solid var(--green); border-radius: var(--radius); }
 .pv-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; flex: none; }
 .btn[aria-pressed='true'] { color: var(--green); }
 .btn:disabled { opacity: .5; cursor: default; }
-.btn-primary { color: #fff; background: var(--primary); }
-.btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
 .cv-steps { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 6px; }
-.cv-steps li { padding: 1px 8px; font-size: 12px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; }
+.cv-steps li { padding: 1px 8px; font-size: 12px; color: var(--muted); border: 1px solid var(--border); border-radius: var(--radius); }
 .cv-steps li.next { color: var(--fg); font-weight: 600; border-color: var(--on); background: color-mix(in srgb, var(--on) 14%, transparent); }
 
 .pe-label { display: block; margin: 12px 0 4px; font-size: 12px; font-weight: 600; color: var(--muted); }
 .pe-sub { margin: 16px 0 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
 .pe-input {
-  display: block; width: 100%; min-width: 0; height: 36px; padding: 0 12px; font: inherit; color: var(--fg); background: var(--canvas); border: 1px solid var(--border); border-radius: 6px;
+  display: block; width: 100%; min-width: 0; height: 36px; padding: 0 12px; font: inherit; color: var(--fg); background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius);
   -webkit-appearance: none; appearance: none; transition: border-color .15s;
 }
 select.pe-input { padding-right: 30px; background-position: right 12px center; }
@@ -42,7 +40,7 @@ select.pe-input { padding-right: 30px; background-position: right 12px center; }
 .pe-nums label span { font-size: 11px; color: var(--muted); }
 .pe-nums .num { width: 64px; }
 .pe-move { margin-left: auto; display: inline-flex; flex: none; gap: 0; }
-.pe-move button { width: 32px; height: 36px; font-size: 14px; color: var(--muted); background: none; border: 0; border-radius: 6px; cursor: pointer; }
+.pe-move button { width: 32px; height: 36px; font-size: 14px; color: var(--muted); background: none; border: 0; border-radius: var(--radius); cursor: pointer; }
 .pe-move button:hover:not(:disabled) { color: var(--fg); background: var(--btn-hover); }
 .pe-move button:disabled { opacity: .3; cursor: default; }
 .ce-steps li { display: flex; align-items: center; gap: 8px; }
@@ -81,3 +79,8 @@ select.pe-input { padding-right: 30px; background-position: right 12px center; }
   .pv-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px; }
   .pv-list > li:nth-child(2) { border-top: 0; }
 }
+
+/* the plan's colour down the left of each plan, each day of a cycle, and the plan being edited */
+.pv-list > li[data-color] { border-left: 3px solid var(--on); padding-left: 12px; }
+.cv-steps li[data-color] { border-left: 3px solid var(--on); }
+.pe[data-color] { border-left: 3px solid var(--on); }

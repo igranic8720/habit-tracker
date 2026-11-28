@@ -1,7 +1,7 @@
 .today-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px; margin: 0 0 12px; }
 .quick-note {
   display: block; flex: 1 1 220px; min-width: 0; resize: none; margin: 0; height: 36px; min-height: 36px; max-height: 220px; font: inherit; line-height: 20px; color: var(--fg);
-  background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; field-sizing: content; transition: border-color .15s; -webkit-appearance: none; appearance: none;
+  background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); padding: 7px 12px; field-sizing: content; transition: border-color .15s; -webkit-appearance: none; appearance: none;
 }
 .quick-note::placeholder { color: var(--muted); }
 .quick-note:hover { border-color: var(--muted); }

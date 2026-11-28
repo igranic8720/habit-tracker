@@ -2,12 +2,12 @@
 .title .swatch { margin-right: -8px; }
 .name {
   flex: 1; min-width: 120px; font: inherit; font-size: 16px; font-weight: 600; color: var(--fg);
-  background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 3px 8px; margin-left: 0; -webkit-appearance: none; appearance: none;
+  background: transparent; border: 1px solid transparent; border-radius: var(--radius); padding: 3px 8px; margin-left: 0; -webkit-appearance: none; appearance: none;
 }
 .name::placeholder { color: var(--muted); font-weight: 400; }
 .name:hover { border-color: var(--border); }
 .name:focus { outline: none; background: var(--canvas); border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
-.notes-toggle { background: none; border: 0; padding: 4px 8px; cursor: pointer; font-size: 14px; color: var(--muted); border-radius: 6px; }
+.notes-toggle { background: none; border: 0; padding: 4px 8px; cursor: pointer; font-size: 14px; color: var(--muted); border-radius: var(--radius); }
 .notes-toggle:hover { color: var(--link); background: var(--btn-hover); }
 
 @media (pointer: coarse) {

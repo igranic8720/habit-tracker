@@ -1,6 +1,6 @@
 .num {
   width: 72px; min-width: 0; height: 36px; padding: 0 8px; font: inherit; font-variant-numeric: tabular-nums; text-align: center; color: var(--fg);
-  background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; -webkit-appearance: none; appearance: none; transition: border-color .15s;
+  background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); -webkit-appearance: none; appearance: none; transition: border-color .15s;
 }
 .num::placeholder { color: var(--muted); }
 .num:hover { border-color: var(--muted); }

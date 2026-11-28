@@ -1,3 +1,4 @@
+import { DashboardOutlined, FieldTimeOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import TodayList from '../components/glance/TodayList.jsx'
 import Panel from '../components/shared/Panel.jsx'
@@ -15,8 +16,8 @@ import SubTabs from '../components/shared/SubTabs.jsx'
 import '../components/glance/glance.css'
 
 const TABS = [
-  { id: 'overview', label: 'Overview', href: '#/' },
-  { id: 'timeline', label: 'Timeline', href: '#/timeline' },
+  { id: 'overview', label: 'Overview', href: '#/', Icon: DashboardOutlined },
+  { id: 'timeline', label: 'Timeline', href: '#/timeline', Icon: FieldTimeOutlined },
 ]
 
 // At a glance (the home page): on the left this year's graph (with its missed days and streak), then Today above the last two weeks

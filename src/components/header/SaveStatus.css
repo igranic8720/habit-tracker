@@ -10,7 +10,7 @@
   .save-state {
     position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 68px); /* above the tab bar */
     min-width: 0; padding: 6px 14px; font-size: 13px; white-space: nowrap; pointer-events: none; display: inline-flex;
-    background: var(--overlay); border: 1px solid var(--border); border-radius: 999px; box-shadow: var(--shadow);
+    background: var(--overlay); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
   }
   .save-state:empty, .save-state.saving { display: none; }
   .save-state.saved { animation: save-fade 2.4s forwards; }

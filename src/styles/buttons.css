@@ -1,13 +1,15 @@
-/* GitHub buttons: .btn is the secondary style; .btn-sm and .btn-danger modify it */
+/* buttons, in the ivangranic.ca style: square, quiet, an aqua bottom edge on hover; .btn-sm and .btn-danger modify them */
 .btn {
-  padding: 5px 16px; cursor: pointer; font-size: 14px; font-weight: 500; line-height: 20px; color: var(--fg);
-  background: var(--btn); border: 1px solid var(--btn-border); border-radius: 6px; transition: background-color .15s;
+  padding: 5px 16px; cursor: pointer; font-size: 13px; font-weight: 500; line-height: 20px; letter-spacing: .02em; color: var(--fg);
+  background: var(--btn); border: 1px solid var(--btn-border); border-radius: var(--radius); transition: background-color .2s, border-color .2s;
 }
-.btn:hover:not(:disabled) { background: var(--btn-hover); }
+.btn:hover:not(:disabled) { background: var(--btn-hover); border-bottom-color: var(--accent); }
 .btn:disabled { cursor: not-allowed; opacity: .55; }
 .btn-sm { padding: 3px 12px; font-size: 12px; }
+.btn-primary { color: #000; background: var(--accent); border-color: var(--accent); font-weight: 600; text-shadow: none; }
+.btn-primary:hover:not(:disabled) { background: #7fffff; border-color: #7fffff; }
 .btn-danger { color: var(--danger); }
-.btn-danger:hover:not(:disabled) { color: #fff; background: #da3633; border-color: #f85149; }
+.btn-danger:hover:not(:disabled) { color: #fff; background: #da3633; border-color: #ff5c57; }
 
 /* touch screens: 44px minimum tap targets */
 @media (pointer: coarse) {

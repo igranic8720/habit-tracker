@@ -1,13 +1,13 @@
 /* pinned under the top of the screen while you scroll through your sets */
 .rt {
   position: sticky; top: 8px; z-index: 30; display: flex; align-items: center; gap: 10px; margin: 0 0 12px; padding: 8px 8px 8px 12px; overflow: hidden;
-  background: var(--overlay); border: 1px solid var(--accent); border-radius: 6px; box-shadow: var(--shadow);
+  background: var(--overlay); border: 1px solid var(--accent); border-radius: var(--radius); box-shadow: var(--shadow);
 }
 .rt-fill { position: absolute; inset: auto 0 0 0; height: 3px; background: var(--accent); transform-origin: left; transition: transform .25s linear; }
 .rt-label { font-size: 12px; font-weight: 600; color: var(--muted); }
 .rt-time { font-size: 20px; font-variant-numeric: tabular-nums; }
 .rt-buttons { margin-left: auto; display: flex; gap: 4px; }
-.rt-buttons button { padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 600; color: var(--fg); background: var(--btn); border: 1px solid var(--btn-border); border-radius: 6px; cursor: pointer; }
+.rt-buttons button { padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 600; color: var(--fg); background: var(--btn); border: 1px solid var(--btn-border); border-radius: var(--radius); cursor: pointer; }
 .rt-buttons button:hover { background: var(--btn-hover); }
 .rt.over { border-color: var(--green); }
 .rt.over .rt-fill { background: var(--green); }

@@ -33,7 +33,7 @@ export default function LiftProgress({ habit, year }) {
   }
 
   return (
-    <Panel title={<>Lift progress · {year}</>} label={`Lift progress ${year}`}>
+    <Panel title={`Lift progress · ${year}`} label={`Lift progress ${year}`}>
       {names.length === 0 ? (
         <p className="lp-empty">Log an exercise and its progress line shows up here.</p>
       ) : (

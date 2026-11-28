@@ -1,22 +1,37 @@
-.page-nav { display: inline-flex; align-self: center; border: 1px solid var(--btn-border); border-radius: 6px; overflow: hidden; background: var(--btn); }
-.page-nav a { padding: 5px 16px; font-size: 14px; font-weight: 600; line-height: 20px; color: var(--muted); text-decoration: none; transition: background-color .15s; }
-.page-nav a + a { border-left: 1px solid var(--btn-border); }
-.page-nav a:hover { background: var(--btn-hover); color: var(--fg); }
-.page-nav a.on { color: var(--fg); background: var(--btn-hover); }
+/* the page tabs: a dark recessed strip holding the three pages, each with its mark; the page you're on is lit (aqua mark, bright
+   text, a faint aqua tint and an aqua line under it) */
+.page-nav { display: inline-flex; align-self: center; gap: 4px; padding: 4px; background: var(--canvas); border: 1px solid var(--border-muted); }
+.page-nav a {
+  position: relative; display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; letter-spacing: .02em;
+  color: var(--muted); white-space: nowrap; transition: color .2s, background-color .2s;
+}
+.page-nav-icon { font-size: 16px; transition: color .2s; }
+.page-nav a::after {
+  content: ''; position: absolute; left: 12px; right: 12px; bottom: 0; height: 2px; background: var(--accent);
+  transform: scaleX(0); transition: transform .25s ease;
+}
+.page-nav a:hover { color: var(--fg); background: var(--btn); }
+.page-nav a:hover::after { transform: scaleX(.35); opacity: .6; }
+.page-nav a.on { color: var(--fg); background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.page-nav a.on .page-nav-icon { color: var(--accent); }
+.page-nav a.on::after { transform: scaleX(1); opacity: 1; }
 .page-nav a:focus-visible { outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .page-nav a::after { transition: none; } }
 
 /* landscape phones: its own row under the title */
 @media (max-height: 500px) {
   .page-nav { grid-column: 1 / -1; justify-self: start; }
 }
-/* phones: a tab bar pinned to the bottom, like an iOS app (clear of the home indicator) */
+/* phones: a tab bar pinned to the bottom like a phone app's (clear of the home indicator): the mark above the name, the page
+   you're on in aqua with a line along its top */
 @media (max-width: 768px) {
   .page-nav {
-    position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(3, 1fr); justify-self: auto;
-    border: 0; border-top: 1px solid var(--border); border-radius: 0; background: var(--subtle); padding-bottom: env(safe-area-inset-bottom);
+    position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 0;
+    padding-bottom: env(safe-area-inset-bottom); background: var(--card-solid); border: 0; border-top: 1px solid var(--border);
   }
-  .page-nav a { padding: 13px 0 12px; text-align: center; font-size: 15px; border-top: 2px solid transparent; margin-top: -1px; }
-  .page-nav a + a { border-left: 0; }
-  .page-nav a:hover, .page-nav a.on { background: none; }
-  .page-nav a.on { border-top-color: var(--accent); }
+  .page-nav a { flex-direction: column; justify-content: center; gap: 3px; padding: 9px 0 8px; font-size: 11px; }
+  .page-nav-icon { font-size: 20px; }
+  .page-nav a::after { top: -1px; bottom: auto; left: 25%; right: 25%; }
+  .page-nav a:hover { background: none; }
+  .page-nav a.on { background: none; color: var(--accent); }
 }

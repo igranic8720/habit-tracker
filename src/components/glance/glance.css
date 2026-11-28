@@ -5,7 +5,7 @@
 .glance-list > li:first-child { border-top: 0; }
 /* the item being timed: first in the list, its row tinted in its colour, with today's note under it */
 .glance-list > li { flex-wrap: wrap; }
-.glance-list > li.is-running { order: -1; margin: 0 -10px; padding: 8px 10px; border-radius: 8px; border-top-color: transparent; background: color-mix(in srgb, var(--on) 10%, transparent); }
+.glance-list > li.is-running { order: -1; margin: 0 -10px; padding: 8px 10px; border-radius: var(--radius); border-top-color: transparent; background: color-mix(in srgb, var(--on) 10%, transparent); }
 .glance-list > li.is-running + li { border-top-color: transparent; }
 .glance-note { flex-basis: 100%; padding-left: 34px; } /* under the name, past the ring */
 .glance-note .today-row { margin: 2px 0 0; }
@@ -20,9 +20,8 @@
   flex: none; position: relative; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
   font-size: 12px; color: #fff; background: conic-gradient(var(--on) var(--p), color-mix(in srgb, var(--on) 22%, transparent) 0); /* the rest of the ring: a track in its colour, like the Habits page bar */
 }
-.glance-ring::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: var(--subtle); } /* the hole */
+.glance-ring:not(.on) { -webkit-mask: radial-gradient(circle, transparent 7.5px, #000 8px); mask: radial-gradient(circle, transparent 7.5px, #000 8px); } /* the hole: cut out, so the card shows through */
 .glance-ring.on { background: var(--on); }
-.glance-ring.on::after { display: none; }
 .glance-icon { flex: none; width: 24px; display: flex; justify-content: center; }
 .glance-list a.btn { text-decoration: none; }
 .glance-list .timer-btn { flex: none; min-width: 88px; } /* Start and the running clock take the same room */
@@ -51,7 +50,7 @@
 /* the month, compact: short days showing just the date (the shading says how much was tracked; the exact time is in the tooltip),
    the month's total beside the month name */
 .g-month .cal { gap: 3px; }
-.g-month .cal-day { aspect-ratio: auto; min-height: 0; height: 32px; border-radius: 5px; }
+.g-month .cal-day { aspect-ratio: auto; min-height: 0; height: 32px; border-radius: var(--radius); }
 .g-month .cal-ms { display: none; }
 .g-month .cal-day { gap: 1px; padding-top: 0; padding-bottom: 6px; } /* (the dots sit above the blue line along the bottom) */
 @media (max-width: 900px), (max-height: 500px) {
@@ -85,7 +84,7 @@
 
 /* a checklist habit's square (where a timed one has its ring): an outline in its colour, filled with a tick once done */
 .glance-box {
-  flex: none; width: 24px; height: 24px; padding: 0; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;
+  flex: none; width: 24px; height: 24px; padding: 0; border-radius: var(--radius); display: inline-flex; align-items: center; justify-content: center;
   font-size: 13px; color: var(--canvas); cursor: pointer;
   border: 2px solid var(--on); background: color-mix(in srgb, var(--on) 12%, transparent);
 }
@@ -106,3 +105,7 @@
   .g-daily { grid-column: 3; grid-row: 1; }
 }
 .g-agenda:empty { display: none; } /* no calendar connected: no empty gap above the month */
+/* each row of Today's habits (and today's workout) has its colour down the left, like its card on the Habits page */
+.glance-list > li[data-color] { border-left: 3px solid var(--on); padding-left: 10px; }
+.glance-list > li[data-color='gray'] { border-left-color: var(--border); }
+.glance-note { padding-left: 34px; }

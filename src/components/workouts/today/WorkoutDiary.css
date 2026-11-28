@@ -1,2 +1,2 @@
-.diary-name { flex: 1; font-size: 16px; font-weight: 600; }
+.diary-name { flex: 1; font-size: 15px; font-weight: 600; letter-spacing: .02em; }
 .diary-today { margin-bottom: 4px; scroll-margin-top: 12px; }

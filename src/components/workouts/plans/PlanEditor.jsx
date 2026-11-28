@@ -30,6 +30,7 @@ export default function PlanEditor({ initial, taken, names, onSave, onCancel, on
   return (
     <form
       className="pe surface"
+      data-color={draft.color} /* (its bar follows the colour you pick) */
       onSubmit={(e) => {
         e.preventDefault()
         if (valid) onSave({ id: draft.id, name: draft.name.trim().slice(0, 60), color: draft.color, rest: draft.rest, exercises: clean })

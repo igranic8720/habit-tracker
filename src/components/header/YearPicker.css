@@ -1,4 +1,4 @@
-.year-picker { display: inline-flex; border: 1px solid var(--btn-border); border-radius: 6px; overflow: hidden; background: var(--btn); }
+.year-picker { display: inline-flex; border: 1px solid var(--btn-border); border-radius: var(--radius); overflow: hidden; background: var(--btn); }
 .year-picker button, .year-picker select {
   font: inherit; font-size: 14px; font-weight: 600; line-height: 20px; color: var(--fg); background: var(--btn);
   border: 0; border-radius: 0; padding: 5px 12px; cursor: pointer; transition: background-color .15s;

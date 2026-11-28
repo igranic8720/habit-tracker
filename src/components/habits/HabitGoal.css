@@ -2,7 +2,7 @@
 .goal { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 0 0 12px; }
 .goal-pick { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
 /* the stepper: down arrow, the target, up arrow, joined in one box */
-.goal-step { display: inline-flex; align-items: stretch; border: 1px solid var(--border); border-radius: 6px; background: var(--canvas); overflow: hidden; }
+.goal-step { display: inline-flex; align-items: stretch; border: 1px solid var(--border); border-radius: var(--radius); background: var(--canvas); overflow: hidden; }
 .goal-step.unset { border-color: var(--danger); }
 .goal-arrow { display: inline-flex; align-items: center; justify-content: center; width: 28px; padding: 0; font-size: 11px; color: var(--muted); background: var(--btn); border: 0; cursor: pointer; }
 .goal-arrow:hover:not(:disabled) { color: var(--fg); background: var(--btn-hover); }
@@ -14,7 +14,7 @@
 .goal-value:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .goal-progress { flex: 1 1 200px; display: flex; align-items: center; gap: 10px; min-width: 0; }
 .goal-label { flex: none; font-size: 13px; color: var(--muted); }
-.goal-bar { flex: 1; height: 6px; border-radius: 999px; background: color-mix(in srgb, var(--on) 15%, transparent); overflow: hidden; } /* a plain track in the habit's colour, not a box */
+.goal-bar { flex: 1; height: 6px; border-radius: var(--radius); background: color-mix(in srgb, var(--on) 15%, transparent); overflow: hidden; } /* a plain track in the habit's colour, not a box */
 .goal-bar span { display: block; height: 100%; border-radius: inherit; background: var(--on); transition: width .3s; }
 .goal-text { flex: none; min-width: 150px; text-align: right; font-size: 13px; /* a steady width, so the bar is the same length on every card and doesn't jump as the minutes go up */ color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .goal.is-done .goal-text { color: var(--fg); font-weight: 600; }

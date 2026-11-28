@@ -1,4 +1,4 @@
-.graph { background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; padding: 12px 12px 8px; }
+.graph { background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 12px 8px; }
 .graph-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px 16px; flex-wrap: wrap; margin-top: 4px; font-size: 12px; color: var(--muted); }
 .graph-foot strong { color: var(--fg); font-weight: 600; }
 .legend { display: inline-flex; align-items: center; gap: 4px; }
@@ -20,7 +20,7 @@
 }
 /* the weekday labels stay put when the graph is wider than its card and scrolls sideways (it opens at the latest weeks) */
 .scroll { overscroll-behavior-x: contain; padding-left: 0; margin-left: 0; }
-.days { position: sticky; left: 0; z-index: 1; background: var(--canvas); box-shadow: 6px 0 0 var(--canvas);
+.days { position: sticky; left: 0; z-index: 1; background: var(--well-solid); box-shadow: 6px 0 0 var(--well-solid);
   display: flex; flex-direction: column; gap: 4px; padding-top: 19px; width: 24px; flex: none; font-size: 11px; color: var(--muted); }
 .days span { height: var(--s); line-height: var(--s); }
 .months { display: flex; gap: 4px; height: 15px; margin-bottom: 4px; font-size: 11px; color: var(--muted); }

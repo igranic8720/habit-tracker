@@ -1,7 +1,7 @@
 .lp-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .lp-select {
   flex: 1 1 140px; min-width: 0; height: 36px; padding: 0 30px 0 12px; font: inherit; font-weight: 600; color: var(--fg); cursor: pointer;
-  background-color: var(--btn); border: 1px solid var(--btn-border); border-radius: 6px;
+  background-color: var(--btn); border: 1px solid var(--btn-border); border-radius: var(--radius);
   background-position: right 12px center;
 }
 .lp-select:hover { background-color: var(--btn-hover); }

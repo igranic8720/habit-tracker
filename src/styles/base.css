@@ -1,13 +1,45 @@
 /* reset, page background and the small utilities every component shares */
 * { box-sizing: border-box; }
 h1, h2, h3, p { margin: 0; }
-html { background: var(--canvas); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+html { background: #000; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 body { margin: 0; height: 100vh; height: 100dvh; overflow: hidden; padding: 16px 24px; color: var(--fg); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
-button { font-family: inherit; }
+button, input, select, textarea { font-family: inherit; }
+/* ivangranic.ca: every bit of text has a soft shadow, so it reads on the grain behind the see-through cards */
+* { text-shadow: 1px 1px 3px rgba(0, 0, 0, .6); }
+a { color: var(--fg); font-weight: 500; text-decoration: none; }
+a:hover { color: var(--accent); }
+
+/* the page background, the same as ivangranic.ca: a pale cyan glow fading to black, with moving paper grain over it.
+   Both layers are fixed behind everything (the cards sit on top). Reduced motion: the grain stays still. */
+body::before {
+  content: ''; position: fixed; inset: -150px; z-index: -2; pointer-events: none;
+  background: radial-gradient(ellipse at center, #b3faff, #000000);
+}
+body::after {
+  content: ''; position: fixed; top: -110%; left: -50%; width: 300%; height: 300%; z-index: -1; pointer-events: none;
+  background-image: url(/paper-pattern2.png); opacity: .6; animation: grain 8s steps(5) infinite;
+}
+@keyframes grain {
+  0%, 100% { transform: translate(0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%); }
+  70% { transform: translateY(15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+@media (prefers-reduced-motion: reduce) { body::after { animation: none; } }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* every box: a GitHub-style card */
-.surface { background: var(--subtle); border: 1px solid var(--border); border-radius: 6px; }
+/* every box: a card in the ivangranic.ca style: black and a little see-through, square, no border; it rises in as the page opens */
+.surface { background: var(--card); border: 0; border-radius: var(--radius); animation: spawn-in .6s ease backwards; }
+@keyframes spawn-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .surface { animation: none; } }
+/* the accent bar down the left of a card (the header, a habit in its own colour) */
+.accent-bar { border-left: 3px solid var(--accent); }
 
 /* a small round marker in the colour of the habit / plan around it */
 .dot { display: inline-block; width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--on); vertical-align: 1px; }

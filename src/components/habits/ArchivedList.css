@@ -1,5 +1,5 @@
 .archived { padding: 16px 20px 8px; }
-.archived h2 { margin: 0 0 8px; font-size: 14px; font-weight: 600; }
+.archived h2 { margin: 0 0 8px; font-size: 15px; font-weight: 600; letter-spacing: .02em; }
 .archived ul { list-style: none; margin: 0; padding: 0; }
 .archived li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border-muted); }
 .a-name { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -10,3 +10,5 @@
   .archived li { flex-wrap: wrap; gap: 8px 12px; }
   .a-meta { order: 3; flex-basis: 100%; }
 }
+/* each archived habit keeps its colour down the left */
+.archived li { border-left: 3px solid var(--on); padding-left: 12px; }

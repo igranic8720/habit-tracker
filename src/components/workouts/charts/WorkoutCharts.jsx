@@ -19,7 +19,7 @@ export default function WorkoutCharts({ habit, year }) {
   const asRow = (key) => (r) => ({ from: r.from, to: r.to, value: r.future ? null : r[key] })
   return (
     <div className="habit-color" data-color={habitColor(habit)} style={{ display: 'contents' }}>
-      <Panel title={<>Workouts per week · {year}</>} label={`Workouts per week ${year}`}>
+      <Panel title={`Workouts per week · ${year}`} label={`Workouts per week ${year}`}>
         <BarChart
           accent
           rows={rows.map(asRow('workouts'))}

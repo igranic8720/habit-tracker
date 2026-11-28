@@ -1,14 +1,27 @@
-.subtabs { display: flex; border: 1px solid var(--btn-border); border-radius: 6px; overflow: hidden; background: var(--btn); }
-.subtabs a { flex: 1 1 0; min-width: 0; padding: 6px 12px; text-align: center; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; white-space: nowrap; transition: background-color .15s; }
-.subtabs a + a { border-left: 1px solid var(--btn-border); }
-.subtabs a:hover { background: var(--btn-hover); color: var(--fg); }
-.subtabs a.on { color: var(--fg); background: var(--btn-hover); }
+/* a page's sections, in the same style as the page tabs (PageNav.css): a dark recessed strip of equal tabs, each with its mark;
+   the open one is lit (aqua mark, bright text, a faint aqua tint and an aqua line under it) */
+.subtabs { display: flex; gap: 4px; padding: 4px; background: var(--card); border: 1px solid var(--border-muted); }
+.subtabs a {
+  position: relative; flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px;
+  font-size: 13px; font-weight: 600; letter-spacing: .02em; color: var(--muted); white-space: nowrap; transition: color .2s, background-color .2s;
+}
+.subtabs-icon { font-size: 15px; transition: color .2s; }
+.subtabs a::after {
+  content: ''; position: absolute; left: 12px; right: 12px; bottom: 0; height: 2px; background: var(--accent);
+  transform: scaleX(0); transition: transform .25s ease;
+}
+.subtabs a:hover { color: var(--fg); background: var(--btn); }
+.subtabs a:hover::after { transform: scaleX(.35); opacity: .6; }
+.subtabs a.on { color: var(--fg); background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.subtabs a.on .subtabs-icon { color: var(--accent); }
+.subtabs a.on::after { transform: scaleX(1); opacity: 1; }
 .subtabs a:focus-visible { outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .subtabs a::after { transition: none; } }
 
 /* tabs (or whole tab bars) that only exist where the page is one column: there they stand in for the second column */
 .subtabs a.phone-only, .subtabs.phone-only { display: none; }
 @media (max-width: 900px), (max-height: 500px) {
-  .subtabs a.phone-only { display: block; }
+  .subtabs a.phone-only { display: flex; }
   .subtabs.phone-only { display: flex; }
 }
 

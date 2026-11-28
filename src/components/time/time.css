@@ -1,4 +1,4 @@
-.time-select, .time-input { font: inherit; color: var(--fg); background: var(--canvas); border: 1px solid var(--btn-border); border-radius: 6px; padding: 5px 10px; min-width: 0; }
+.time-select, .time-input { font: inherit; color: var(--fg); background: var(--canvas); border: 1px solid var(--btn-border); border-radius: var(--radius); padding: 5px 10px; min-width: 0; }
 .time-select { padding-right: 28px; max-width: 100%; }
 
 .day-nav { display: flex; align-items: center; gap: 8px; }
@@ -30,13 +30,13 @@
 }
 
 /* the month's box: the same as the year graph's (canvas background, border, a little padding) */
-.cal-box { margin-top: 8px; padding: 8px 10px 6px; background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; }
+.cal-box { margin-top: 8px; padding: 8px 10px 6px; background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); }
 .cal-box .cal { margin-top: 0; }
 .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-top: 8px; }
 .cal-dow { text-align: center; font-size: 11px; color: var(--muted); }
 .cal-day {
   position: relative; aspect-ratio: 1; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
-  padding: 2px; font: inherit; color: var(--fg); background: color-mix(in srgb, var(--fg) 6%, var(--cell)); border: 0; /* (a touch of the text colour: it shows on the card in dark mode too) */ border-radius: 6px; cursor: pointer; transition: background-color .15s;
+  padding: 2px; font: inherit; color: var(--fg); background: color-mix(in srgb, var(--fg) 6%, var(--cell)); border: 0; /* (a touch of the text colour: it shows on the card in dark mode too) */ border-radius: var(--radius); cursor: pointer; transition: background-color .15s;
 }
 /* time tracked: the same green steps as the year graph (white numbers on the darker two) */
 .cal-day[data-level='1'] { background: color-mix(in srgb, var(--hc-green) 35%, var(--cell)); }
@@ -51,20 +51,20 @@
 .cal-day:disabled { opacity: .35; cursor: default; }
 /* something on your calendar: blue dots under the date (blue like calendar events everywhere), clear of the line below */
 .cal-evs { display: inline-flex; align-items: center; gap: 2px; height: 6px; line-height: 1; }
-.cal-evs i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-.cal-evs b { font-size: 9px; font-weight: 700; color: var(--accent); }
-.cal-day.has-ev { box-shadow: inset 0 -3px 0 var(--accent); } /* and a blue edge along the bottom of the day, like the dots */
-.cal-day.cal-today.has-ev { box-shadow: inset 0 -4px 0 var(--accent), inset 0 0 0 2px var(--fg); } /* (the first shadow is drawn on top: the line over the ring) */
-.cal-day.cal-future.has-ev { box-shadow: inset 0 -3px 0 var(--accent), inset 0 0 0 1px var(--border-muted); }
+.cal-evs i { width: 6px; height: 6px; border-radius: 50%; background: var(--event); }
+.cal-evs b { font-size: 9px; font-weight: 700; color: var(--event); }
+.cal-day.has-ev { box-shadow: inset 0 -3px 0 var(--event); } /* and a blue edge along the bottom of the day, like the dots */
+.cal-day.cal-today.has-ev { box-shadow: inset 0 -4px 0 var(--event), inset 0 0 0 2px var(--fg); } /* (the first shadow is drawn on top: the line over the ring) */
+.cal-day.cal-future.has-ev { box-shadow: inset 0 -3px 0 var(--event), inset 0 0 0 1px var(--border-muted); }
 .cal-key { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 8px 0 0; padding: 0; font-size: 12px; color: var(--muted); }
 .cal-key li { display: inline-flex; align-items: center; gap: 6px; }
-.cal-key-sw { width: 12px; height: 12px; border-radius: 3px; background: color-mix(in srgb, var(--hc-green) 55%, var(--cell)); }
+.cal-key-sw { width: 12px; height: 12px; border-radius: var(--radius); background: color-mix(in srgb, var(--hc-green) 55%, var(--cell)); }
 .cal-num { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .cal-ms { font-size: 10px; line-height: 1; min-height: 10px; font-variant-numeric: tabular-nums; }
 
 .dbars { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 3px; height: 120px; margin-top: 8px; }
 .dbar { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 3px; padding: 0; min-height: 44px; background: none; border: 0; border-bottom: 1px solid var(--border); cursor: pointer; color: var(--muted); font: inherit; }
-.dbar-fill { display: block; width: 100%; min-height: 0; background: var(--accent); border-radius: 3px 3px 0 0; opacity: .8; }
+.dbar-fill { display: block; width: 100%; min-height: 0; background: var(--accent); border-radius: var(--radius); opacity: .8; }
 .dbar.dbar-sel .dbar-fill, .dbar:hover .dbar-fill { opacity: 1; }
 .dbar.dbar-sel { color: var(--fg); font-weight: 600; }
 .dbar-day { font-size: 10px; }
@@ -77,7 +77,7 @@
 
 /* start / stop on a habit or workout */
 .timer-btn { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.timer-btn.running { color: #fff; background: var(--accent); border-color: var(--accent); font-weight: 600; }
+.timer-btn.running { color: #000; background: var(--accent); border-color: var(--accent); font-weight: 600; text-shadow: none; } /* (black on aqua) */
 .timer-btn:disabled { opacity: .5; cursor: default; }
 .today-row .timer-btn { height: 36px; flex: none; min-width: 150px; } /* Start timer and Stop · 0:04:04 take the same room, so the note box keeps its size */
 @media (max-width: 768px) {
@@ -85,7 +85,7 @@
 }
 
 .cal-allday { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.cal-allday li { padding: 2px 8px; font-size: 12px; border-radius: 999px; border: 1px solid var(--border); background: color-mix(in srgb, var(--accent) 12%, var(--canvas)); }
+.cal-allday li { padding: 2px 8px; font-size: 12px; border-radius: var(--radius); border: 1px solid var(--border); background: color-mix(in srgb, var(--event) 12%, var(--canvas)); }
 
 /* connect / sync the Microsoft calendar */
 .cal-connect { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
@@ -102,14 +102,14 @@
 /* the day's calendar events, as a list above the timeline */
 .oncal-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .oncal-item {
-  display: flex; align-items: flex-start; gap: 14px; padding: 10px 12px; border-radius: 6px;
-  border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--canvas));
+  display: flex; align-items: flex-start; gap: 14px; padding: 10px 12px; border-radius: var(--radius);
+  border-left: 4px solid var(--event); background: color-mix(in srgb, var(--event) 10%, var(--canvas));
 }
 .oncal-when { flex: none; min-width: 84px; display: flex; flex-direction: column; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .oncal-when small { font-size: 12px; font-weight: 400; color: var(--muted); }
 .oncal-title { flex: 1; min-width: 0; font-size: 17px; overflow-wrap: anywhere; }
-.oncal-item.now { background: color-mix(in srgb, var(--accent) 22%, var(--canvas)); }
-.oncal-item.now .oncal-when { color: var(--accent); }
+.oncal-item.now { background: color-mix(in srgb, var(--event) 22%, var(--canvas)); }
+.oncal-item.now .oncal-when { color: var(--event); }
 .oncal-item.past { opacity: .55; border-left-color: var(--border); background: var(--canvas); }
 
 .oncal-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -132,7 +132,7 @@
 .tl-sum .day-total { flex: none; margin: 0; white-space: nowrap; }
 .tl-chips { flex: 1; min-width: 0; list-style: none; margin: 0; padding: 0 16px 0 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
   mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); } /* more than fit: they fade out at the edge and scroll sideways */
-.tl-chips li { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 13px; white-space: nowrap; background: color-mix(in srgb, var(--on) 14%, var(--canvas)); border: 1px solid color-mix(in srgb, var(--on) 35%, transparent); }
+.tl-chips li { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: var(--radius); font-size: 13px; white-space: nowrap; background: color-mix(in srgb, var(--on) 14%, var(--canvas)); border: 1px solid color-mix(in srgb, var(--on) 35%, transparent); }
 .tl-chips li span { color: var(--muted); font-variant-numeric: tabular-nums; }
 .tl-run { flex: none; display: inline-flex; gap: 6px; }
 
@@ -141,11 +141,11 @@
 .tl2.two-lanes .tl2-heads { grid-template-columns: 1fr 1fr; gap: 8px; }
 .tl2-grid {
   position: relative; margin-left: 52px; height: 720px; /* a constant 30px an hour, on every screen */
-  border: 1px solid var(--border); border-radius: 8px; background: var(--canvas);
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--canvas);
 }
 .tl2-night { position: absolute; left: 0; right: 0; background: color-mix(in srgb, var(--fg) 4%, transparent); pointer-events: none; }
-.tl2-night:first-child { border-radius: 8px 8px 0 0; }
-.tl2-night + .tl2-night { border-radius: 0 0 8px 8px; }
+.tl2-night:first-child { border-radius: var(--radius); }
+.tl2-night + .tl2-night { border-radius: var(--radius); }
 .tl2-hour { position: absolute; left: 0; right: 0; border-top: 1px solid color-mix(in srgb, var(--border) 55%, transparent); pointer-events: none; }
 .tl2-hour.major { border-top-color: var(--border); }
 .tl2-hour span { position: absolute; right: calc(100% + 8px); top: -7px; font-size: 11px; line-height: 14px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -158,7 +158,7 @@
 .tl2-block {
   position: absolute; left: 0; right: 0; box-sizing: border-box; z-index: 1; overflow: hidden; padding: 1px 6px 1px 8px;
   display: flex; flex-flow: row wrap; align-content: flex-start; align-items: baseline; column-gap: 6px;
-  font-size: 12px; line-height: 14px; color: var(--fg); border-radius: 5px;
+  font-size: 12px; line-height: 14px; color: var(--fg); border-radius: var(--radius);
   background: color-mix(in srgb, var(--on) 22%, var(--canvas)); border: 1px solid color-mix(in srgb, var(--on) 45%, transparent); border-left: 4px solid var(--on);
 }
 .tl2-block strong { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
@@ -166,7 +166,7 @@
 .tl2-dur { flex: none; font-style: normal; font-size: 11px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .tl2-range { flex-basis: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
 .tl2-block.running { background-image: repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in srgb, var(--on) 18%, transparent) 6px 12px); border-style: dashed; border-left-style: solid; }
-.tl2-block.event { --on: var(--accent); }
+.tl2-block.event { --on: var(--event); }
 .tl2-block.event.declined { opacity: .5; }
 .tl2-block.event.declined strong { text-decoration: line-through; }
 .tl2-block.short { flex-wrap: nowrap; align-items: center; padding-top: 0; padding-bottom: 0; }
@@ -177,19 +177,19 @@
 button.tl2-block { font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
 .tl2-block.event:hover { background: color-mix(in srgb, var(--on) 32%, var(--canvas)); }
 .tl2-block.event:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; z-index: 3; }
-.tl2-block.event.open { z-index: 3; box-shadow: 0 0 0 2px var(--accent); }
+.tl2-block.event.open { z-index: 3; box-shadow: 0 0 0 2px var(--event); }
 .tl2-pop {
-  position: absolute; left: 6px; right: 6px; z-index: 6; padding: 6px; border-radius: 8px;
+  position: absolute; left: 6px; right: 6px; z-index: 6; padding: 6px; border-radius: var(--radius);
   background: var(--overlay); border: 1px solid var(--border); box-shadow: var(--shadow);
 }
 .tl2-pop .oncal-item { padding-right: 34px; }
-.tl2-pop-x { position: absolute; top: 10px; right: 10px; z-index: 1; display: inline-flex; padding: 4px; color: var(--muted); background: none; border: 0; border-radius: 4px; cursor: pointer; }
+.tl2-pop-x { position: absolute; top: 10px; right: 10px; z-index: 1; display: inline-flex; padding: 4px; color: var(--muted); background: none; border: 0; border-radius: var(--radius); cursor: pointer; }
 .tl2-pop-x:hover { color: var(--fg); background: color-mix(in srgb, var(--fg) 8%, transparent); }
 
 /* now */
 .tl2-now { position: absolute; left: -6px; right: 0; z-index: 2; border-top: 2px solid #e5534b; pointer-events: none; }
 .tl2-now::before { content: ''; position: absolute; left: -4px; top: -6px; width: 10px; height: 10px; border-radius: 50%; background: #e5534b; }
-.tl2-now span { position: absolute; right: calc(100% + 10px); top: -9px; padding: 0 4px; font-size: 11px; font-weight: 700; line-height: 16px; color: #fff; background: #e5534b; border-radius: 4px; white-space: nowrap; }
+.tl2-now span { position: absolute; right: calc(100% + 10px); top: -9px; padding: 0 4px; font-size: 11px; font-weight: 700; line-height: 16px; color: #fff; background: #e5534b; border-radius: var(--radius); white-space: nowrap; }
 
 .tl-sessions { margin-top: 8px; }
 .tl-sessions summary { cursor: pointer; color: var(--muted); }
@@ -198,7 +198,7 @@ button.tl2-block { font: inherit; font-size: 12px; text-align: left; cursor: poi
 
 /* the agenda */
 .agenda-past { margin: 4px 0 8px; padding: 4px 0; font: inherit; font-size: 13px; color: var(--link); background: none; border: 0; cursor: pointer; }
-.oncal-soon { color: var(--accent); font-weight: 600; }
+.oncal-soon { color: var(--event); font-weight: 600; }
 
 @media (max-width: 768px) {
   .tl2-grid { margin-left: 46px; }
@@ -252,7 +252,7 @@ button.tl2-block { font: inherit; font-size: 12px; text-align: left; cursor: poi
 .month-name { min-width: 116px; text-align: center; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; } /* a steady width, so the arrows don't move between months */
 
 /* the line of shame under the year's head: red-edged while there's something to answer for, plain once you're on track */
-.ty-nag { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 6px 10px; font-size: 14px; font-weight: 600; border-radius: 6px; border-left: 3px solid; }
+.ty-nag { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 6px 10px; font-size: 14px; font-weight: 600; border-radius: var(--radius); border-left: 3px solid; }
 .ty-nag.bad { color: var(--fg); background: color-mix(in srgb, var(--danger) 10%, transparent); border-left-color: var(--danger); }
 .ty-nag.bad .anticon { color: var(--danger); }
 .ty-nag.ok { color: var(--muted); font-weight: 400; background: var(--canvas); border-left-color: var(--border); }
@@ -261,9 +261,11 @@ button.tl2-block { font: inherit; font-size: 12px; text-align: left; cursor: poi
 /* a checklist habit ticked off: a one-line marker at the moment it was ticked, in its colour (a moment, not a span of time) */
 .tl2-tick {
   position: absolute; height: 18px; padding: 0 6px; display: flex; align-items: center; gap: 5px; min-width: 0;
-  font-size: 11px; line-height: 16px; color: var(--fg); background: var(--canvas); border: 1px solid var(--on); border-radius: 999px;
+  font-size: 11px; line-height: 16px; color: var(--fg); background: var(--card-solid); border: 1px solid var(--on); border-radius: var(--radius);
   box-shadow: 0 1px 2px color-mix(in srgb, var(--fg) 12%, transparent); z-index: 1;
 }
 .tl2-tick .anticon { flex: none; color: var(--on); font-size: 12px; }
 .tl2-tick strong { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 .tl2-tick:hover { z-index: 3; box-shadow: var(--shadow); }
+/* each tracked session in the day's list has its habit's / plan's colour down the left, like its block on the timeline */
+.time-list li[data-color] { border-left: 3px solid var(--on); padding-left: 8px; }

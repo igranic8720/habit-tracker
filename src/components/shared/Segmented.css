@@ -1,7 +1,14 @@
-.seg { display: inline-flex; border: 1px solid var(--btn-border); border-radius: 6px; overflow: hidden; background: var(--btn); }
-.seg button { font: inherit; font-size: 12px; font-weight: 600; padding: 4px 12px; color: var(--muted); background: var(--btn); border: 0; cursor: pointer; }
-.seg button + button { border-left: 1px solid var(--btn-border); }
-.seg button[aria-pressed='true'] { color: var(--fg); background: var(--btn-hover); }
+/* a small either/or switch (Top set | Est. 1RM), in the page tabs' style at a smaller size: a recessed strip, the chosen one lit */
+.seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--canvas); border: 1px solid var(--border-muted); }
+.seg button {
+  position: relative; font: inherit; font-size: 12px; font-weight: 600; letter-spacing: .02em; padding: 4px 10px; color: var(--muted);
+  background: none; border: 0; cursor: pointer; transition: color .2s, background-color .2s;
+}
+.seg button::after { content: ''; position: absolute; left: 8px; right: 8px; bottom: 0; height: 2px; background: var(--accent); transform: scaleX(0); transition: transform .25s ease; }
+.seg button:hover { color: var(--fg); background: var(--btn); }
+.seg button[aria-pressed='true'] { color: var(--fg); background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.seg button[aria-pressed='true']::after { transform: scaleX(1); }
+@media (prefers-reduced-motion: reduce) { .seg button::after { transition: none; } }
 
 @media (pointer: coarse) {
   .seg button { min-height: 44px; padding: 6px 16px; font-size: 14px; }

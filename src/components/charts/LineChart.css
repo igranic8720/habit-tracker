@@ -3,7 +3,7 @@
 .lc-plot { touch-action: pan-y; }
 .lc-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .lc-svg polyline { fill: none; stroke: var(--on, var(--green)); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.lc-pt { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--on, var(--green)); box-shadow: 0 0 0 2px var(--subtle); pointer-events: none; }
+.lc-pt { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--on, var(--green)); box-shadow: 0 0 0 2px var(--card-solid); pointer-events: none; }
 .lc-pt.hover { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
 .lc-x { position: relative; height: 14px; margin: 6px 0 0 42px; font-size: 11px; color: var(--muted); }
 .lc-x span { position: absolute; white-space: nowrap; }
