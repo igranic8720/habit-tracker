@@ -10,7 +10,7 @@ import { exerciseNames } from '../lib/workouts.js'
 
 // the Workouts page: your own graphs pinned left; on the right Today / Plans / Cycles. Phones (one column): the graphs are a
 // fourth tab, Graphs
-export default function WorkoutsPage({ w, diary, time, year, sub, taken }) {
+export default function WorkoutsPage({ w, diary, time, year, sub, taken, since }) {
   if (w.status === 'loading') return null
   if (w.status === 'failed') {
     return (
@@ -37,7 +37,7 @@ export default function WorkoutsPage({ w, diary, time, year, sub, taken }) {
         ) : sub === 'cycles' ? (
           <CyclesView w={w} />
         ) : (
-          <WorkoutDiary w={w} diary={diary} time={time} year={year} />
+          <WorkoutDiary w={w} diary={diary} time={time} year={year} since={since} />
         )}
       </div>
     </div>

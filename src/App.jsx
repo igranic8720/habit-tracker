@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import HeaderStats from './components/header/HeaderStats.jsx'
 import PageHeader from './components/header/PageHeader.jsx'
 import GlanceStats from './components/header/GlanceStats.jsx'
+import Pomodoro from './components/header/Pomodoro.jsx'
 import WorkoutStats from './components/header/WorkoutStats.jsx'
 import Panel from './components/shared/Panel.jsx'
 import { useDayRollover } from './hooks/useDayRollover.js'
@@ -164,13 +165,16 @@ export default function App() {
         {page === 'workouts' ? (
           <WorkoutStats log={w.status === 'ready' ? diary : null} year={year} />
         ) : page === 'glance' ? (
-          <GlanceStats map={timeByDay} habits={habits.filter((h) => !h.archived)} workout={w.log[todayKey]} />
+          <>
+            <Pomodoro />
+            <GlanceStats map={timeByDay} habits={habits.filter((h) => !h.archived)} workout={w.log[todayKey]} />
+          </>
         ) : (
           <HeaderStats habits={habits.filter((h) => !h.archived)} year={year} />
         )}
       </PageHeader>
       {page === 'workouts' ? (
-        <WorkoutsPage w={w} diary={diary} time={time} year={year} sub={sub} taken={claims} />
+        <WorkoutsPage w={w} diary={diary} time={time} year={year} sub={sub} taken={claims} since={since} />
       ) : page === 'glance' ? (
         <GlancePage
           sub={sub}
@@ -188,7 +192,7 @@ export default function App() {
           onHabitCheck={(h) => cl.patch(h.id, toggleCheck(h, todayKey))}
         />
       ) : (
-        <HabitsPage habits={habits} year={year} sub={sub} time={time} taken={claims} change={change} patch={patch} add={() => hb.add([...claims.keys()])} addCheck={() => cl.add([...claims.keys()])} remove={remove} />
+        <HabitsPage habits={habits} year={year} sub={sub} time={time} taken={claims} since={since} change={change} patch={patch} add={() => hb.add([...claims.keys()])} addCheck={() => cl.add([...claims.keys()])} remove={remove} />
       )}
     </main>
   )

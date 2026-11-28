@@ -14,7 +14,7 @@
   --btn: rgba(255, 255, 255, .05); --btn-hover: rgba(255, 255, 255, .1); --btn-border: rgba(255, 255, 255, .1);
   --primary: #238636; --primary-hover: #2ea043;
   --danger: #ff5c57;
-  --cell: rgba(255, 255, 255, .06); --cell-border: rgba(255, 255, 255, .04);
+  --cell: rgba(255, 255, 255, .1); --cell-border: rgba(255, 255, 255, .06); /* an empty day: clearly a square, even on a black card */
   --green: #26a641; --blue: #388bfd; --purple: #a371f7; --orange: #db6d28; --pink: #db61a2;
   --shadow: 0 6px 30px rgba(0, 0, 0, .75);
   --radius: 0; /* square, like the site's cards */

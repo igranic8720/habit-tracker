@@ -20,7 +20,7 @@ const api = await serve((req, res) => (req.url.startsWith('/api/workouts') ? wor
 after(() => api.close())
 
 const good = () => ({
-  plans: [{ id: 'p1', name: 'Push', color: 'orange', exercises: [{ exercise: 'Bench press', sets: 3, reps: 8, weight: 135 }] }],
+  plans: [{ id: 'p1', name: 'Push', color: 'orange', exercises: [{ exercise: 'Bench press', sets: 3, reps: 8, weight: 135, rest: 90 }] }],
   cycles: [{ id: 'c1', name: 'PPL', steps: ['p1'] }],
   active: 'c1',
   log: { '2026-11-25': { name: 'Push', plan: 'p1', cycle: 'c1', step: 0, entries: [{ exercise: 'Bench press', sets: [{ weight: 135, reps: 8, done: true }] }], note: 'ok' } },
@@ -45,11 +45,11 @@ test('round trip, and a copy of each file kept once a day before it changes', as
   assert.deepEqual({ plans: back.plans, cycles: back.cycles, active: back.active, log: back.log }, good())
   const today = new Date().toISOString().slice(0, 10)
   const kept = JSON.parse(fs.readFileSync(path.join(DIR, 'backups', `log.${today}.json`), 'utf8'))
-  assert.equal(kept['2026-11-25'].entries[0].exercise, 'handstand') // the version from before the change
+  assert.equal(kept['2026-11-25'].exercises[0].exercise, 'handstand') // the version from before the change
   const again = good()
   again.log['2026-11-25'].note = 'changed'
   assert.equal((await api.post('/api/workouts', { ...again, version: back.version })).status, 200)
-  assert.equal(JSON.parse(fs.readFileSync(path.join(DIR, 'backups', `log.${today}.json`), 'utf8'))['2026-11-25'].entries[0].exercise, 'handstand') // today's copy isn't replaced
+  assert.equal(JSON.parse(fs.readFileSync(path.join(DIR, 'backups', `log.${today}.json`), 'utf8'))['2026-11-25'].exercises[0].exercise, 'handstand') // today's copy isn't replaced
 })
 
 test('a save from an out-of-date copy is refused (409)', async () => {
@@ -106,20 +106,96 @@ test('tracked time is kept with its workout day, and bad time is refused', async
   assert.equal((await api.post('/api/workouts', { ...withTime([{ id: 'x', start: 1, end: 2 }, { id: 'x', start: 3, end: 4 }]), version })).status, 400)
 })
 
-test('a plan’s rest time and the running rest are saved; silly values are refused', async () => {
-  const withRest = (planRest, dayRest) => {
-    const g = good()
-    g.plans[0].rest = planRest
-    if (dayRest !== undefined) g.log['2026-11-25'].rest = dayRest
-    return g
-  }
+test('each plan exercise has its own rest; a plan-wide rest is refused; the running rest is saved', async () => {
   let { version } = await api.get('/api/workouts')
-  assert.equal((await api.post('/api/workouts', { ...withRest(90, { start: 1000, end: 91000 }), version })).status, 200)
+  const g = good()
+  g.log['2026-11-25'].rest = { start: 1000, end: 91000 }
+  assert.equal((await api.post('/api/workouts', { ...g, version })).status, 200)
   const back = await api.get('/api/workouts')
-  assert.equal(back.plans[0].rest, 90)
+  assert.equal(back.plans[0].exercises[0].rest, 90)
+  assert.equal(back.plans[0].rest, undefined)
   assert.deepEqual(back.log['2026-11-25'].rest, { start: 1000, end: 91000 })
   ;({ version } = back)
-  for (const [planRest, dayRest] of [[0, undefined], [1000, undefined], [1.5, undefined], ['90', undefined], [90, { start: 5, end: 1 }], [90, { start: 0, end: 2 * 3600000 }], [90, null]]) {
-    assert.equal((await api.post('/api/workouts', { ...withRest(planRest, dayRest), version })).status, 400, JSON.stringify([planRest, dayRest]))
+  const bad = {
+    'a plan-wide rest': (d) => (d.plans[0].rest = 90),
+    'an exercise with no rest': (d) => delete d.plans[0].exercises[0].rest,
+    'an exercise rest of 0': (d) => (d.plans[0].exercises[0].rest = 0),
+    'an exercise rest of 1.5': (d) => (d.plans[0].exercises[0].rest = 1.5),
+    'a running rest ending first': (d) => (d.log['2026-11-25'].rest = { start: 5, end: 1 }),
+    'a running rest over an hour': (d) => (d.log['2026-11-25'].rest = { start: 0, end: 2 * 3600000 }),
+    'a running rest of null': (d) => (d.log['2026-11-25'].rest = null),
+  }
+  for (const [name, spoil] of Object.entries(bad)) {
+    const d = good()
+    spoil(d)
+    assert.equal((await api.post('/api/workouts', { ...d, version })).status, 400, name)
+  }
+})
+
+test('timed exercises and each exercise’s rest are saved; bad ones are refused', async () => {
+  const g = good()
+  g.plans[0].exercises.push({ exercise: 'Plank', sets: 3, secs: 45, rest: 60 }, { exercise: 'Deadlift', sets: 1, reps: 5, rest: 180 })
+  g.log['2026-11-25'].entries.push({ exercise: 'Plank', rest: 60, sets: [{ weight: 0, reps: 0, secs: 45, done: true }] })
+  let { version } = await api.get('/api/workouts')
+  assert.equal((await api.post('/api/workouts', { ...g, version })).status, 200)
+  const back = await api.get('/api/workouts')
+  assert.deepEqual(back.plans[0].exercises.slice(1), [{ exercise: 'Plank', sets: 3, secs: 45, rest: 60 }, { exercise: 'Deadlift', sets: 1, reps: 5, rest: 180 }])
+  assert.deepEqual(back.log['2026-11-25'].entries[1], { exercise: 'Plank', rest: 60, sets: [{ weight: 0, reps: 0, secs: 45, done: true }] })
+  ;({ version } = back)
+  const bad = {
+    'both reps and a hold': (d) => d.plans[0].exercises.push({ exercise: 'X', sets: 1, reps: 5, secs: 30, rest: 60 }),
+    'neither reps nor a hold': (d) => d.plans[0].exercises.push({ exercise: 'X', sets: 1, rest: 60 }),
+    'a hold too short': (d) => d.plans[0].exercises.push({ exercise: 'X', sets: 1, secs: 2, rest: 60 }),
+    'a hold over an hour': (d) => d.plans[0].exercises.push({ exercise: 'X', sets: 1, secs: 3601, rest: 60 }),
+    'an exercise rest too long': (d) => d.plans[0].exercises.push({ exercise: 'X', sets: 1, reps: 5, rest: 901 }),
+    'an exercise rest as text': (d) => d.plans[0].exercises.push({ exercise: 'X', sets: 1, reps: 5, rest: '90' }),
+    'a logged hold negative': (d) => d.log['2026-11-25'].entries.push({ exercise: 'X', sets: [{ weight: 0, reps: 0, secs: -5 }] }),
+    'a logged rest of 0': (d) => d.log['2026-11-25'].entries.push({ exercise: 'X', rest: 0, sets: [] }),
+  }
+  for (const [name, spoil] of Object.entries(bad)) {
+    const d = good()
+    spoil(d)
+    assert.equal((await api.post('/api/workouts', { ...d, version })).status, 400, name)
+  }
+})
+
+test('climbs in plans and in the log are saved; bad ones are refused', async () => {
+  const g = good()
+  g.plans[0].exercises.push({ exercise: 'MoonBoard', sets: 6, grade: 'V5', rest: 180 }, { exercise: 'Project', sets: 1, grade: 'V17', rest: 300 })
+  g.log['2026-11-25'].entries.push({ exercise: 'MoonBoard', rest: 180, sets: [{ grade: 'V5', sent: true, done: true }, { grade: 'V6', sent: false, done: false }] })
+  let { version } = await api.get('/api/workouts')
+  assert.equal((await api.post('/api/workouts', { ...g, version })).status, 200)
+  const back = await api.get('/api/workouts')
+  assert.deepEqual(back.plans[0].exercises.slice(-2), [{ exercise: 'MoonBoard', sets: 6, grade: 'V5', rest: 180 }, { exercise: 'Project', sets: 1, grade: 'V17', rest: 300 }])
+  assert.deepEqual(back.log['2026-11-25'].entries.at(-1).sets, [{ grade: 'V5', sent: true, done: true }, { grade: 'V6', sent: false, done: false }])
+  ;({ version } = back)
+  const bad = {
+    'an unknown grade': (d) => d.plans[0].exercises.push({ exercise: 'MoonBoard', sets: 6, grade: 'V18', rest: 180 }),
+    'a Font grade (V-scale is stored)': (d) => d.plans[0].exercises.push({ exercise: 'MoonBoard', sets: 6, grade: '6C+', rest: 180 }),
+    'a climb with reps too': (d) => d.plans[0].exercises.push({ exercise: 'MoonBoard', sets: 6, grade: 'V5', reps: 5, rest: 180 }),
+    'a climb with a weight': (d) => d.plans[0].exercises.push({ exercise: 'MoonBoard', sets: 6, grade: 'V5', weight: 10, rest: 180 }),
+    'a logged climb without sent': (d) => d.log['2026-11-25'].entries.push({ exercise: 'MoonBoard', sets: [{ grade: 'V5', done: true }] }),
+    'a logged climb with sent as text': (d) => d.log['2026-11-25'].entries.push({ exercise: 'MoonBoard', sets: [{ grade: 'V5', sent: 'yes' }] }),
+    'a logged climb with reps': (d) => d.log['2026-11-25'].entries.push({ exercise: 'MoonBoard', sets: [{ grade: 'V5', sent: true, reps: 3 }] }),
+  }
+  for (const [name, spoil] of Object.entries(bad)) {
+    const d = good()
+    spoil(d)
+    assert.equal((await api.post('/api/workouts', { ...d, version })).status, 400, name)
+  }
+})
+
+test('a running time on is saved with the day, like the rest; bad ones are refused', async () => {
+  let { version } = await api.get('/api/workouts')
+  const g = good()
+  g.log['2026-11-25'].on = { start: 1000, end: 46000, i: 0, j: 0 }
+  assert.equal((await api.post('/api/workouts', { ...g, version })).status, 200)
+  const back = await api.get('/api/workouts')
+  assert.deepEqual(back.log['2026-11-25'].on, { start: 1000, end: 46000, i: 0, j: 0 })
+  ;({ version } = back)
+  for (const on of [{ start: 5, end: 1, i: 0, j: 0 }, { start: 0, end: 2 * 3600000, i: 0, j: 0 }, { start: 0, end: 10, i: -1, j: 0 }, { start: 0, end: 10, i: 0 }, null]) {
+    const d = good()
+    d.log['2026-11-25'].on = on
+    assert.equal((await api.post('/api/workouts', { ...d, version })).status, 400, JSON.stringify(on))
   }
 })

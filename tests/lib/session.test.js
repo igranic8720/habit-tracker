@@ -29,3 +29,11 @@ test('PRs: today’s heaviest ticked set of an exercise, when it beats every ear
   const best = { Squat: { weight: 140, reps: 8, done: true }, Row: { weight: 95, reps: 8, done: true } }
   assert.deepEqual(prIndexes(entries, (name) => best[name]), [1, -1])
 })
+
+test('climbs: a grade change carries to the problems not logged yet; whether one was sent never does', () => {
+  const C = (grade, sent, done) => ({ grade, sent, done })
+  const sets = [C('V5', false, false), C('V5', false, false), C('V5', false, false)]
+  assert.deepEqual(changeSet(sets, 0, { grade: 'V6' }).map((s) => s.grade), ['V6', 'V6', 'V6'])
+  const logged = changeSet(sets, 0, { sent: true, done: true })
+  assert.deepEqual(logged.map((s) => [s.sent, s.done]), [[true, true], [false, false], [false, false]])
+})

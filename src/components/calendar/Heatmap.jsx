@@ -79,9 +79,14 @@ export default function Heatmap({ habit, year, selected, onPick, colorOf, legend
           </span>
         )}
         {legend ?? (
-          <span className="legend" aria-hidden="true">
-            Not done <i className="lg" /> <i className="lg on" /> Done
-          </span>
+          <ul className="legend plan-legend" aria-label="Legend">
+            <li>
+              <i className="lg" /> Not done
+            </li>
+            <li>
+              <i className="lg on" /> Done
+            </li>
+          </ul>
         )}
       </div>
     </div>

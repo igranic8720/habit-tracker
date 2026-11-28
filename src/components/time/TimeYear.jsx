@@ -88,7 +88,7 @@ export default function TimeYear({ map, year, selected, onPick, since }) {
         selected={selected}
         onPick={onPick}
         openUntil={lastDay()}
-        openFrom={since > `${year}-01-01` ? since : undefined} // upcoming days open too (to see what's scheduled); nothing can be ticked there
+        openFrom={since ?? todayKey} /* (nothing recorded yet: no day before today counts) */ // upcoming days open too (to see what's scheduled); nothing can be ticked there
         levelOf={(k) => level(perDay.get(k) ?? 0)}
         tipOf={(k, label) => `${label}: ${perDay.has(k) ? duration(perDay.get(k)) : k > todayKey ? 'upcoming' : 'nothing tracked'}`}
         stat={<span><strong>{perDay.size}</strong> {perDay.size === 1 ? 'day' : 'days'} with time tracked</span>}

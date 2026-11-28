@@ -1,4 +1,4 @@
-// Production server: serves the built app (dist/) and the data API (/api/habit, /api/checklist, /api/workouts, /api/time, /api/calendar). No dependencies beyond Node.
+// Production server: serves the built app (dist/) and the data API (/api/habit, /api/checklist, /api/workouts, /api/pomodoro, /api/time, /api/calendar). No dependencies beyond Node.
 //   npm run build && npm start
 // Settings (environment variables):
 //   PORT            port to listen on            (default 3000)
@@ -12,6 +12,7 @@ import { calendarApi } from './calendar.js'
 import { closeAll, eventsApi } from './events.js'
 import { checklistApi } from './checklist.js'
 import { habitApi } from './habits.js'
+import { pomodoroApi } from './pomodoro.js'
 import { timeApi } from './time.js'
 import { workoutApi } from './workouts.js'
 
@@ -29,6 +30,7 @@ const TYPES = {
   '.ico': 'image/x-icon',
   '.txt': 'text/plain; charset=utf-8',
   '.woff2': 'font/woff2',
+  '.wav': 'audio/wav',
 }
 
 if (!fs.existsSync(path.join(DIST, 'index.html'))) {
@@ -67,6 +69,7 @@ const server = http.createServer((req, res) => {
     if (pathname === '/api/habit') return habitApi(req, res)
     if (pathname === '/api/checklist') return checklistApi(req, res)
     if (pathname === '/api/workouts') return workoutApi(req, res)
+    if (pathname === '/api/pomodoro') return pomodoroApi(req, res)
     if (pathname === '/api/time') return timeApi(req, res)
     if (pathname === '/api/calendar' || pathname.startsWith('/api/calendar/')) return calendarApi(req, res)
     if (pathname === '/api/events') return eventsApi(req, res)

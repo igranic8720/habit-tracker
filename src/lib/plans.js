@@ -1,29 +1,40 @@
 // workout plans (a named day of exercises) and cycles (plans in a repeating order)
 import { firstFree, newId, recolor } from './habits.js'
-import { hasSets, lastTime, topSet } from './workouts.js'
+import { durText, hasSets, lastTime, topSet } from './workouts.js'
 
 // each plan has a colour of its own (from the same 14 as habits; no habit or other plan uses it); a new plan takes the first free one
 // (also skipping colours in `taken`: the habits' colours, so no two items ever share one)
 export const nextColor = (plans, taken = []) => firstFree([...plans.map((p) => p.color), ...taken])
-export const newPlan = (plans = [], taken = []) => ({ id: newId(), name: '', color: nextColor(plans, taken), exercises: [{ exercise: '', sets: 3, reps: 8 }] })
+export const newPlan = (plans = [], taken = []) => ({ id: newId(), name: '', color: nextColor(plans, taken), exercises: [newExercise()] })
 // plans with no colour, or one from an earlier palette, get one when loaded
 export const withColors = recolor
 export const planColor = (plan) => plan?.color ?? 'gray' // a freestyle day, or a deleted plan: neutral grey, so it never looks like a plan
 export const newCycle = () => ({ id: newId(), name: '', steps: [] })
 
-export const planLine = (plan) => plan.exercises.map((e) => `${e.exercise} ${e.sets}×${e.reps}`).join(' · ') || 'No exercises yet'
+// a plan exercise is { exercise, sets, reps, rest }; timed, { exercise, sets, secs, rest } (a hold of that many seconds per set); or
+// a climb, { exercise, sets, grade, rest } (that many problems at a target grade, e.g. MoonBoard 6 × V5). Lifts and holds can have a
+// starting weight; rest is the seconds between its sets / problems (it runs the rest timer)
+const amountText = (e) => (e.grade ? `${e.sets} × ${e.grade}` : `${e.sets}×${e.secs ? durText(e.secs) : e.reps}`)
+export const planLine = (plan) => plan.exercises.map((e) => `${e.exercise} ${amountText(e)}`).join(' · ') || 'No exercises yet'
 
-// the rest between sets a plan can have, in seconds, and how they read (90 -> "1:30")
+// the rest between sets an exercise can have, in seconds, and how they read (90 -> "1:30"); a new exercise rests 1:30
 export const RESTS = [30, 45, 60, 75, 90, 120, 150, 180, 240, 300]
-export const restText = (s) => (s < 60 ? `${s}s` : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`)
+export const DEFAULT_REST = 90
+export const restText = durText
+export const newExercise = () => ({ exercise: '', sets: 3, reps: 8, rest: DEFAULT_REST })
+// how long a timed exercise's hold can be, in seconds
+export const HOLDS = [10, 15, 20, 30, 45, 60, 75, 90, 120, 150, 180, 240, 300]
 
-// today's entries for a plan: each exercise with its planned sets and reps, weight carried over from last time
-// (or the plan's starting weight). The sets start un-ticked: they count once you tick them.
+// today's entries for a plan: each exercise with its planned sets and reps (or, timed, the seconds to hold), weight carried over
+// from last time (or the plan's starting weight), and its rest (an exercise added during the workout has none: no rest timer). The sets start un-ticked: they count once you
+// tick them.
 export function sessionFromPlan(plan, diary, key) {
   return plan.exercises.map((ex) => {
+    if (ex.grade) return { exercise: ex.exercise, ...(ex.rest ? { rest: ex.rest } : {}), sets: Array.from({ length: ex.sets }, () => ({ grade: ex.grade, sent: false, done: false })) }
     const prev = lastTime(diary, ex.exercise, key)
-    const weight = prev ? topSet(prev).weight : (ex.weight ?? 0)
-    return { exercise: ex.exercise, sets: Array.from({ length: ex.sets }, () => ({ weight, reps: ex.reps, done: false })) }
+    const weight = prev ? (topSet(prev).weight ?? 0) : (ex.weight ?? 0)
+    const set = ex.secs ? { weight, reps: 0, secs: ex.secs, done: false } : { weight, reps: ex.reps, done: false }
+    return { exercise: ex.exercise, ...(ex.rest ? { rest: ex.rest } : {}), sets: Array.from({ length: ex.sets }, () => ({ ...set })) }
   })
 }
 

@@ -1,12 +1,15 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { DATA, DATE, ID, backup, dataApi, validSessions, versionOf, writeAtomic } from './storage.js'
+import { cyclesFromDisk, cyclesToDisk, logFromDisk, logToDisk, planFromDisk, planToDisk } from './diskformat.js'
 
 // Workouts live apart from habits, in data/workouts/:
-//   plans.json    named workout plans:   [{ id, name, color, rest (seconds between sets), exercises: [{ exercise, sets, reps, weight? }] }]
+//   plans.json    named workout plans:   [{ id, name, color, exercises: [{ exercise, sets, reps | secs (a timed hold) | grade (a climb: sets = problems), weight?, rest (seconds between sets) }] }]
 //   cycles.json   groups of plans:       { active, cycles: [{ id, name, steps: [planId, ...] }] }
-//   log.json      what you actually did: { 'YYYY-MM-DD': { name, plan, cycle, step?, entries: [{ exercise, sets: [{ weight, reps, done? }] }], note?, sessions?: [{ id, start, end }], rest?: { start, end } } }  (rest: the rest timer running now, so every device shows it)
+//   log.json      what you actually did: { 'YYYY-MM-DD': { name, plan, cycle, step?, entries: [{ exercise, rest?, sets: [{ weight, reps, secs?, done? } or, a climb, { grade, sent, done? }] }], note?, sessions?: [{ id, start, end }], rest?: { start, end }, on?: { start, end, i, j } } }  (rest: the rest timer running now, on: a set's time on running now, so every device shows them)
 // Weights are pounds. Writes are atomic; a copy of each file is kept once a day in backups/ (last 14).
+// That is the shape the app sends and receives; the files use the names on screen instead (Done for, Problems, Target grade, Time
+// on, Rest, lb, cycleDay…: see diskformat.js).
 const DIR = path.join(DATA, 'workouts')
 const HABITS = path.join(DATA, 'habits')
 const FILE = { plans: 'plans.json', cycles: 'cycles.json', log: 'log.json' }
@@ -18,14 +21,26 @@ const num = (v, lo, hi) => typeof v === 'number' && Number.isFinite(v) && v >= l
 const id = (v) => typeof v === 'string' && ID.test(v)
 const unique = (list) => new Set(list.map((x) => x.id)).size === list.length
 
-const validSet = (s) => s && num(s.weight, 0, 5000) && int(s.reps, 0, 1000) && (s.done === undefined || typeof s.done === 'boolean')
+const GRADES = Array.from({ length: 18 }, (_, i) => `V${i}`) // V0–V17: must match GRADES in src/lib/workouts.js
+const validDone = (s) => s.done === undefined || typeof s.done === 'boolean'
+const validClimb = (s) => GRADES.includes(s.grade) && typeof s.sent === 'boolean' && validDone(s) && Object.keys(s).every((k) => ['grade', 'sent', 'done'].includes(k))
+const validLift = (s) => num(s.weight, 0, 5000) && int(s.reps, 0, 1000) && (s.secs === undefined || int(s.secs, 0, 3600)) && validDone(s)
+const validSet = (s) => s && typeof s === 'object' && (s.grade !== undefined ? validClimb(s) : validLift(s))
+const validRest = (r) => r === undefined || int(r, 5, 900)
 const validEntries = (entries) =>
   Array.isArray(entries) &&
   entries.length <= 50 &&
-  entries.every((e) => e && str(e.exercise, 80) && Array.isArray(e.sets) && e.sets.length <= 50 && e.sets.every(validSet))
+  entries.every((e) => e && str(e.exercise, 80) && validRest(e.rest) && Array.isArray(e.sets) && e.sets.length <= 50 && e.sets.every(validSet))
 const validPlan = (p) =>
-  p && id(p.id) && str(p.name, 60) && (p.color === undefined || COLORS.includes(p.color)) && (p.rest === undefined || int(p.rest, 5, 900)) && Array.isArray(p.exercises) && p.exercises.length <= 40 &&
-  p.exercises.every((e) => e && str(e.exercise, 80) && int(e.sets, 1, 20) && int(e.reps, 1, 100) && (e.weight === undefined || num(e.weight, 0, 5000)))
+  p && id(p.id) && str(p.name, 60) && (p.color === undefined || COLORS.includes(p.color)) && p.rest === undefined && Array.isArray(p.exercises) && p.exercises.length <= 40 &&
+  p.exercises.every(
+    (e) =>
+      e && str(e.exercise, 80) && int(e.sets, 1, 20) && int(e.rest, 5, 900) &&
+      // exactly one of: reps, a hold (secs), a climb's target grade (no weight)
+      (e.grade !== undefined
+        ? GRADES.includes(e.grade) && e.reps === undefined && e.secs === undefined && e.weight === undefined
+        : (e.secs === undefined ? int(e.reps, 1, 100) : int(e.secs, 5, 3600) && e.reps === undefined) && (e.weight === undefined || num(e.weight, 0, 5000))),
+  )
 const validCycle = (c) => c && id(c.id) && str(c.name, 60) && Array.isArray(c.steps) && c.steps.length <= 30 && c.steps.every(id)
 const validLog = (log) =>
   log !== null &&
@@ -35,7 +50,9 @@ const validLog = (log) =>
     ([k, d]) =>
       DATE.test(k) && d && str(d.name, 80) && (d.plan == null || id(d.plan)) && (d.cycle == null || id(d.cycle)) &&
       (d.step === undefined || int(d.step, 0, 100)) && validEntries(d.entries) && (d.note === undefined || str(d.note, 2000)) && (d.sessions === undefined || validSessions(d.sessions, 50)) &&
-      (d.rest === undefined || (d.rest && int(d.rest.start, 0, 4102444800000) && int(d.rest.end, d.rest.start, d.rest.start + 3600000))),
+      (d.rest === undefined || (d.rest && int(d.rest.start, 0, 4102444800000) && int(d.rest.end, d.rest.start, d.rest.start + 3600000))) &&
+      // a timed set's time on, running now (like the rest: so every device shows it): which exercise and set
+      (d.on === undefined || (d.on && int(d.on.start, 0, 4102444800000) && int(d.on.end, d.on.start, d.on.start + 3600000) && int(d.on.i, 0, 49) && int(d.on.j, 0, 49))),
   )
 
 export const isValid = (d) =>
@@ -57,9 +74,9 @@ function writeFile(name, value) {
 
 function save(d) {
   fs.mkdirSync(DIR, { recursive: true })
-  writeFile(FILE.plans, d.plans)
-  writeFile(FILE.cycles, { active: d.active ?? null, cycles: d.cycles })
-  writeFile(FILE.log, sortKeys(d.log))
+  writeFile(FILE.plans, d.plans.map(planToDisk))
+  writeFile(FILE.cycles, cyclesToDisk(d.active, d.cycles))
+  writeFile(FILE.log, logToDisk(sortKeys(d.log)))
 }
 
 function readJson(name, fallback) {
@@ -112,8 +129,8 @@ export function migrateStrengthHabits() {
 
 function load() {
   migrateStrengthHabits()
-  const cycles = readJson(FILE.cycles, { active: null, cycles: [] })
-  return { plans: readJson(FILE.plans, []), cycles: cycles.cycles ?? [], active: cycles.active ?? null, log: readJson(FILE.log, {}) }
+  const { active, cycles } = cyclesFromDisk(readJson(FILE.cycles, null))
+  return { plans: readJson(FILE.plans, []).map(planFromDisk), cycles, active, log: logFromDisk(readJson(FILE.log, {})) }
 }
 
 // GET /api/workouts -> { plans, cycles, active, log, version }   POST the same -> saves them (see dataApi)

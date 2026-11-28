@@ -3,15 +3,17 @@ import { MONTHS } from '../../lib/dates.js'
 import ChartTooltip from './ChartTooltip.jsx'
 import './LineChart.css'
 
-// round axis ticks around the data (about 3 intervals), e.g. 175–205 -> 170, 180, 190, 200, 210
-function axis(min, max) {
+// round axis ticks around the data (about 3 intervals), e.g. 175–205 -> 170, 180, 190, 200, 210; whole: steps of at least 1, in whole
+// numbers (climbing grades: no "V4.5")
+function axis(min, max, whole = false) {
   if (min === max) {
-    min -= 5
-    max += 5
+    min -= whole ? 1 : 5
+    max += whole ? 1 : 5
   }
   const raw = (max - min) / 3
   const mag = 10 ** Math.floor(Math.log10(raw))
-  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw)
+  const nice = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw)
+  const step = whole ? Math.max(1, Math.ceil(nice)) : nice
   const lo = Math.max(0, Math.floor(min / step) * step)
   const hi = Math.ceil(max / step) * step
   const ticks = []
@@ -21,10 +23,10 @@ function axis(min, max) {
 
 // a line over one calendar year. points: [{ date: Date, y }]. renderTip(point) fills the tooltip.
 // The line is an SVG stretched to the plot; the dots and labels are HTML so they never get squashed.
-export default function LineChart({ year, points, yFormat = String, renderTip }) {
+export default function LineChart({ year, points, yFormat = String, renderTip, whole = false }) {
   const start = new Date(year, 0, 1).getTime()
   const span = new Date(year + 1, 0, 1).getTime() - start
-  const { lo, hi, ticks } = axis(Math.min(...points.map((p) => p.y)), Math.max(...points.map((p) => p.y)))
+  const { lo, hi, ticks } = axis(Math.min(...points.map((p) => p.y)), Math.max(...points.map((p) => p.y)), whole)
   const dots = points.length <= 20 // a dense series is just the line: dots only on hover and on the latest point
   const left = (p) => ((p.date.getTime() - start) / span) * 100
   const top = (p) => (1 - (p.y - lo) / (hi - lo)) * 100

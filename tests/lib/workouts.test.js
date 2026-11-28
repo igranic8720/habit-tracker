@@ -113,3 +113,69 @@ test('axis and label helpers', () => {
   assert.equal(w.fmt(82.5), '82.5')
   assert.equal(w.setText(S(0, 10)), 'BW×10')
 })
+
+test('timed sets (a plank): seconds held count like reps, read as time, and a longer hold is a PR', () => {
+  const T = (weight, secs, done) => ({ weight, reps: 0, secs, ...(done === undefined ? {} : { done }) })
+  const plank = { workouts: { '2026-11-10': [{ exercise: 'Plank', sets: [T(0, 45), T(0, 60)] }] } }
+  const today = [{ exercise: 'Plank', sets: [T(0, 75, true), T(0, 30, false)] }]
+  assert.equal(w.setCount(today), 1) // the ticked hold counts; the open one doesn't
+  assert.ok(w.hasSets(today))
+  assert.equal(w.setText(T(0, 45)), '45s')
+  assert.equal(w.setText(T(25, 90)), '25×1:30') // a weighted hold
+  assert.equal(w.workText(today), '1:15 time on')
+  assert.equal(w.workText([...today, { exercise: 'Bench press', sets: [S(100, 5)] }]), `500 ${w.UNIT} · 1:15 time on`)
+  assert.deepEqual(w.topSet([T(0, 45), T(0, 60), T(0, 50)]), T(0, 60))
+  assert.equal(w.e1rm(T(25, 60)), 25) // no rep-max estimate for a hold
+  const best = w.bestBefore(plank, 'Plank', '2026-11-20')
+  assert.deepEqual(best, T(0, 60))
+  assert.ok(w.beats(T(0, 75, true), best))
+  assert.ok(!w.beats(T(0, 60, true), best))
+  const later = { workouts: { ...plank.workouts, '2026-11-17': [{ exercise: 'Plank', sets: [T(0, 75)] }] } }
+  assert.deepEqual(w.progress(later)[0].change, { text: '+15s', dir: 1 })
+  assert.equal(w.durText(45), '45s')
+  assert.equal(w.durText(125), '2:05')
+})
+
+test('climbs (MoonBoard): each problem logged counts, sends are what count as a best, V grades read with Font beside', () => {
+  const C = (grade, sent, done) => ({ grade, sent, ...(done === undefined ? {} : { done }) })
+  const day = [{ exercise: 'MoonBoard', sets: [C('V5', true, true), C('V5', false, true), C('V6', true, true), C('V5', false, false)] }]
+  assert.equal(w.setCount(day), 3) // logged, sent or not; the last isn't logged yet
+  assert.ok(!w.isComplete(day))
+  assert.ok(w.isComplete([{ exercise: 'MoonBoard', sets: [C('V5', false, true)] }])) // logging every problem completes it, sends or not
+  assert.equal(w.workText(day), '3 climbs, 2 sent')
+  assert.equal(w.volume(day), 0) // no weight moved
+  assert.equal(w.setText(C('V5', true)), 'V5 ✓')
+  assert.equal(w.setText(C('V5', false)), 'V5 ✗')
+  assert.equal(w.gradeText('V5'), 'V5 · 6C/6C+')
+  assert.equal(w.gradeNum('V10'), 10)
+  assert.equal(w.GRADES.at(-1).v, 'V17') // up to V17 (9A)
+  assert.equal(w.gradeText('V17'), 'V17 · 9A')
+  // the best is the hardest send: a sent V5 beats an unsent V8
+  assert.deepEqual(w.topSet([C('V8', false), C('V5', true), C('V4', true)]), C('V5', true))
+  const history = { workouts: { '2026-11-10': [{ exercise: 'MoonBoard', sets: [C('V5', true), C('V7', false)] }] } }
+  const best = w.bestBefore(history, 'MoonBoard', '2026-11-20')
+  assert.deepEqual(best, C('V5', true))
+  assert.ok(w.beats(C('V6', true, true), best)) // a harder send: PR
+  assert.ok(!w.beats(C('V8', false, true), best)) // trying something harder isn't a PR
+  assert.ok(!w.beats(C('V5', true, true), best)) // the same grade isn't either
+  const later = { workouts: { ...history.workouts, '2026-11-17': [{ exercise: 'MoonBoard', sets: [C('V6', true)] }] } }
+  assert.deepEqual(w.progress(later)[0].change, { text: 'V5 ✓ → V6 ✓', dir: 1 })
+  assert.equal(w.liftSeries(later, 'MoonBoard', 2026).map((s) => w.e1rm(s.top)).join(), '5,6')
+})
+
+test('lifts, timed exercises and climbs are told apart (lifts and climbs each get a progress graph; timed ones none)', () => {
+  const h = {
+    workouts: {
+      '2026-11-10': [
+        { exercise: 'Kilter 40°', sets: [{ grade: 'V5', sent: true }] },
+        { exercise: 'Bench press', sets: [S(80, 8)] },
+        { exercise: 'Plank', sets: [{ weight: 0, reps: 0, secs: 45 }] },
+      ],
+    },
+  }
+  assert.equal(w.exerciseKind(h, 'Kilter 40°'), 'climb')
+  assert.equal(w.exerciseKind(h, 'kilter 40° '), 'climb') // by name, like everything else
+  assert.equal(w.exerciseKind(h, 'Bench press'), 'lift')
+  assert.equal(w.exerciseKind(h, 'Plank'), 'time')
+  assert.equal(w.exerciseKind(h, 'Never done'), null)
+})

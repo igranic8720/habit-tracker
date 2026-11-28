@@ -84,3 +84,8 @@ select.pe-input { padding-right: 30px; background-position: right 12px center; }
 .pv-list > li[data-color] { border-left: 3px solid var(--on); padding-left: 12px; }
 .cv-steps li[data-color] { border-left: 3px solid var(--on); }
 .pe[data-color] { border-left: 3px solid var(--on); }
+
+/* a plan exercise's options: reps or time, sets, reps / time on, starting weight, its own rest */
+.pe-kind { display: flex; flex-direction: column; gap: 2px; }
+.pe-kind > span { font-size: 11px; color: var(--muted); }
+.pe-small { width: auto; min-width: 96px; height: 36px; padding-right: 30px; background-position: right 10px center; }

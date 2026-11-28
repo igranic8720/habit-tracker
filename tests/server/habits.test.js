@@ -31,7 +31,7 @@ test('saving writes one tidy file per habit, in order, and returns the new versi
   assert.notEqual(r.body.version, version)
   assert.deepEqual(ls(HABITS).filter((n) => n.endsWith('.json')), ['a.json', 'b.json'])
   const a = JSON.parse(fs.readFileSync(path.join(HABITS, 'a.json'), 'utf8'))
-  assert.deepEqual(a, { id: 'a', name: 'a', color: 'red', order: 0, target: 30, notes: { '2026-03-01': 'hi' } }) // days sent are dropped
+  assert.deepEqual(a, { id: 'a', name: 'a', colour: 'red', order: 0, dailyTargetMins: 30, notes: { '2026-03-01': 'hi' } }) // the names on screen; days sent are dropped
   assert.equal(JSON.parse(fs.readFileSync(path.join(HABITS, 'b.json'), 'utf8')).archived, true)
   assert.ok(!ls(HABITS).some((n) => n.includes('.tmp')))
 })
@@ -52,7 +52,7 @@ test('a save from an out-of-date copy is refused (409) and writes nothing', asyn
   assert.equal(fresh.status, 200)
   const stale = await api.post('/api/habit', { version: v1, habits: [habit('a')] })
   assert.equal(stale.status, 409)
-  assert.equal(JSON.parse(fs.readFileSync(path.join(HABITS, 'a.json'), 'utf8')).target, 45)
+  assert.equal(JSON.parse(fs.readFileSync(path.join(HABITS, 'a.json'), 'utf8')).dailyTargetMins, 45)
   assert.equal((await api.post('/api/habit', { habits: [habit('a')] })).status, 409) // no version at all: refused too
 })
 
@@ -99,12 +99,12 @@ test('tracked time is saved in the habit’s own file, in start order, and read 
   ]
   let { version } = await api.get('/api/habit')
   assert.equal((await api.post('/api/habit', { habits: [habit('timed', { sessions })], version })).status, 200)
-  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(HABITS, 'timed.json'), 'utf8')).sessions.map((s) => s.id), ['s1', 's2'])
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(HABITS, 'timed.json'), 'utf8')).trackedSessions, [{ id: 's1', started: 1000, finished: 1500 }, { id: 's2', started: 2000, finished: 5000 }])
   assert.deepEqual((await api.get('/api/habit')).habits.find((h) => h.id === 'timed').sessions.map((s) => s.id), ['s1', 's2'])
-  // a habit without any time keeps a file without a sessions field
+  // a habit without any time keeps a file without a trackedSessions field
   ;({ version } = await api.get('/api/habit'))
   await api.post('/api/habit', { habits: [habit('timed')], version })
-  assert.ok(!('sessions' in JSON.parse(fs.readFileSync(path.join(HABITS, 'timed.json'), 'utf8'))))
+  assert.ok(!('trackedSessions' in JSON.parse(fs.readFileSync(path.join(HABITS, 'timed.json'), 'utf8'))))
 })
 
 test('bad tracked time is refused', async () => {

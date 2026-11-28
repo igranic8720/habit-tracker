@@ -1,9 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { DATA, ID, backup, dataApi, versionOf, writeAtomic } from './storage.js'
+import { timeFromDisk, timeToDisk } from './diskformat.js'
 
-// Time tracking lives in data/time/sessions.json:
+// Time tracking lives in data/time/sessions.json. The app sends / receives
 //   { running: null | { kind, ref, label, color, start }, sessions: [{ id, kind, ref, label, color, start, end }] }
+// and the file uses the names on screen (runningTimer, trackedSessions, habitId, what, started, finished: see diskformat.js).
 // kind is 'habit' | 'workout' | 'other'; ref is the habit's id (or null); start/end are milliseconds since 1970 (UTC).
 // The running timer is saved too, so it keeps counting if you close the app or switch device.
 const DIR = path.join(DATA, 'time')
@@ -29,7 +31,7 @@ export const isValid = (d) =>
 function save(d) {
   fs.mkdirSync(DIR, { recursive: true })
   const sessions = [...d.sessions].sort((a, b) => a.start - b.start || a.id.localeCompare(b.id))
-  const text = JSON.stringify({ running: d.running ?? null, sessions }, null, 2) + '\n'
+  const text = JSON.stringify(timeToDisk({ running: d.running ?? null, sessions }), null, 2) + '\n'
   if (fs.existsSync(FILE) && fs.readFileSync(FILE, 'utf8') === text) return
   backup(DIR, 'sessions.json')
   writeAtomic(FILE, text)
@@ -37,8 +39,7 @@ function save(d) {
 
 function load() {
   try {
-    const d = JSON.parse(fs.readFileSync(FILE, 'utf8'))
-    return { running: d.running ?? null, sessions: d.sessions ?? [] }
+    return timeFromDisk(JSON.parse(fs.readFileSync(FILE, 'utf8')))
   } catch {
     return { running: null, sessions: [] }
   }

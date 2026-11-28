@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { DATA, DATE, ID, dataApi, validSessions, versionOf } from './storage.js'
+import { habitFromDisk, habitToDisk } from './diskformat.js'
 import { folderFiles, loadFolder, saveFolder } from './folders.js'
 import { migrateStrengthHabits } from './workouts.js'
 
@@ -45,7 +46,7 @@ const tidy = (h, order) => ({
   notes: Object.fromEntries(Object.entries(h.notes ?? {}).sort(([a], [b]) => a.localeCompare(b))),
 })
 
-const save = (habits) => saveFolder(DIR, habits, tidy)
+const save = (habits) => saveFolder(DIR, habits, (h, i) => habitToDisk(tidy(h, i))) // (on disk, by the names on screen: diskformat.js)
 
 // one-time: data/habit.json -> data/habits/<id>.json (the old file is renamed, not deleted)
 function migrateLegacy() {
@@ -64,7 +65,7 @@ function migrateLegacy() {
 function load() {
   migrateLegacy()
   migrateStrengthHabits() // workouts moved to their own store: pull any earlier strength "habits" across first
-  return loadFolder(DIR, (h) => h?.type !== 'strength', 'habits') // (a strength file only remains here if its migration was refused)
+  return loadFolder(DIR, (h) => h?.type !== 'strength', 'habits').map(habitFromDisk) // (a strength file only remains here if its migration was refused)
 }
 
 // GET /api/habit -> { habits, version }   POST /api/habit { habits, version } -> saves them (see dataApi)

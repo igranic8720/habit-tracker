@@ -67,3 +67,21 @@ test('rest times read as seconds or minutes', async () => {
   assert.deepEqual([30, 45, 60, 90, 150, 300].map(restText), ['30s', '45s', '1:00', '1:30', '2:30', '5:00'])
   assert.ok(RESTS.every((s) => s >= 5 && s <= 900)) // all accepted by the server
 })
+
+test('a plan exercise can be timed (a hold per set); each has its own rest, carried into the day', () => {
+  const plan = { id: 'core', name: 'Core', exercises: [{ exercise: 'Plank', sets: 2, secs: 45, rest: 60 }, { exercise: 'Deadlift', sets: 1, reps: 5, weight: 100, rest: 180 }] }
+  assert.equal(p.planLine(plan), 'Plank 2×45s · Deadlift 1×5')
+  const [plank, dl] = p.sessionFromPlan(plan, diaryOf({}), '2026-11-25')
+  assert.deepEqual(plank, { exercise: 'Plank', rest: 60, sets: [{ weight: 0, reps: 0, secs: 45, done: false }, { weight: 0, reps: 0, secs: 45, done: false }] })
+  assert.deepEqual(dl, { exercise: 'Deadlift', rest: 180, sets: [{ weight: 100, reps: 5, done: false }] })
+  // a new exercise rests 1:30 until you change it
+  assert.deepEqual(p.newExercise(), { exercise: '', sets: 3, reps: 8, rest: 90 })
+  assert.deepEqual(p.newPlan([], []).exercises, [p.newExercise()])
+})
+
+test('a climb in a plan: that many problems at the target grade, each to log as sent or not', () => {
+  const plan = { id: 'x', name: 'Mixed', exercises: [{ exercise: 'MoonBoard', sets: 3, grade: 'V5', rest: 180 }, { exercise: 'Plank', sets: 1, secs: 45, rest: 60 }] }
+  assert.equal(p.planLine(plan), 'MoonBoard 3 × V5 · Plank 1×45s')
+  const [mb] = p.sessionFromPlan(plan, diaryOf({}), '2026-11-25')
+  assert.deepEqual(mb, { exercise: 'MoonBoard', rest: 180, sets: [0, 1, 2].map(() => ({ grade: 'V5', sent: false, done: false })) })
+})

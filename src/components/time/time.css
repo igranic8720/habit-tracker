@@ -218,17 +218,7 @@ button.tl2-block { font: inherit; font-size: 12px; text-align: left; cursor: poi
 /* the year graph on At a glance: squares down to 9px (not 10), so the whole year fits its column without scrolling sideways */
 /* compact: the same box as the habits' graphs with less padding, tighter rows (the squares stay as wide), and the count and the
    key share one line */
-.time-year .graph { padding: 8px 10px 6px; }
 .time-year .ty-head { margin-bottom: 4px; }
-.time-year .week, .time-year .days { gap: 2px; }
-.time-year .days { padding-top: 15px; }
-.time-year .months { margin-bottom: 2px; height: 13px; }
-.time-year .graph-foot { margin-top: 2px; }
-.time-year .plan-legend { flex-basis: auto; }
-.time-year .chart {
-  min-width: calc(30px + var(--weeks) * 9px + (var(--weeks) - 1) * 4px);
-  --s: clamp(9px, calc((100cqw - 30px - (var(--weeks) - 1) * 4px) / var(--weeks)), var(--s-max, 30px));
-}
 
 /* the year's head: the total, and beside it the days missed (red while there are any) and the current run of days */
 .ty-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin-bottom: 8px; }

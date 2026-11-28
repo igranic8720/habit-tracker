@@ -12,7 +12,7 @@ const range = (r) => (
   </span>
 )
 
-// the Workouts page's own graphs: workouts per week, and a per-lift progress line
+// the Workouts page's own graphs: workouts per week, then your climbing grades, then a progress line per lift
 export default function WorkoutCharts({ habit, year }) {
   const rows = weeklyWorkouts(habit, year)
   const cMax = Math.max(4, Math.ceil(Math.max(...rows.map((r) => r.workouts)) / 2) * 2)
@@ -37,6 +37,7 @@ export default function WorkoutCharts({ habit, year }) {
         <WeeklyWorkoutTable rows={rows} />
       </Panel>
 
+      <LiftProgress habit={habit} year={year} climbs />
       <LiftProgress habit={habit} year={year} />
     </div>
   )

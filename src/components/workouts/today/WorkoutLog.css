@@ -10,12 +10,11 @@
 
 .wl-ex { padding: 12px 0; border-top: 1px solid var(--border-muted); }
 .wl-ex-head { display: flex; align-items: center; gap: 4px; }
-.wl-name, .wl-new {
+.wl-name {
   flex: 1; min-width: 0; font: inherit; color: var(--fg); background: transparent; border: 1px solid transparent; border-radius: var(--radius); padding: 3px 8px; margin-left: -8px;
   -webkit-appearance: none; appearance: none;
 }
 .wl-name { margin: 0; display: flex; align-items: center; font-size: inherit; font-weight: 600; overflow-wrap: anywhere; }
-.wl-new:focus { outline: none; background: var(--canvas); border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
 .wl-last { margin: 0 0 6px; font-size: 12px; color: var(--muted); }
 .wl-sets { list-style: none; margin: 4px 0 8px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .wl-sets li { display: flex; align-items: center; gap: 8px; }
@@ -35,15 +34,9 @@
 .wl-x { width: 28px; height: 28px; flex: none; font-size: 12px; color: var(--muted); background: none; border: 0; border-radius: var(--radius); cursor: pointer; }
 .wl-x:hover { color: var(--danger); background: var(--btn-hover); }
 
-.wl-add { display: flex; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border-muted); }
-.wl-ex + .wl-add { margin-top: 0; }
-.wl-head + .wl-add { border-top: 0; padding-top: 8px; }
-.wl-new { margin-left: 0; padding: 7px 12px; border-color: var(--border); background: var(--canvas); }
-.wl-new::placeholder { color: var(--muted); }
-.wl-new:hover { border-color: var(--muted); }
 
 @media (max-width: 768px) {
-  .wl-name, .wl-new { font-size: 16px; }
+  .wl-name { font-size: 16px; }
   .wl-sets li { gap: 6px; }
   .wl-sets .num { width: 64px; }
   /* the workout's buttons get their own row, so its name keeps the full width */
@@ -53,12 +46,11 @@
 }
 @media (pointer: coarse) {
   .wl-name { min-height: 44px; }
-  .wl-new { min-height: 44px; }
   .wl-x { width: 40px; height: 44px; font-size: 14px; }
   .wl-ok { width: 44px; height: 44px; }
 }
 @media (pointer: coarse) {
-  .wl-name, .wl-new { font-size: 16px; }
+  .wl-name { font-size: 16px; }
 }
 
 /* until the workout is started: a Start button over the sets, which are locked */
@@ -74,8 +66,26 @@
 }
 
 /* ultrawide: the day's exercises side by side (at least 520px each), so each set's ✕ stays near its numbers instead of a
-   screen-width away; adding an exercise stays full width under them */
+   screen-width away */
 @media (min-width: 2300px) and (min-height: 501px) {
   .wl-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(520px, 1fr)); column-gap: 32px; align-items: start; }
-  .wl-body > .wl-add { grid-column: 1 / -1; }
 }
+
+/* a timed set's countdown: ▶ and its time on; while it runs, aqua with the time left */
+.hold-btn { flex: none; min-width: 84px; height: 36px; font-variant-numeric: tabular-nums; }
+.hold-btn.running { color: #000; text-shadow: none; background: var(--accent); border-color: var(--accent); font-weight: 600; }
+
+/* a climb's problem: its grade, then Sent / Not sent (the answer you pick lights up: green for a send, red-ish for not) */
+.climb-grade { height: 36px; min-width: 132px; padding: 0 30px 0 10px; font: inherit; font-size: 13px; color: var(--fg); background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); }
+.climb-grade option { background: var(--overlay); color: var(--fg); }
+.climb-answer { display: inline-flex; gap: 4px; }
+.climb-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; font: inherit; font-size: 12px; font-weight: 600; color: var(--muted); background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; white-space: nowrap; transition: background-color .15s, color .15s, border-color .15s; }
+.climb-btn:hover { color: var(--fg); border-color: var(--muted); }
+.climb-btn.sent.on { color: #fff; background: var(--primary); border-color: var(--primary); }
+.climb-btn.not.on { color: var(--fg); background: color-mix(in srgb, var(--danger) 25%, var(--canvas)); border-color: var(--danger); }
+.climb-row.is-next .climb-grade { border-color: var(--on); }
+@media (max-width: 420px) { .climb-btn { padding: 0 8px; } .climb-grade { min-width: 0; } }
+/* an exercise's times beside its name: time on, rest */
+.wl-ex-times { margin-left: 10px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.wl-ex-head .wl-x { margin-left: auto; }
+.wl-ex-head .wl-name { flex: 0 1 auto; } /* (as wide as the name, so its times sit beside it) */

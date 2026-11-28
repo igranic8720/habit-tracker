@@ -12,14 +12,14 @@ export function nextSet(entries) {
   return i < 0 ? null : { i, j: entries[i].sets.findIndex(isOpen) }
 }
 
-// change one set; the later sets not done yet follow a weight / reps change when they still had the old value,
-// so moving your working weight up is one edit, not three
+// change one set; the later sets not done yet follow a weight / reps (or a climb's grade) change when they still had the old value,
+// so moving your working weight up is one edit, not three (whether a climb was sent is each climb's own)
 export function changeSet(sets, j, patch) {
   const old = sets[j]
   return sets.map((s, k) => {
     if (k === j) return { ...s, ...patch }
     if (k < j || !isOpen(s)) return s
-    return { ...s, ...Object.fromEntries(Object.entries(patch).filter(([f]) => f !== 'done' && s[f] === old[f])) }
+    return { ...s, ...Object.fromEntries(Object.entries(patch).filter(([f]) => f !== 'done' && f !== 'sent' && s[f] === old[f])) }
   })
 }
 

@@ -4,7 +4,7 @@
 .wk-table th[scope='row'] { text-align: left; display: flex; align-items: center; gap: 8px; color: var(--fg); font-size: 14px; padding: 0; height: 22px; }
 .wk-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
 .wk-table td { text-align: center; padding: 0 2px; }
-.pip { display: inline-block; width: 18px; height: 18px; border-radius: 2px; background: var(--cell); box-shadow: inset 0 0 0 1px var(--cell-border); vertical-align: middle; }
+.pip { display: inline-block; width: 18px; height: 18px; border-radius: var(--radius); background: var(--cell); box-shadow: inset 0 0 0 1px var(--cell-border); vertical-align: middle; }
 .pip.on { background: var(--on); }
 .pip.now { outline: 1px solid var(--fg); outline-offset: 1px; }
 .wk-count { color: var(--muted); font-size: 12px; width: 36px; text-align: right !important; font-variant-numeric: tabular-nums; }

@@ -2,6 +2,7 @@ import { calendarApi } from './calendar.js'
 import { eventsApi } from './events.js'
 import { checklistApi } from './checklist.js'
 import { habitApi } from './habits.js'
+import { pomodoroApi } from './pomodoro.js'
 import { timeApi } from './time.js'
 import { workoutApi } from './workouts.js'
 
@@ -13,6 +14,7 @@ export function dataApi() {
       server.middlewares.use('/api/habit', habitApi)
       server.middlewares.use('/api/checklist', checklistApi)
       server.middlewares.use('/api/workouts', workoutApi)
+      server.middlewares.use('/api/pomodoro', pomodoroApi)
       server.middlewares.use('/api/time', timeApi)
       server.middlewares.use('/api/calendar', calendarApi)
       server.middlewares.use('/api/events', eventsApi)

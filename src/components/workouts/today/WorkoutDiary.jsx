@@ -1,14 +1,15 @@
 import { useRef, useState } from 'react'
 import { YEAR, todayKey } from '../../../lib/dates.js'
-import { cycleStatus, newSession, planColor, resolveStep, restText } from '../../../lib/plans.js'
-import { bestBefore, describe, exerciseNames, hasSets, lastTime } from '../../../lib/workouts.js'
+import { cycleStatus, newSession, planColor, resolveStep } from '../../../lib/plans.js'
+import { bestBefore, describe, hasSets, lastTime } from '../../../lib/workouts.js'
 import DayDetail from '../../calendar/DayDetail.jsx'
 import Heatmap from '../../calendar/Heatmap.jsx'
 import NotesLog from '../../calendar/NotesLog.jsx'
 import TodayNote from '../../shared/TodayNote.jsx'
 import ExerciseProgress from '../ExerciseProgress.jsx'
 import { useNow } from '../../../hooks/useNow.js'
-import RestTimer from './RestTimer.jsx'
+import TimerBar from './TimerBar.jsx'
+import { openCount } from '../../../lib/session.js'
 import TimerButton from '../../time/TimerButton.jsx'
 import WorkoutDay from '../WorkoutDay.jsx'
 import WorkoutChooser from './WorkoutChooser.jsx'
@@ -17,7 +18,8 @@ import './WorkoutDiary.css'
 import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons'
 
 // the Today tab: choose today's workout (or carry on with it), tick off sets, then the year heatmap, progress and history
-export default function WorkoutDiary({ w, diary, time, year }) {
+// since: the day tracking started (nothing recorded yet: today); the year's days before it are faded and can't be opened
+export default function WorkoutDiary({ w, diary, time, year, since }) {
   const [logOpen, setLogOpen] = useState(false)
   const [selected, setSelected] = useState(null) // a clicked past day, opened read-only (past days are locked)
   const todayRef = useRef(null)
@@ -74,20 +76,52 @@ export default function WorkoutDiary({ w, diary, time, year }) {
   const started = !!session && (timing || (session.sessions?.length ?? 0) > 0 || hasSets(session.entries))
   const busy = time?.running && !timing ? time.running.label : null // another timer is running
   const what = session && { kind: 'workout', ref: null, label: session.name || 'Workout', color: planColor(planOf(todayKey)) }
-  // the rest timer: started by ticking a set, as long as the plan says how long to rest. It is saved with today's workout, so every
-  // device shows the same countdown. Once it has run out (plus a few seconds of "rest over") it is gone.
-  const restLen = planOf(todayKey)?.rest
+  // the rest timer: started by ticking a set, for that exercise's rest (one added during the workout has none). It is saved with
+  // today's workout, so every device shows the same countdown. Once it has run out (plus a few seconds of "rest over") it is gone.
   const now = useNow(!!session?.rest, 2000)
   const resting = session?.rest && now < session.rest.end + 8000 ? session.rest : null
-  const startRest = () => {
+  const startRest = (len) => {
     const now = Date.now()
-    if (restLen) w.patchDay(todayKey, (d) => ({ ...d, rest: { start: now, end: now + restLen * 1000 } }))
+    w.patchDay(todayKey, (d) => {
+      const { on: _on, ...others } = d // (one countdown at a time)
+      return len ? { ...others, rest: { start: now, end: now + len * 1000 } } : others
+    })
   }
   const stopRest = () =>
     w.patchDay(todayKey, (d) => {
       const { rest: _r, ...others } = d
       return others
     })
+  // a timed set's time on: started from its ▶, saved with today's workout like the rest (so every device shows the same countdown), in
+  // the same bar. At zero the set is ticked and its exercise's rest starts (or, on the last set, the workout's timer stops).
+  const on = session?.on ?? null
+  const startOn = (i, j) => {
+    const secs = session.entries[i]?.sets[j]?.secs
+    if (!secs) return
+    const now = Date.now()
+    w.patchDay(todayKey, (d) => {
+      const { rest: _r, ...others } = d
+      return { ...others, on: { start: now, end: now + secs * 1000, i, j } }
+    })
+  }
+  const stopOn = () =>
+    w.patchDay(todayKey, (d) => {
+      const { on: _on, ...others } = d
+      return others
+    })
+  const finishOn = () => {
+    if (!on) return
+    const left = openCount(session.entries) - (session.entries[on.i]?.sets[on.j]?.done === false ? 1 : 0)
+    const len = session.entries[on.i]?.rest
+    const now = Date.now()
+    w.patchDay(todayKey, (d) => {
+      if (!d.on) return d // (another device finished it first)
+      const { on: o, rest: _r, ...others } = d
+      const entries = d.entries.map((e, i) => (i !== o.i ? e : { ...e, sets: e.sets.map((s, j) => (j === o.j ? { ...s, done: true } : s)) }))
+      return { ...others, entries, ...(left > 0 && len ? { rest: { start: now, end: now + len * 1000 } } : {}) }
+    })
+    if (left === 0 && timing) time.stop()
+  }
   const adjustRest = (seconds) =>
     w.patchDay(todayKey, (d) => (d.rest ? { ...d, rest: { ...d.rest, end: Math.min(d.rest.start + 3600000, Math.max(Date.now(), d.rest.end + seconds * 1000)) } } : d))
   // the key under the heatmap: an empty square, then one coloured square per plan (and grey for freestyle days, when there are any)
@@ -124,13 +158,17 @@ export default function WorkoutDiary({ w, diary, time, year }) {
           {(!session || choosing) && (
             <WorkoutChooser w={w} cycle={cycle} status={status} session={session} onLoad={load} onCancel={session ? () => setChoosing(false) : undefined} />
           )}
-          {session && resting && <RestTimer rest={resting} onAdjust={adjustRest} onStop={stopRest} />}
+          {session && on ? (
+            <TimerBar kind="on" timer={on} label={`${session.entries[on.i]?.exercise || 'Exercise'} · set ${on.j + 1}`} onStop={stopOn} onDone={finishOn} />
+          ) : (
+            session && resting && <TimerBar kind="rest" timer={resting} onAdjust={adjustRest} onStop={stopRest} />
+          )}
           {session && (
             <>
               <WorkoutLog
                 color={planColor(planOf(todayKey))}
                 title={session.name}
-                tag={[sc ? `${sc.name} · day ${resolveStep(sc, session) + 1} of ${sc.steps.length}` : session.plan ? 'Plan' : 'Freestyle', restLen ? `${restText(restLen)} rest` : session.plan && planOf(todayKey) ? 'no rest time set (edit the plan)' : null].filter(Boolean).join(' · ')}
+                tag={[sc ? `${sc.name} · day ${resolveStep(sc, session) + 1} of ${sc.steps.length}` : session.plan ? 'Plan' : 'Freestyle'].join(' · ')}
                 action={
                   <>
                     {started && <TimerButton t={time} what={what} label="Start workout" />}
@@ -145,12 +183,14 @@ export default function WorkoutDiary({ w, diary, time, year }) {
                   </>
                 }
                 entries={session.entries}
-                names={exerciseNames(diary)}
                 lastTime={(name) => lastTime(diary, name, todayKey)}
                 bestBefore={(name) => bestBefore(diary, name, todayKey)}
                 onChange={setEntries}
-                onTicked={(left) => {
-                  if (left > 0) return startRest()
+                activeOn={on}
+                onTimeOn={startOn}
+                onStopOn={stopOn}
+                onTicked={(left, i) => {
+                  if (left > 0) return startRest(session.entries[i]?.rest)
                   // the last set: the workout is done, so its rest and its timer stop (the time is saved with today's workout)
                   if (session.rest) stopRest()
                   if (timing) time.stop()
@@ -183,7 +223,7 @@ export default function WorkoutDiary({ w, diary, time, year }) {
         <strong>{total}</strong> {total === 1 ? 'workout' : 'workouts'} logged in {year}
       </h3>
 
-      <Heatmap habit={diary} year={year} selected={sel} onPick={pickDay} colorOf={colorOf} legend={legend} />
+      <Heatmap habit={diary} year={year} selected={sel} onPick={pickDay} colorOf={colorOf} legend={legend} openFrom={since ?? todayKey} />
 
       <ExerciseProgress habit={diary} />
 

@@ -1,12 +1,12 @@
 import { useId, useState } from 'react'
 import { moveItem, removeAt, replaceAt } from '../../../lib/arrays.js'
-import { RESTS, restText } from '../../../lib/plans.js'
+import { DEFAULT_REST, RESTS, newExercise } from '../../../lib/plans.js'
 import ColorPicker from '../../shared/ColorPicker.jsx'
 import EditorActions from '../EditorActions.jsx'
 import PlanExerciseRow from './PlanExerciseRow.jsx'
 
-// create / edit one plan: a name, the rest between sets (required: it runs the rest timer), and its exercises with planned
-// sets × reps (and an optional starting weight).
+// create / edit one plan: a name and its exercises, each with planned sets × reps, sets × a hold (timed) or a number of problems
+// at a target grade (a climb: MoonBoard), the rest between its sets (it runs the rest timer), and an optional starting weight.
 // It edits a draft; nothing is saved until you press Save.
 export default function PlanEditor({ initial, taken, names, onSave, onCancel, onDelete }) {
   const [draft, setDraft] = useState(initial)
@@ -22,10 +22,11 @@ export default function PlanEditor({ initial, taken, names, onSave, onCancel, on
     .map((r) => ({
       exercise: r.exercise.trim().slice(0, 80),
       sets: Math.min(20, Math.max(1, r.sets || 0)),
-      reps: Math.min(100, Math.max(1, r.reps || 0)),
-      ...(r.weight > 0 ? { weight: r.weight } : {}),
+      ...(r.grade ? { grade: r.grade } : r.secs ? { secs: r.secs } : { reps: Math.min(100, Math.max(1, r.reps || 0)) }),
+      ...(r.weight > 0 && !r.grade ? { weight: r.weight } : {}),
+      rest: RESTS.includes(r.rest) ? r.rest : DEFAULT_REST,
     }))
-  const valid = draft.name.trim() !== '' && clean.length > 0 && RESTS.includes(draft.rest)
+  const valid = draft.name.trim() !== '' && clean.length > 0
 
   return (
     <form
@@ -33,7 +34,7 @@ export default function PlanEditor({ initial, taken, names, onSave, onCancel, on
       data-color={draft.color} /* (its bar follows the colour you pick) */
       onSubmit={(e) => {
         e.preventDefault()
-        if (valid) onSave({ id: draft.id, name: draft.name.trim().slice(0, 60), color: draft.color, rest: draft.rest, exercises: clean })
+        if (valid) onSave({ id: draft.id, name: draft.name.trim().slice(0, 60), color: draft.color, exercises: clean })
       }}
     >
       <h2 className="pv-title">{onDelete ? 'Edit plan' : 'New plan'}</h2>
@@ -54,27 +55,6 @@ export default function PlanEditor({ initial, taken, names, onSave, onCancel, on
       </div>
       <p className="pe-hint">Tap the dot to choose the plan’s colour.</p>
 
-      <label className="pe-label" htmlFor={`${listId}-rest`}>
-        Rest between sets
-      </label>
-      <select
-        id={`${listId}-rest`}
-        className="pe-input chevron pe-rest"
-        required
-        value={draft.rest ?? ''}
-        onChange={(e) => setDraft({ ...draft, rest: Number(e.target.value) })}
-      >
-        <option value="" disabled>
-          Choose a rest time…
-        </option>
-        {RESTS.map((s) => (
-          <option key={s} value={s}>
-            {restText(s)}
-          </option>
-        ))}
-      </select>
-      {!RESTS.includes(draft.rest) && <p className="pe-hint">Required. The rest timer counts this down after each set you tick.</p>}
-
       <h3 className="pe-sub">Exercises</h3>
       <ol className="pe-rows">
         {rows.map((r, i) => (
@@ -84,7 +64,7 @@ export default function PlanEditor({ initial, taken, names, onSave, onCancel, on
             index={i}
             count={rows.length}
             listId={listId}
-            onChange={(patch) => setRows(replaceAt(rows, i, { ...r, ...patch }))}
+            onChange={(patch, whole) => setRows(replaceAt(rows, i, whole ? patch : { ...r, ...patch }))}
             onMove={(d) => setRows(moveItem(rows, i, d))}
             onRemove={() => setRows(removeAt(rows, i))}
           />
@@ -95,7 +75,7 @@ export default function PlanEditor({ initial, taken, names, onSave, onCancel, on
           <option key={n} value={n} />
         ))}
       </datalist>
-      <button type="button" className="btn btn-sm" onClick={() => setRows([...rows, { exercise: '', sets: 3, reps: 8 }])}>
+      <button type="button" className="btn btn-sm" onClick={() => setRows([...rows, newExercise()])}>
         + Exercise
       </button>
       <p className="pe-hint">“Start lb” is only used the first time. After that, the weight from your last session is filled in for you.</p>

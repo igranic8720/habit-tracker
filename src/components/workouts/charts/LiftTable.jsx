@@ -21,7 +21,7 @@ export default function LiftTable({ series, day }) {
                 <td>{day(s.key)}</td>
                 <td>{s.sets.map(setText).join(', ')}</td>
                 <td>{setText(s.top)}</td>
-                <td>{s.top.weight ? `${Math.round(s.est)} ${UNIT}` : '–'}</td>
+                <td>{s.top.weight && !s.top.secs && s.top.grade === undefined ? `${Math.round(s.est)} ${UNIT}` : '–'}</td>
               </tr>
             ))}
           </tbody>

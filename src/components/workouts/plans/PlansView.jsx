@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { fromKey } from '../../../lib/format.js'
 import { newId } from '../../../lib/habits.js'
 import { freeColor } from '../../../lib/habits.js'
-import { newPlan, planColor, planLine, planUse, restText } from '../../../lib/plans.js'
+import { newPlan, planColor, planLine, planUse } from '../../../lib/plans.js'
 import ColorPicker from '../../shared/ColorPicker.jsx'
 import PlanEditor from './PlanEditor.jsx'
 import '../manage.css'
@@ -62,7 +62,7 @@ export default function PlansView({ w, taken, names, hasSessionToday, onDo }) {
                     <ColorPicker value={planColor(p)} taken={taken} onChange={(color) => w.savePlan({ ...p, color })} />
                     <strong>{p.name || 'Untitled plan'}</strong>
                   </span>
-                  <span className="pv-line">{planLine(p)} · {p.rest ? `${restText(p.rest)} rest` : 'no rest time set'}</span>
+                  <span className="pv-line">{planLine(p)}</span>
                   <span className="pv-use">
                     {use.times ? `Done ${use.times}× · last ${fromKey(use.last).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'Not done yet'}
                   </span>

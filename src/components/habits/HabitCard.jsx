@@ -17,7 +17,8 @@ import './HabitCard.css'
 // one habit: title row, its daily target and today's progress (a checklist habit: just what it is), today's note + its timer or
 // tick, the year heatmap, and the day / log panels. A timed habit's day is done once its tracked time reaches the target; a
 // checklist habit's once you tick it off (habit.days is worked out from either). The kind is set when the habit is added.
-export default function HabitCard({ habit, year, time, taken, onChange, onArchive }) {
+// since: the day tracking started (nothing recorded yet: today); the year's days before it are faded and can't be opened
+export default function HabitCard({ habit, year, time, taken, since, onChange, onArchive }) {
   const [logOpen, setLogOpen] = useState(false)
   const [selected, setSelected] = useState(null) // a clicked past day, opened to read its note (past notes are locked)
   const todayRef = useRef(null) // the always-visible note box for today
@@ -98,7 +99,7 @@ export default function HabitCard({ habit, year, time, taken, onChange, onArchiv
         <strong>{total}</strong> {total === 1 ? 'day' : 'days'} done in {year}
       </h3>
 
-      <Heatmap habit={habit} year={year} selected={sel} onPick={pickDay} />
+      <Heatmap habit={habit} year={year} selected={sel} onPick={pickDay} openFrom={since ?? todayKey} />
 
       {sel && <DayDetail dateKey={sel} done={done.has(sel)} at={check ? checkedTime(habit, sel) : null} note={notes[sel]} onClose={() => setSelected(null)} />}
 

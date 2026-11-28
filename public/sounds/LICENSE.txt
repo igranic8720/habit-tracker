@@ -1,0 +1,5 @@
+chime.wav  (Kenney "Interface Sounds" 1.0: confirmation_002.wav)
+
+Created/distributed by Kenney (www.kenney.nl), 2020.
+License: Creative Commons Zero (CC0), http://creativecommons.org/publicdomain/zero/1.0/
+Taken from the CC0 mirror at https://github.com/Calinou/kenney-interface-sounds

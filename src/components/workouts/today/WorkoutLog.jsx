@@ -1,17 +1,16 @@
-import { useId, useState } from 'react'
 import { changeSet, nextSet, openCount, prIndexes } from '../../../lib/session.js'
-import { hasSets, setCount, setTotal, topSet, workText } from '../../../lib/workouts.js'
+import { hasSets, isClimb, setCount, setTotal, workText } from '../../../lib/workouts.js'
 import ExerciseEntry from './ExerciseEntry.jsx'
 import './WorkoutLog.css'
 import { CheckOutlined } from '@ant-design/icons'
 
-// the set editor for today's session: exercises, each with sets of weight × reps, and a tick on each set when you have done it.
+// the set editor for today's session: the plan's exercises (none can be added on the day), each with its sets, and a tick on each
+// set when you have done it.
 // Only ticked sets count (towards the day, the heatmap and the graphs). Past days are read-only (see WorkoutDay).
-// onTicked(setsLeft) is called when a set is ticked, so the page can start the rest timer.
+// onTicked(setsLeft, i) is called when a set of exercise i is ticked, so the page can start the rest timer (that exercise's rest).
 // locked: nothing can be typed or ticked yet (the workout hasn't been started); gate is shown above the locked sets instead.
-export default function WorkoutLog({ color, title, tag, action, entries, names, lastTime, bestBefore, onChange, onTicked, locked = false, gate }) {
-  const listId = useId()
-  const [draft, setDraft] = useState('')
+// activeOn: the timed set whose time on is running ({ i, j }); onTimeOn(i, j) / onStopOn start and stop one (the countdown is the page's).
+export default function WorkoutLog({ color, title, tag, action, entries, lastTime, bestBefore, onChange, onTicked, activeOn, onTimeOn, onStopOn, locked = false, gate }) {
   const logged = hasSets(entries)
   const done = setCount(entries)
   const total = setTotal(entries)
@@ -25,29 +24,27 @@ export default function WorkoutLog({ color, title, tag, action, entries, names, 
   const tick = (i, j) => {
     const on = entries[i].sets[j].done === false
     setSets(i, (sets) => changeSet(sets, j, { done: on }))
-    if (on) onTicked?.(open - 1)
+    if (on) onTicked?.(open - 1, i)
+  }
+  // a climb is logged in one go: sent or not, and done (a second press of the same answer un-logs it)
+  const logClimb = (i, j, sent) => {
+    const s = entries[i].sets[j]
+    if (s.done !== false && s.sent === sent) return setSets(i, (sets) => changeSet(sets, j, { done: false }))
+    setSets(i, (sets) => changeSet(sets, j, { sent, done: true }))
+    if (s.done === false) onTicked?.(open - 1, i)
   }
   const tickAll = (i) => {
     const sets = entries[i].sets
     const all = sets.every((s) => s.done !== false)
     setSets(i, (ss) => ss.map((s) => ({ ...s, done: !all })))
-    if (!all) onTicked?.(open - sets.filter((s) => s.done === false).length)
+    if (!all) onTicked?.(open - sets.filter((s) => s.done === false).length, i)
   }
   const removeExercise = (i) => {
     const e = entries[i]
-    if (e.sets.some((s) => s.done !== false && s.reps > 0) && !confirm(`Remove ${e.exercise || 'this exercise'} and the sets you ticked?`)) return
+    if (e.sets.some((s) => s.done !== false && (isClimb(s) || s.reps > 0)) && !confirm(`Remove ${e.exercise || 'this exercise'} and the sets you ticked?`)) return
     onChange(entries.filter((_, k) => k !== i))
   }
-  // a new exercise starts from last time's best set, spelled the way you spelled it before
-  const addExercise = (raw) => {
-    const typed = raw.trim().slice(0, 80)
-    if (!typed) return
-    const name = names.find((n) => n.toLowerCase() === typed.toLowerCase()) ?? typed
-    const prev = lastTime(name)
-    const start = prev ? topSet(prev) : { weight: 0, reps: 0 }
-    onChange([...entries, { exercise: name, sets: [{ weight: start.weight, reps: start.reps, done: false }] }])
-    setDraft('')
-  }
+
 
   return (
     <div className="wl" data-color={color}>
@@ -86,27 +83,14 @@ export default function WorkoutLog({ color, title, tag, action, entries, names, 
           onTick={(j) => tick(i, j)}
           onRemoveSet={(j) => setSets(i, (sets) => sets.filter((_, k) => k !== j))}
           onTickAll={() => tickAll(i)}
+          onClimb={(j, sent) => logClimb(i, j, sent)}
+          activeJ={activeOn?.i === i ? activeOn.j : -1}
+          onTimeOn={(j) => onTimeOn?.(i, j)}
+          onStopOn={onStopOn}
         />
       ))}
 
-      <form
-        className="wl-add"
-        onSubmit={(ev) => {
-          ev.preventDefault()
-          addExercise(draft)
-        }}
-      >
-        <input className="wl-new" list={listId} value={draft} maxLength={80} placeholder="Add an exercise…" aria-label="Add an exercise" enterKeyHint="done" onChange={(ev) => setDraft(ev.target.value)} />
-        <button type="submit" className="btn btn-sm" disabled={!draft.trim()}>
-          Add
-        </button>
-      </form>
       </fieldset>
-      <datalist id={listId}>
-        {names.map((n) => (
-          <option key={n} value={n} />
-        ))}
-      </datalist>
     </div>
   )
 }

@@ -16,3 +16,5 @@
   .btn { min-height: 44px; }
   .btn-sm { min-height: 40px; padding: 6px 14px; font-size: 14px; }
 }
+/* black text on aqua: no shadow on anything inside either (every element has one: base.css) */
+.btn-primary *, .timer-btn.running *, .hold-btn.running *, .wc-go.primary *, .wl-gate .timer-btn:not(:disabled) * { text-shadow: none; }

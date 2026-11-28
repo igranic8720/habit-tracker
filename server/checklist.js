@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { DATA, DATE, ID, dataApi, versionOf } from './storage.js'
+import { checkFromDisk, checkToDisk } from './diskformat.js'
 import { folderFiles, loadFolder, saveFolder } from './folders.js'
 
 // Checklist habits: ticked off by hand, one day at a time (no timer, no target). Kept apart from the timed habits, one JSON
@@ -40,8 +41,8 @@ const tidy = (h, order) => ({
 // GET /api/checklist -> { items, version }   POST /api/checklist { items, version } -> saves them (see dataApi)
 export const checklistApi = dataApi({
   name: 'checklist',
-  load: () => ({ items: loadFolder(CHECK_DIR, () => true, 'checklist') }),
+  load: () => ({ items: loadFolder(CHECK_DIR, () => true, 'checklist').map(checkFromDisk) }), // (on disk, by the names on screen: diskformat.js)
   isValid: (d) => isValid(d.items),
-  save: (d) => saveFolder(CHECK_DIR, d.items, tidy),
+  save: (d) => saveFolder(CHECK_DIR, d.items, (h, i) => checkToDisk(tidy(h, i))),
   version: () => versionOf(folderFiles(CHECK_DIR)),
 })

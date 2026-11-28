@@ -4,7 +4,8 @@ import CycleDayCard from './CycleDayCard.jsx'
 import './WorkoutChooser.css'
 
 // the top of Today until a workout is loaded: the active cycle's days ("up next" / "today" marked; any day is one tap to load)
-// and a picker for any other plan or a freestyle workout. Which cycle is active is chosen on the Cycles tab.
+// and a picker for any other plan (a workout is always a plan's: its exercises can't be added to). Which cycle is active is chosen on
+// the Cycles tab.
 export default function WorkoutChooser({ w, cycle, status, session, onLoad, onCancel }) {
   const [pick, setPick] = useState('')
   const todayStep = session && cycle && session.cycle === cycle.id ? resolveStep(cycle, session) : -1
@@ -66,14 +67,13 @@ export default function WorkoutChooser({ w, cycle, status, session, onLoad, onCa
                 {p.name || 'Untitled plan'}
               </option>
             ))}
-            <option value="free">Freestyle (no plan)</option>
           </select>
           <button
             type="button"
             className="btn"
             disabled={!pick}
             onClick={() => {
-              onLoad(pick === 'free' ? null : w.plans.find((p) => p.id === pick))
+              onLoad(w.plans.find((p) => p.id === pick))
               setPick('')
             }}
           >

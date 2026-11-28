@@ -1,0 +1,30 @@
+/* the Pomodoro timer in the header: a small recessed strip like the page tabs; aqua while focusing, green on a break */
+.pomo { display: inline-flex; align-items: center; gap: 6px; padding: 4px; background: var(--canvas); border: 1px solid var(--border-muted); align-self: center; }
+.pomo-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; font-size: 14px; color: var(--muted); background: var(--btn); border: 1px solid var(--btn-border); border-radius: var(--radius); cursor: pointer; transition: color .2s, background-color .2s; }
+.pomo-btn:hover { color: var(--fg); background: var(--btn-hover); }
+.pomo-btn.play { color: #000; background: var(--accent); border-color: var(--accent); }
+.pomo-btn.play * { text-shadow: none; }
+.pomo-what { display: inline-flex; align-items: baseline; gap: 8px; padding: 0 6px; }
+.pomo-label { font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
+.pomo-clock { min-width: 5ch; font-size: 18px; font-variant-numeric: tabular-nums; }
+.pomo-done { font-size: 12px; color: var(--muted); padding-right: 4px; }
+.pomo.running.focus { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--canvas)); }
+.pomo.running.focus .pomo-label, .pomo.running.focus .pomo-clock { color: var(--accent); }
+.pomo.running.break { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, var(--canvas)); }
+.pomo.running.break .pomo-label, .pomo.running.break .pomo-clock { color: var(--green); }
+@media (pointer: coarse) { .pomo-btn { width: 40px; height: 40px; } }
+/* phones: on its own row in the header, full width */
+@media (max-width: 768px), (max-height: 500px) {
+  .pomo { grid-column: 1 / -1; justify-self: stretch; }
+  .pomo-what { flex: 1; }
+}
+/* before it starts: the two lengths to set, as small number boxes */
+.pomo-setup { gap: 12px; align-items: center; }
+.pomo-len { display: inline-flex; align-items: center; gap: 6px; }
+.pomo-len .num { width: 48px; height: 32px; padding: 0 6px; font-size: 15px; text-align: center; }
+.pomo-unit { font-size: 12px; color: var(--muted); }
+@media (pointer: coarse) { .pomo-len .num { height: 40px; width: 56px; font-size: 16px; } }
+/* wide screens: top right of the header (the headline numbers go under it, right-aligned, when there isn't room beside it) */
+@media (min-width: 769px) and (min-height: 501px) {
+  .page-head .pomo { margin-left: auto; }
+}
