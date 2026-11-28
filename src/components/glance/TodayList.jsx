@@ -1,6 +1,6 @@
 import { useNow } from '../../hooks/useNow.js'
 import { todayKey } from '../../lib/dates.js'
-import { habitColor, habitName, targetText } from '../../lib/habits.js'
+import { checkedTime, habitColor, habitName, isCheck, targetText } from '../../lib/habits.js'
 import { planColor } from '../../lib/plans.js'
 import { breakdown, duration, habitTimeOn } from '../../lib/time.js'
 import { isComplete, setCount, setTotal } from '../../lib/workouts.js'
@@ -19,15 +19,26 @@ function Ring({ pct, done, label }) {
   )
 }
 
-// today in one list: every habit (how far it is towards its daily target, its timer) and today's workout (sets ticked).
-// Nothing is marked by hand: a habit is done once today's tracked time reaches its target, a workout once every set is ticked.
+// a checklist habit's tick: a square in its colour, filled with a tick once it's done (press to tick it off, again to undo)
+function CheckBox({ done, label, onToggle }) {
+  return (
+    <button type="button" className={`glance-box${done ? ' on' : ''}`} role="checkbox" aria-checked={done} aria-label={label} onClick={onToggle}>
+      {done && <CheckOutlined />}
+    </button>
+  )
+}
+
+// today in one list: every habit (a timed one: how far it is towards its daily target, its timer; a checklist one: its tick) and
+// today's workout (sets ticked). A timed habit (a ring) is done once today's tracked time reaches its target, a checklist habit
+// (a square) once it is ticked, a workout once every set is ticked.
 // Whatever is being timed moves to the top, with today's note open under it (the same note as on its own page).
-export default function TodayList({ habits, segs, time, workout, plans, onHabitNote, onWorkoutNote }) {
+export default function TodayList({ habits, segs, time, workout, plans, onHabitNote, onHabitCheck, onWorkoutNote }) {
   const timing = time.running?.kind === 'habit'
   const now = useNow(timing, 5000)
   const parts = breakdown(segs)
   const workoutMs = parts.filter((p) => p.id.startsWith('workout:')).reduce((n, p) => n + p.ms, 0)
   const rows = habits.map((h) => {
+    if (isCheck(h)) return { h, check: true, done: h.days.includes(todayKey) }
     const ms = habitTimeOn(h, todayKey, time.running, now)
     const goal = (h.target ?? 0) * 60000
     return { h, ms, goal, done: goal > 0 && ms >= goal }
@@ -52,7 +63,16 @@ export default function TodayList({ habits, segs, time, workout, plans, onHabitN
         <strong>{doneCount}</strong> of {habits.length} {habits.length === 1 ? 'habit' : 'habits'} done
       </p>
       <ul className="glance-list">
-        {ordered.map(({ h, ms, goal, done }) => (
+        {ordered.map(({ h, ms, goal, done, check }) => check ? (
+          <li key={h.id} className={done ? 'is-done' : ''} data-color={habitColor(h)}>
+            <CheckBox done={done} label={`${habitName(h)}: done today`} onToggle={() => onHabitCheck(h)} />
+            {/* (the name ticks it too: a bigger target than the square; the square is the control for screen readers) */}
+            <div className="glance-what glance-tap" aria-hidden="true" onClick={() => onHabitCheck(h)}>
+              <strong>{habitName(h)}</strong>
+              <span>{done ? `Done at ${checkedTime(h, todayKey)}` : 'Tick it off once it’s done'}</span>
+            </div>
+          </li>
+        ) : (
           <li key={h.id} className={`${done ? 'is-done' : ''}${h.id === runningHabit ? ' is-running' : ''}`} data-color={habitColor(h)}>
             <Ring pct={goal ? (ms / goal) * 100 : 0} done={done} label={done ? 'Done today' : goal ? `${Math.floor((ms / goal) * 100)}% of today’s target` : 'No daily target yet'} />
             <div className="glance-what">

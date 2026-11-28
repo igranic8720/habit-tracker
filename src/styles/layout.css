@@ -32,3 +32,18 @@ main { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
   .workspace.show-side > .habits-pane:not(:has(> .subtabs)) { display: none; }
   .workspace.show-side > .side { order: 1; } /* below the tab bar */
 }
+
+/* ultrawide screens: the page stops growing at 2600px and sits in the middle, so cards, rows and their buttons keep sensible
+   proportions instead of stretching across the whole screen */
+@media (min-width: 2700px) {
+  main { width: 100%; max-width: 2600px; margin-inline: auto; }
+}
+/* very wide: the habit cards go two to a row (the add buttons and the archived list stay full width) */
+@media (min-width: 2300px) and (min-height: 501px) {
+  .habit-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; align-items: start; }
+  .habit-cards > :not(.card) { grid-column: 1 / -1; }
+}
+/* ultrawide: year graphs may use slightly bigger squares, so a wide card is filled rather than left half empty */
+@media (min-width: 2300px) and (min-height: 501px) {
+  .chart { --s-max: 36px; }
+}

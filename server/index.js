@@ -1,4 +1,4 @@
-// Production server: serves the built app (dist/) and the data API (/api/habit, /api/workouts, /api/time, /api/calendar). No dependencies beyond Node.
+// Production server: serves the built app (dist/) and the data API (/api/habit, /api/checklist, /api/workouts, /api/time, /api/calendar). No dependencies beyond Node.
 //   npm run build && npm start
 // Settings (environment variables):
 //   PORT            port to listen on            (default 3000)
@@ -10,6 +10,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { calendarApi } from './calendar.js'
 import { closeAll, eventsApi } from './events.js'
+import { checklistApi } from './checklist.js'
 import { habitApi } from './habits.js'
 import { timeApi } from './time.js'
 import { workoutApi } from './workouts.js'
@@ -64,6 +65,7 @@ const server = http.createServer((req, res) => {
     if (pathname.includes('\0')) return send(res, 400, 'Bad request')
 
     if (pathname === '/api/habit') return habitApi(req, res)
+    if (pathname === '/api/checklist') return checklistApi(req, res)
     if (pathname === '/api/workouts') return workoutApi(req, res)
     if (pathname === '/api/time') return timeApi(req, res)
     if (pathname === '/api/calendar' || pathname.startsWith('/api/calendar/')) return calendarApi(req, res)

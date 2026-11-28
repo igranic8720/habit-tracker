@@ -113,6 +113,9 @@ test('a habit is done on the days its time reaches its target (the running timer
   assert.equal(habitTimeOn(h, d2, running, at(d2, '10:15')), 30 * 60000)
   // another habit's timer doesn't count
   assert.deepEqual(habitDoneDays(h, { ...running, ref: 'other' }, at(d2, '11:00')), [d1])
+  // a checklist habit is done on the days it was ticked, whatever its time
+  assert.deepEqual(habitDoneDays({ ...h, kind: 'check', checks: { [d2]: 5, '2026-01-01': 9 } }), ['2026-01-01', d2])
+  assert.deepEqual(habitDoneDays({ ...h, kind: 'check' }), [])
   assert.deepEqual(habitDoneDays({ ...h, target: null }), [])
   assert.deepEqual(habitDoneDays({ ...h, target: 60 }), [])
 })

@@ -72,3 +72,10 @@
 @media (max-width: 768px) {
   .wl-gate .timer-btn { flex: 1 1 100%; min-height: 48px; }
 }
+
+/* ultrawide: the day's exercises side by side (at least 520px each), so each set's ✕ stays near its numbers instead of a
+   screen-width away; adding an exercise stays full width under them */
+@media (min-width: 2300px) and (min-height: 501px) {
+  .wl-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(520px, 1fr)); column-gap: 32px; align-items: start; }
+  .wl-body > .wl-add { grid-column: 1 / -1; }
+}

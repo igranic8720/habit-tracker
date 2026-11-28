@@ -40,8 +40,9 @@ const habitPieces = (habit, running, now) => {
 // the time a habit has on a day
 export const habitTimeOn = (habit, key, running = null, now = Date.now()) =>
   habitPieces(habit, running, now).filter((g) => g.key === key).reduce((n, g) => n + (g.end - g.start), 0)
-// the days it is done (oldest first); none without a target
+// the days it is done (oldest first): a checklist habit's ticked days; a timed one's days at its target (none without a target)
 export function habitDoneDays(habit, running = null, now = Date.now()) {
+  if (habit.kind === 'check') return Object.keys(habit.checks ?? {}).sort()
   if (!(habit.target > 0)) return []
   const per = new Map()
   for (const g of habitPieces(habit, running, now)) per.set(g.key, (per.get(g.key) ?? 0) + (g.end - g.start))

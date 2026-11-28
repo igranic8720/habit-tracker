@@ -22,3 +22,4 @@
 .goal-progress.none .goal-text { min-width: 0; text-align: left; } /* nothing yet: just the words, beside the target */
 @media (pointer: coarse) { .goal-arrow { width: 44px; font-size: 14px; } .goal-value { padding: 10px 8px; font-size: 16px; } }
 @media (max-width: 768px) { .goal-text { min-width: 0; } .goal-progress { flex-basis: 100%; } } /* phones: the bar takes the whole row */
+.goal-text.goal-check { min-width: 0; text-align: left; }

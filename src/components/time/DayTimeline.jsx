@@ -7,7 +7,7 @@ import { todayKey } from '../../lib/dates.js'
 import Panel from '../shared/Panel.jsx'
 import AddSession from './AddSession.jsx'
 import CalendarEvent from './CalendarEvent.jsx'
-import { CloseOutlined, LeftOutlined, RightOutlined, StopFilled, SwapLeftOutlined, SwapRightOutlined } from '@ant-design/icons'
+import { CheckSquareFilled, CloseOutlined, LeftOutlined, RightOutlined, StopFilled, SwapLeftOutlined, SwapRightOutlined } from '@ant-design/icons'
 
 const HOURS = Array.from({ length: 24 }, (_, h) => h)
 const hourName = (h) => new Date(2000, 0, 1, h % 24).toLocaleTimeString([], { hour: 'numeric' })
@@ -18,9 +18,10 @@ const nameOf = (s) => (s.kind === 'workout' ? `Workout - ${s.label}` : s.label)
 // a calendar block opens its details (the same card as the agenda's: Join, Open in Outlook…) in a small card on the timeline;
 // clicking elsewhere or Escape closes it
 // one day as a picture (always the same size: 30px an hour): what you tracked (left) beside your calendar (right) on a 24-hour grid, with a "now" line on today.
+// ticks: the checklist habits ticked off that day, [{ id, name, color, at }], shown as markers in the tracked lane at the moment they were ticked.
 // Above it: the day's total and how it split between habits / workouts; below it: the sessions themselves (to stop or delete
 // one) and "Add time I forgot to track". The calendar's details are in the Agenda card.
-export default function DayTimeline({ dayKey, segs, running, cal, habits, workoutName, onDay, onAdd, onRemove, onStop, onDiscard, firstDay }) {
+export default function DayTimeline({ dayKey, segs, running, cal, habits, ticks = [], workoutName, onDay, onAdd, onRemove, onStop, onDiscard, firstDay }) {
   const isToday = dayKey === todayKey
   const now = useNow(isToday, 30000)
   const tick = useNow(!!running && segs.some((g) => g.session.id === 'running'))
@@ -53,7 +54,15 @@ export default function DayTimeline({ dayKey, segs, running, cal, habits, workou
   const name = dayName(dayKey)
   const runningSeg = live.find((g) => g.session.id === 'running')
   const done = live.filter((g) => g.session.id !== 'running')
-  const tracked = sideBySide(live.map((g, i) => ({ start: g.start, end: g.end, i, g }))).map((p) => ({ g: live[p.event.i], col: p.col, cols: p.cols }))
+  // tracked time and ticks share the lane: laid out together, so a tick next to a session sits beside it rather than over it
+  const marks = ticks.filter((k) => k.at >= day0 && k.at < day1)
+  const lane = sideBySide(
+    [...live.map((g) => ({ start: g.start, end: g.end, g })), ...marks.map((k) => ({ start: k.at, end: k.at, k }))]
+      .sort((a, b) => a.start - b.start) // (layout reads them in time order, and finds each again by its place in the list)
+      .map((x, i) => ({ ...x, i })),
+  )
+  const tracked = lane.filter((p) => p.event.g).map((p) => ({ g: p.event.g, col: p.col, cols: p.cols }))
+  const tickMarks = lane.filter((p) => p.event.k).map((p) => ({ k: p.event.k, col: p.col, cols: p.cols }))
   const [openId, setOpenId] = useState(null)
   const open = placed.find((p) => p.event.id === openId)?.event ?? null // another day: nothing open
   const popRef = useRef(null)
@@ -109,7 +118,7 @@ export default function DayTimeline({ dayKey, segs, running, cal, habits, workou
           <span>Tracked</span>
           {showCal && <span>Calendar</span>}
         </div>
-        <div className="tl2-grid" ref={gridRef} role="img" aria-label={`Timeline: ${live.length} tracked ${live.length === 1 ? 'session' : 'sessions'}${showCal ? `, ${timed.length} calendar ${timed.length === 1 ? 'event' : 'events'}` : ''}`}>
+        <div className="tl2-grid" ref={gridRef} role="img" aria-label={`Timeline: ${live.length} tracked ${live.length === 1 ? 'session' : 'sessions'}${marks.length ? `, ${marks.length} ticked off` : ''}${showCal ? `, ${timed.length} calendar ${timed.length === 1 ? 'event' : 'events'}` : ''}`}>
           <div className="tl2-night" style={{ top: 0, height: at(day0 + 6 * 3600000) }} />
           <div className="tl2-night" style={{ top: at(day0 + 22 * 3600000), bottom: 0 }} />
           {HOURS.map((h) => (
@@ -129,6 +138,17 @@ export default function DayTimeline({ dayKey, segs, running, cal, habits, workou
                 <strong>{nameOf(g.session)}</strong>
                 <em className="tl2-dur">{duration(g.end - g.start)}</em>
                 <span className="tl2-range">{span(g.start, g.end)}</span>
+              </div>
+            ))}
+            {tickMarks.map(({ k, col, cols }) => (
+              <div
+                key={`tick-${k.id}`}
+                className="tl2-tick"
+                data-color={k.color}
+                style={{ top: top(k.at), left: `${(col / cols) * 100}%`, maxWidth: `${100 / cols}%` }} /* (as wide as its label, at most its column) */
+                title={`${k.name}: ticked off at ${timeOfDay(k.at)}`}
+              >
+                <CheckSquareFilled /> <strong>{k.name}</strong> <em className="tl2-dur">{timeOfDay(k.at)}</em>
               </div>
             ))}
           </div>

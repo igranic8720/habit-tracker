@@ -15,8 +15,8 @@
 .chart {
   display: flex; gap: 6px; width: 100%; container-type: inline-size;
   min-width: calc(30px + var(--weeks) * 10px + (var(--weeks) - 1) * 4px); /* below this the grid scrolls sideways */
-  /* squares grow to fill the card: 10px minimum, 30px maximum */
-  --s: clamp(10px, calc((100cqw - 30px - (var(--weeks) - 1) * 4px) / var(--weeks)), 30px);
+  /* squares grow to fill the card: 10px minimum, 30px maximum (--s-max: a card can allow bigger ones) */
+  --s: clamp(10px, calc((100cqw - 30px - (var(--weeks) - 1) * 4px) / var(--weeks)), var(--s-max, 30px));
 }
 /* the weekday labels stay put when the graph is wider than its card and scrolls sideways (it opens at the latest weeks) */
 .scroll { overscroll-behavior-x: contain; padding-left: 0; margin-left: 0; }
@@ -50,3 +50,4 @@
   .cell::before { content: ''; position: absolute; inset: -2px; } /* grow each square's tap area to meet its neighbours */
 }
 
+.cell.before { opacity: .3; } /* before tracking started: not a day you missed */

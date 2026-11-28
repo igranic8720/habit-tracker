@@ -32,7 +32,7 @@ export function eventsApi(req, res) {
   res.on('error', bye)
 }
 
-// tell every connected device that a store changed: { store: 'habit' | 'workouts' | 'time' | 'calendar', version }
+// tell every connected device that a store changed: { store: 'habit' | 'checklist' | 'workouts' | 'time' | 'calendar', version }
 export function announce(store, version = null) {
   const msg = `event: change\ndata: ${JSON.stringify({ store, version })}\n\n`
   for (const res of clients) res.write(msg)

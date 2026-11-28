@@ -93,3 +93,20 @@ test('daily targets step by 15 minutes from 15m to 24h', async () => {
   assert.equal(stepTarget(20, -1), 15)
   assert.deepEqual([15, 60, 90, 1440].map(targetText), ['15m', '1h', '1h 30m', '24h'])
 })
+
+test('a checklist habit is ticked off and unticked one day at a time', async () => {
+  const { isCheck, toggleCheck, newCheck } = await import('../../src/lib/habits.js')
+  const h = { id: 'c', kind: 'check' }
+  assert.ok(isCheck(h))
+  assert.ok(!isCheck({ id: 't' }))
+  const one = { ...h, ...toggleCheck(h, '2026-03-02', 1000) }
+  const two = { ...one, ...toggleCheck(one, '2026-03-01', 2000) }
+  assert.deepEqual(two.checks, { '2026-03-02': 1000, '2026-03-01': 2000 }) // each day ticked, with the moment it was clicked
+  assert.deepEqual(toggleCheck(two, '2026-03-02', 3000), { checks: { '2026-03-01': 2000 } }) // unticked: gone, moment and all
+  const { checkedTime } = await import('../../src/lib/habits.js')
+  const t = new Date(2026, 2, 1, 8, 42).getTime()
+  assert.equal(checkedTime({ checks: { '2026-03-01': t } }, '2026-03-01'), new Date(t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }))
+  assert.equal(checkedTime({ checks: {} }, '2026-03-01'), null)
+  const fresh = newCheck('cyan')
+  assert.deepEqual({ ...fresh, id: 'x' }, { id: 'x', name: '', color: 'cyan', checks: {}, notes: {} }) // no target, no kind
+})

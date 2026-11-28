@@ -12,7 +12,7 @@ const TABS = [
 ]
 
 // layout: dashboard pinned left; habit cards scrolling right. Phones (one column): two tabs, Habits and Dashboard
-export default function HabitsPage({ habits, year, time, taken, change, patch, add, remove, sub }) {
+export default function HabitsPage({ habits, year, time, taken, change, patch, add, addCheck, remove, sub }) {
   const [showArchived, setShowArchived] = useState(false)
   const active = habits.filter((h) => !h.archived)
   const archived = habits.filter((h) => h.archived)
@@ -24,7 +24,7 @@ export default function HabitsPage({ habits, year, time, taken, change, patch, a
           <Dashboard habits={active} year={year} />
         </aside>
       )}
-      <div className="habits-pane">
+      <div className="habits-pane habit-cards">
         {active.map((h) => (
           <HabitCard key={h.id} habit={h} year={year} time={time} taken={taken} onChange={(next) => change(h.id, next)} onArchive={() => patch(h.id, { archived: true })} />
         ))}
@@ -32,6 +32,7 @@ export default function HabitsPage({ habits, year, time, taken, change, patch, a
           archivedCount={archived.length}
           archivedOpen={showArchived}
           onAdd={add}
+          onAddCheck={addCheck}
           full={freeColor([...taken.keys()]) === null}
           onToggleArchived={() => setShowArchived(!showArchived)}
         />

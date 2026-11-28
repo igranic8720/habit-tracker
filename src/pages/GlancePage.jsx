@@ -8,6 +8,7 @@ import MonthCalendar from '../components/time/MonthCalendar.jsx'
 import TimeYear from '../components/time/TimeYear.jsx'
 import { useCalendarRange } from '../hooks/useCalendar.js'
 import { AHEAD } from '../lib/calendar.js'
+import { habitColor, habitName, isCheck } from '../lib/habits.js'
 import { nextDay } from '../lib/time.js'
 import { YEAR, todayKey } from '../lib/dates.js'
 import SubTabs from '../components/shared/SubTabs.jsx'
@@ -22,7 +23,7 @@ const TABS = [
 // beside the agenda above the month;
 // on the right (its own narrow column) the chosen day's timeline. Pick a day in any of them.
 // firstDay: Jan 1 of the earliest year with anything tracked (nothing before it can be browsed)
-export default function GlancePage({ t, map, habits, w, firstDay, sub, onHabitNote }) {
+export default function GlancePage({ t, map, habits, w, firstDay, sub, onHabitNote, onHabitCheck, since }) {
   const [day, setDay] = useState(todayKey)
   // the whole synced calendar (30 days back to 60 ahead) is loaded once, so picking another day shows it at once: nothing
   // reloads, and the agenda never blinks out (which made the page jump)
@@ -44,7 +45,7 @@ export default function GlancePage({ t, map, habits, w, firstDay, sub, onHabitNo
       <SubTabs label="At a glance sections" tabs={TABS} current={sub === 'timeline' ? 'timeline' : 'overview'} className="glance-tabs phone-only" />
       <div className="habits-pane glance-main">
         {/* first thing you see: the year so far, and how many days of it you let slip */}
-        <TimeYear map={map} year={YEAR} selected={day} onPick={setDay} />
+        <TimeYear map={map} year={YEAR} selected={day} onPick={setDay} since={since} />
         {/* two columns of cards: Today above the last two weeks, beside the agenda above the month; they stack in a narrow window */}
         <div className="g-cols">
           <div className="g-col">
@@ -56,6 +57,7 @@ export default function GlancePage({ t, map, habits, w, firstDay, sub, onHabitNo
                 workout={workout}
                 plans={w.plans}
                 onHabitNote={onHabitNote}
+                onHabitCheck={onHabitCheck}
                 onWorkoutNote={(text) =>
                   w.patchDay(todayKey, (d) => {
                     const { note: _old, ...others } = d // the same note as on the Workouts page
@@ -85,7 +87,8 @@ export default function GlancePage({ t, map, habits, w, firstDay, sub, onHabitNo
             segs={map.get(day) ?? []}
             running={t.running}
             cal={cal}
-            habits={habits}
+            habits={habits.filter((h) => !isCheck(h))} /* (time can only be added to timed habits) */
+            ticks={habits.filter((h) => isCheck(h) && Number.isFinite(h.checks?.[day])).map((h) => ({ id: h.id, name: habitName(h), color: habitColor(h), at: h.checks[day] }))}
             workoutName={workout?.name || 'Workout'}
             onDay={setDay}
             firstDay={firstDay}

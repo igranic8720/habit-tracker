@@ -1,0 +1,9 @@
+/* the tick: plain until it's done, then in the habit's colour */
+.check-btn { white-space: nowrap; }
+.btn.check-btn.on { color: var(--fg); background: color-mix(in srgb, var(--on) 28%, var(--btn)); border-color: var(--on); font-weight: 600; } /* tinted, so the words stay readable on yellow and white too */
+.btn.check-btn.on .anticon { color: var(--on); }
+.today-row .check-btn { height: 36px; flex: none; min-width: 150px; }
+@media (max-width: 768px) { .today-row .check-btn { flex: 1 1 100%; height: 48px; font-size: 16px; } }
+/* on a checklist card, where a timed one has its daily target: says what kind it is */
+.goal-kind { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: var(--fg); border-radius: 999px; background: color-mix(in srgb, var(--on) 20%, var(--canvas)); }
+.goal-kind .anticon { color: var(--on); }

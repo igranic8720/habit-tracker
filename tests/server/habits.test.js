@@ -71,6 +71,8 @@ test('bad data is refused (400) and writes nothing', async () => {
     'target not whole minutes': { habits: [habit('a', { target: 2.5 })] },
     'target over a day': { habits: [habit('a', { target: 1441 })] },
     'target zero': { habits: [habit('a', { target: 0 })] },
+    'unknown kind': { habits: [habit('a', { kind: 'weekly' })] },
+    'a checklist habit (they have their own store)': { habits: [habit('a', { kind: 'check' })] },
   }
   for (const [name, body] of Object.entries(bad)) assert.equal((await api.post('/api/habit', { version, ...body })).status, 400, name)
   assert.equal((await api.post('/api/habit', '{not json')).status, 400)

@@ -4,7 +4,7 @@ import './HabitGoal.css'
 import { CheckOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
 
 // a habit's daily target (required: reaching it is what makes a day done), set with up / down arrows in 15-minute steps from 15m
-// to 24h (the arrow keys work too; Page Up / Down move an hour), and today's progress towards it
+// to 24h (the arrow keys work too; Page Up / Down move an hour), and today's progress towards it.
 export default function HabitGoal({ habit, ms, done, onTarget }) {
   const target = habit.target
   const pct = target ? Math.min(100, (ms / (target * 60000)) * 100) : 0

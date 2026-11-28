@@ -3,8 +3,8 @@ import './DayDetail.css'
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
 
 // read-only panel for a clicked past day: its date (and the workout's name), whether it was done, anything else the
-// page passes in (the workout's sets), and the note
-export default function DayDetail({ dateKey, done, note, name, onClose, children }) {
+// page passes in (the workout's sets), and the note. at: when it was ticked off ('8:42 AM', a checklist habit)
+export default function DayDetail({ dateKey, done, at, note, name, onClose, children }) {
   return (
     <div className="day">
       <div className="day-head">
@@ -12,7 +12,7 @@ export default function DayDetail({ dateKey, done, note, name, onClose, children
           {fromKey(dateKey).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
           {name && <> · {name}</>}
         </span>
-        <span className={`day-status${done ? ' yes' : ''}`}>{done ? <><CheckOutlined /> done</> : 'not done'}</span>
+        <span className={`day-status${done ? ' yes' : ''}`}>{done ? <><CheckOutlined /> done{at ? ` at ${at}` : ''}</> : 'not done'}</span>
         <button className="day-close" aria-label="Close" onClick={onClose}>
           <CloseOutlined />
         </button>

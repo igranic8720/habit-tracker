@@ -15,7 +15,7 @@ const RENAMED = { aqua: 'blue', purple: 'violet', indigo: 'navy', rose: 'wine', 
 // claimant keeps it (habits in order, then plans; a blank starter habit last) and the others get a free colour. With all 28
 // taken there is nothing free, so the rest are left as they are.
 export function claimColors(habits, plans) {
-  const blank = (h) => !h.name && !h.target && !h.sessions?.length && !Object.keys(h.notes ?? {}).length
+  const blank = (h) => !h.name && !h.target && !h.sessions?.length && !Object.keys(h.checks ?? {}).length && !Object.keys(h.notes ?? {}).length
   const items = [...habits.map((x, i) => ({ x, i, rank: blank(x) ? 2 : 0 })), ...plans.map((x, i) => ({ x, i: habits.length + i, rank: 1 }))]
   const order = [...items].sort((a, b) => a.rank - b.rank || a.i - b.i)
   const used = []
@@ -66,8 +66,22 @@ export const stepTarget = (min, dir) =>
       : Math.max(TARGET_STEP, Math.ceil(min / TARGET_STEP) * TARGET_STEP - TARGET_STEP)
 export const targetText = (min) => (min < 60 ? `${min}m` : min % 60 ? `${Math.floor(min / 60)}h ${min % 60}m` : `${min / 60}h`)
 
-// a new habit: no target yet (it asks for one before it can be timed). Its done days are never stored: see habitDoneDays.
+// a new habit: timed, with no target yet (it asks for one before it can be timed). Its done days are never stored: see habitDoneDays.
 export const newHabit = (color = COLORS[0]) => ({ id: newId(), name: '', color, target: null, notes: {} })
+
+// two kinds of habit, kept in two stores: timed (done once a day's tracked time reaches its target; /api/habit) and checklist
+// (done when you tick the day off; /api/checklist, with checks: { 'YYYY-MM-DD': ms when it was ticked }). A habit is one kind for good. In the app
+// both are shown together, a checklist one marked kind: 'check' (that mark is never saved).
+export const newCheck = (color = COLORS[0]) => ({ id: newId(), name: '', color, checks: {}, notes: {} })
+export const isCheck = (h) => h.kind === 'check'
+// tick `key` off, noting the moment it was clicked, or untick it: returns the changes, { checks }
+export function toggleCheck(h, key, now = Date.now()) {
+  const { [key]: was, ...rest } = h.checks ?? {}
+  return { checks: was === undefined ? { ...rest, [key]: now } : rest }
+}
+// when a day was ticked off, as '8:42 AM' (null when it wasn't)
+export const checkedTime = (h, key) =>
+  Number.isFinite(h.checks?.[key]) ? new Date(h.checks[key]).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) : null
 
 export const habitName = (h) => h.name || 'Unnamed habit'
 export const habitColor = (h) => (COLORS.includes(h.color) ? h.color : 'blue')
