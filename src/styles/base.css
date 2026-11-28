@@ -9,11 +9,11 @@ button, input, select, textarea { font-family: inherit; }
 a { color: var(--fg); font-weight: 500; text-decoration: none; }
 a:hover { color: var(--accent); }
 
-/* the page background, the same as ivangranic.ca: a pale cyan glow fading to black, with moving paper grain over it.
+/* the page background, after ivangranic.ca (a little darker): a dim cyan glow fading to black, with moving paper grain over it.
    Both layers are fixed behind everything (the cards sit on top). Reduced motion: the grain stays still. */
 body::before {
   content: ''; position: fixed; inset: -150px; z-index: -2; pointer-events: none;
-  background: radial-gradient(ellipse at center, #b3faff, #000000);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, #b3faff 55%, #000), #000000); /* the site's #b3faff, dimmed */
 }
 body::after {
   content: ''; position: fixed; top: -110%; left: -50%; width: 300%; height: 300%; z-index: -1; pointer-events: none;
